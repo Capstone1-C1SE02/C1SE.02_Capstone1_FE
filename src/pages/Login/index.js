@@ -1,7 +1,5 @@
-import images from '~/assets/images';
-
 function Login() {
-    return <img src={images.logo} alt="Logo" />;
+    return <p>Login</p>;
 }
 
 export default Login;
