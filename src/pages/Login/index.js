@@ -14,6 +14,7 @@ function Login() {
     const handleLogin = () => {
         if (username.length > 0 && password.length > 0) {
             toast.success('Login success');
+            window.location.href = '/';
         } else {
             toast.error('Login failed');
         }
