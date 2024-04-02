@@ -1,0 +1,84 @@
+.container{  
+    .heading{
+        h2{
+            color: #000;
+            font-family: "Times New Roman";
+            font-size: 2rem;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+    }    
+    .option-button{
+        display: flex;
+        justify-content: space-around;
+    }
+}
+
+
+.form-add-action{
+    width: 53.75rem;
+    margin: 0 auto;
+    border-radius: 1.25rem;
+    background: #ffffff;
+    position: fixed;
+    top: 1.94rem;
+    left: 0;
+    right: 0;
+    z-index: 2;
+
+    > div{
+        margin: 1.88rem 0 2.06rem 1.87rem;
+        h2{
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    .form-main-add{        
+        border-bottom: 2px solid rgb(0, 0, 0);
+        border-top: 2px solid rgb(0, 0, 0);
+        margin: 0;
+        padding: 0;
+
+        > div{
+            margin-bottom: calc(3.12rem - 1.87rem);
+            div{
+                width: 20rem;
+                height: 4.75rem;
+                margin: 1.88rem;
+
+            }
+            label{
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
+
+            input, select{
+                width: 100%;
+                height: 2.5rem;
+                border-radius: 1.25rem;
+                border: 1px solid rgba(0, 0, 0, 0.50);
+            }
+
+            
+        }
+
+        h2{
+            font-size: 1.75rem;
+            margin: 2.75rem 0 2.69rem 1.88rem;
+        }
+    }
+
+}
+
+.label-layout{
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.20);
+}
