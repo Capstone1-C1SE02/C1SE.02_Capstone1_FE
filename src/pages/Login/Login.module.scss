@@ -1,0 +1,54 @@
+.login {
+    padding: 50px 0;
+}
+
+.heading {
+    text-align: center;
+    color: #000;
+    font-size: 32px;
+    font-weight: 700;
+    padding-bottom: 50px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: 1px solid var(--primaryColor, #c7383e);
+    padding: 50px;
+
+    &-input {
+        border-radius: 20px;
+        border: 1px solid var(--primaryColor, #c7383e);
+        font-size: 21px !important;
+
+        &::placeholder {
+            color: #a2a4a7 !important;
+            font-size: 21px;
+            font-weight: 400;
+            line-height: normal;
+        }
+    }
+
+    label {
+        font-size: 21px;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+    .btn {
+        cursor: pointer;
+        margin-top: 35px;
+        border-radius: 30px;
+        border: none;
+        background: var(--primaryColor, #c7383e);
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 8px 50px;
+    }
+}
+
+
+
