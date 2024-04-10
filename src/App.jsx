@@ -1,11 +1,16 @@
-import Login from "@/pages/admin/login";
+import { Routes, Route } from "react-router-dom";
+import { Home, Login } from "@/pages/admin";
+import { path } from "./ultils/constant"
 
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold">React App</h1>
-      <Login />
-    </>
+    <div className="h-screen w-screen bg-secondary">
+      <Routes>
+        <Route path={path.HOME} element={<Home />}/>
+        <Route path={path.LOGIN} element={<Login />} />
+        {/* </Route> */}
+      </Routes>
+    </div>
   );
 }
 
