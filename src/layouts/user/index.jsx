@@ -8,9 +8,9 @@ function DefaultLayoutUser({ children }) {
         <Header />
         <main className="flex min-h-min flex-col gap-[20px] rounded-[20px] bg-white p-[30px]">
           <h1 className="text-[30px] font-bold">Tra cứu thông tin văn bằng</h1>
-          <div className="flex flex-grow items-center gap-[30px]">
+          <div className="flex items-center gap-[30px]">
             <SideBar />
-            <div className="h-[100%] w-[3px] rounded-full bg-[--primaryBackgroundColor]" />
+            <div className="h-[100%] w-[3px] flex-shrink-0 rounded-full bg-[--primaryBackgroundColor]" />
             {children}
           </div>
         </main>
