@@ -76,6 +76,12 @@
 
 @layer base {
   :root {
+    --primaryBackgroundColor: #c7383e;
+    --primaryTextColor: #252f4a;
+    --textColorActive: rgba(199, 56, 62, 0.9);
+    --backgroundColorActive: rgba(199, 56, 62, 0.2);
+    --backgroundColorHover: #e8ebed;
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 

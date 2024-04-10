@@ -1,16 +1,29 @@
-import { Routes, Route } from "react-router-dom";
-import { Home, Login } from "@/pages/admin";
-import { path } from "./ultils/constant"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { publicUserRoutes } from "@/routes";
 
 function App() {
   return (
-    <div className="h-screen w-screen bg-secondary">
-      <Routes>
-        <Route path={path.HOME} element={<Home />}/>
-        <Route path={path.LOGIN} element={<Login />} />
-        {/* </Route> */}
-      </Routes>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          {publicUserRoutes.map((route, index) => {
+            const Component = route.component;
+            const Layout = route.layout;
+            return (
+              <Route
+                key={`route-${index}`}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Component />
+                  </Layout>
+                }
+              />
+            );
+          })}
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
