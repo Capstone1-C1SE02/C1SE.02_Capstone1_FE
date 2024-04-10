@@ -11,12 +11,12 @@ function SideBar() {
   };
 
   return (
-    <div className="flex h-[100%] w-[325px] flex-col gap-[15px] py-[10px]">
+    <div className="flex h-[100%] w-[325px] flex-shrink-0 flex-col gap-[15px] py-[10px]">
       <NavLink to={"/"} className={getClassName}>
-        Tìm kiếm thủ công
-      </NavLink>
-      <NavLink to={"/search-by-image"} className={getClassName}>
         Tìm kiếm bằng hình ảnh
+      </NavLink>
+      <NavLink to={"/search-by-text"} className={getClassName}>
+        Tìm kiếm thủ công
       </NavLink>
     </div>
   );
