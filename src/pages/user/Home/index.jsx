@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
 import ErrorMessage from "@/components/user/Form/error-message";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [chonAnh, setChonAnh] = useState("/images/noPicture.svg");
   const [tenAnh, setTenAnh] = useState("Chưa có tệp nào được chọn");
 
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      setMessage("");
       setTenAnh(e.target.files[0].name);
       setChonAnh(URL.createObjectURL(e.target.files[0]));
     }
@@ -24,7 +27,11 @@ function Home() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setMessage("Thông tin không chính xác!");
+    if (chonAnh === "/images/noPicture.svg") {
+      setMessage("Vui lòng chọn ảnh trước khi tra cứu");
+      return;
+    }
+    navigate("/result");
   };
 
   return (
