@@ -1,7 +1,7 @@
-import { FaBars } from "react-icons/fa";
+import { FaBars } from "react-icons/fa6";
 
 const icon = {
-    FaBars
-}
+  FaBars,
+};
 
-export default icon
+export default icon;

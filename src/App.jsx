@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { publicUserRoutes } from "@/routes";
+import { publicUserRoutes, publicAdminRoutes } from "@/routes";
 
 function App() {
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          {publicUserRoutes.map((route, index) => {
+          {publicAdminRoutes.map((route, index) => {
             const Component = route.component;
             const Layout = route.layout;
             return (
