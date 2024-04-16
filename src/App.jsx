@@ -6,7 +6,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          {publicAdminRoutes.map((route, index) => {
+          {publicUserRoutes.map((route, index) => {
             const Component = route.component;
             const Layout = route.layout;
             return (

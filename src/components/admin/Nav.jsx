@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-function Nav() {
+function Nav({ onClick }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const active = "bg-custom-bg-notActive-nav text-custom-text-notActive-nav";
@@ -11,7 +11,7 @@ function Nav() {
   };
 
   return (
-    <div className="border-r-2 p-[10px]">
+    <div className=" w-[400px] p-[10px]">
       <img
         className="mx-auto my-[20px] h-[50px] w-[169.39px] "
         src={"/images/logo.svg"}
@@ -24,54 +24,57 @@ function Nav() {
         <div>
           <ul>
             <li
-              onClick={(e) => handleSetIsactive(0)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 0 ? active : ""}`}
+              // onClick={(e) => handleSetIsactive(0)}
+              onClick={onClick}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách sinh viên đã nhận bằng</NavLink>
+              <NavLink to={"/"}>Danh sách sinh viên đã nhận bằng</NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(1)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 1 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 1 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách sinh viên </NavLink>
+              <NavLink to={"/list-student"}>Danh sách sinh viên </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(2)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 2 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 2 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách năm học </NavLink>
+              <NavLink to={"/list-year"}>Danh sách năm học </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(3)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 3 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 3 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách chương trình đào tạo </NavLink>
+              <NavLink to={"/list-academic-program"}>
+                Danh sách chương trình đào tạo{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(4)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 4 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 4 ? active : ""}`}
             >
-              <NavLink to={"/login"}>
+              <NavLink to={"/list-academic-program-year"}>
                 Danh sách chương trình đào tạo theo năm{" "}
               </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(5)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 5 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 5 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách ngành học </NavLink>
+              <NavLink to={"/list-majored"}>Danh sách ngành học </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(6)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 6 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 6 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Sổ cấp bằng </NavLink>
+              <NavLink to={"/degree-book"}>Sổ cấp bằng </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(7)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 7 ? active : ""}`}
+              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 7 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách bằng </NavLink>
+              <NavLink to={"/degree-list"}>Danh sách bằng </NavLink>
             </li>
           </ul>
         </div>
