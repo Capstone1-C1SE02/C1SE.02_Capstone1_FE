@@ -1,14 +1,8 @@
-import React from 'react'
+import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from './Header';
 
 function Home() {
-  return (
-      <div className='w-full h-full'>
-          <Header />
-          
-    </div>
-  ) 
+  return <div className="h-full w-full"></div>;
 }
 
-export default Home
+export default Home;

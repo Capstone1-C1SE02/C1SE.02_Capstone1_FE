@@ -18,6 +18,10 @@ module.exports = {
     },
     extend: {
       colors: {
+        "custom-text-notActive-nav": "color: #5B6B79",
+        "custom-text-active-nav": "rgba(199, 56, 62, 0.9)", //bg-nav-text-hover by BAO
+        "custom-bg-notActive-nav": "#E8EBED;", //bg-nav-bg-hover by BAO
+        "custom-bg-active-nav": "rgba(199, 56, 62, 0.2)", //bg-nav-bg-hover by BAO
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -51,9 +55,15 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
         // My customs
         "primary-0.9": "rgba(199, 56, 62, 0.9)",
       },
+
+      fontSize: {
+        iconHeader: "26px",
+      },
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
