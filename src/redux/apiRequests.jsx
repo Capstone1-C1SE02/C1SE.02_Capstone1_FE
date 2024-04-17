@@ -1,10 +1,10 @@
-import axios from "axios";
 import { loginFailed, loginStart, loginSuccess } from "./authSlice";
+import axiosConfig from "@/axiosConfig";
 
 export const login = async (user, dispatch, navigate) => {
   dispatch(loginStart());
   try {
-    const res = await axios.post("/v1/auth/login", user);
+    const res = await axiosConfig.post("/v1/auth/login", user);
     dispatch(loginSuccess(res.data));
     navigate("/");
   } catch {
