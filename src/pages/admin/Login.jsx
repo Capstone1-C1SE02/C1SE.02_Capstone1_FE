@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { InputForm, Button } from "@/components/admin";
 import { useNavigate } from "react-router-dom";
+import { login } from "@/redux/apiRequests";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [payload, setPayload] = useState({
@@ -16,8 +19,9 @@ const Login = () => {
   };
 
   const handleSubmit = () => {
-    navigate("/");
     console.log(payload);
+    console.log("payload");
+    login(payload, dispatch, navigate);
   };
 
   return (
