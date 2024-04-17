@@ -37,6 +37,7 @@ const students = [
   },
 ];
 
+
 function Home() {
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
@@ -69,8 +70,9 @@ function Home() {
     console.log("ok 4");
   };
 
+
   const handleActionClick = (studentId) => {
-    setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
+    setShtowActionMenu({ studentId, isOpen: !showAcionMenu.isOpen });
     console.log("49 actions clicked", studentId);
   };
 

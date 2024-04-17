@@ -4,7 +4,7 @@ import axiosConfig from "@/axiosConfig";
 export const login = async (user, dispatch, navigate) => {
   dispatch(loginStart());
   try {
-    const res = await axiosConfig.post("/v1/auth/login", user);
+    const res = await axiosConfig.post("/login", user);
     dispatch(loginSuccess(res.data));
     navigate("/");
   } catch {

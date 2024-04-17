@@ -37,7 +37,7 @@ const Login = () => {
             keyObject={"email"}
           ></InputForm>
 
-          {!isLoggedIn && (
+          {isLoggedIn && (
             <InputForm
               text={"Tên người dùng"}
               setValue={setPayload}

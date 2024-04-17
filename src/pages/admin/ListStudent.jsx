@@ -3,43 +3,24 @@ import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
-const students = [
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    date: "2021-01-20",
-    address: "Quảng Nam",
-    gender: 0,
-    ethnic: "Kinh",
-    nation: "Việt Nam",
-    email: "Nguyenhuutuan0901@gmail.com",
-    phonenumber: "07080000123",
-    yearAdmission: 2021,
-    major: "CNTT",
-    academicProgram: "T",
-    modeofStudy: "CQ",
-    timeStudy: 4,
-  },
-  {
-    username: "Nguyễn Tuấn",
-    id: "1000002",
-    date: "2021-01-20",
-    address: "Quảng Nam",
-    gender: 0,
-    ethnic: "Kinh",
-    nation: "Việt Nam",
-    email: "Nguyenhuutuan0901@gmail.com",
-    phonenumber: "07080000123",
-    yearAdmission: 2021,
-    major: "CNTT",
-    academicProgram: "T",
-    modeofStudy: "CQ",
-    timeStudy: 4,
-  },
-];
+import axiosConfig from "../../axiosConfig";
+
 const { BsThreeDotsVertical, FaTimes } = icon;
 
 function ListStudent() {
+  const [studentss, setStudentsData] = useState([]);
+  useEffect(() => {
+    async function fetchStudentsData() {
+      try {
+        const response = await axiosConfig.get("/student");
+        setStudentsData(response.data);
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
+      }
+    }
+    fetchStudentsData();
+  }, []);
+
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -50,41 +31,42 @@ function ListStudent() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    username: "",
-    date: "",
-    address: "",
-    gender: "",
-    ethnic: "",
-    nation: "",
-    email: "",
-    phonenumber: "",
-    yearAdmission: "",
-    major: "",
-    academicProgram: "",
-    modeofStudy: "",
-    timeStudy: "",
+    StudentID: "",
+    FirstName: "",
+    LastName: "",
+    DateOfBirth: "",
+    Address: "",
+    Gender: "",
+    Nation: "",
+    Nationality: "",
+    Email: "",
+    PhoneNumber: "",
+    MajorName: "",
+    ProgramName: "",
+    YearOfAdmission: "",
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
-    students.reduce((acc, user) => {
-      acc[user.id] = {
-        username: user.username,
-        date: user.date,
-        address: user.address,
-        gender: user.gender,
-        ethnic: user.ethnic,
-        nation: user.nation,
-        email: user.email,
-        phonenumber: user.phonenumber,
-        yearAdmission: user.yearAdmission,
-        major: user.major,
-        academicProgram: user.academicProgram,
-        modeofStudy: user.modeofStudy,
-        timeStudy: user.timeStudy,
+    studentss.reduce((acc, user) => {
+      acc[user.StudentID] = {
+        StudentID: user.StudentID,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        DateOfBirth: user.DateOfBirth,
+        Address: user.Address,
+        Gender: user.Gender,
+        Nation: user.Nation,
+        Nationality: user.Nationality,
+        Email: user.Email,
+        PhoneNumber: user.PhoneNumber,
+        MajorName: user.MajorName,
+        ProgramName: user.ProgramName,
+        YearOfAdmission: user.YearOfAdmission,
       };
       return acc;
     }, {}),
   );
+  console.log(objectPayload);
 
   //add
   const handleAddANew = () => {
@@ -138,44 +120,64 @@ function ListStudent() {
             <thead className=" w-full ">
               <tr className="block w-full text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[200px] px-4 py-2">Tên sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">Chuyên ngành</th>
-                <th className=" min-w-[500px] px-4 py-2">
+                <th className=" min-w-[200px] px-4 py-2">Ngày sinh</th>
+                <th className=" min-w-[500px] px-4 py-2">Quê quán</th>
+                <th className=" min-w-[200px] px-4 py-2">Giới tính</th>
+                <th className=" min-w-[200px] px-4 py-2">Dân tộc</th>
+                <th className=" min-w-[200px] px-4 py-2">Quốc tịch</th>
+                <th className=" min-w-[300px] px-4 py-2">Email</th>
+                <th className=" min-w-[200px] px-4 py-2">Số điện thoại</th>
+                <th className=" min-w-[300px] px-4 py-2">Chuyên ngành</th>
+                <th className=" min-w-[200px] px-4 py-2">
                   Chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Xếp loại</th>
-                <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
+                <th className=" min-w-[200px] px-4 py-2">Năm nhập học</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className=" w-full   ">
-              {students.map((student, index) => (
+              {studentss?.map((student, index) => (
                 <tr
-                  key={student.id}
+                  key={index}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.username}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.id}</td>
-                  <td className="min-w-[200px] px-4 py-2">{student.major}</td>
-                  <td className="min-w-[500px] px-4 py-2">{student.program}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.classification}
+                    {student.LastName + " " + student.FirstName}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.graduationYear}
+                    {student.DateOfBirth}
+                  </td>
+                  <td className="min-w-[500px] px-4 py-2">{student.Address}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.Gender ? "Nam" : "Nữ"}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.Nation}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.Nationality}
+                  </td>
+                  <td className="min-w-[300px] px-4 py-2">{student.Email}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.PhoneNumber}
+                  </td>
+                  <td className="min-w-[300px] px-4 py-2">
+                    {student.yearbasedacademicprogram.program.major.MajorName}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.yearbasedacademicprogram.program.ProgramName}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.YearOfAdmission}
                   </td>
                   <td
-                    onClick={() => handleActionClick(student.id)}
+                    onClick={() => handleActionClick(student.StudentID)}
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === student.id &&
+                      showActionMenu.studentId === student.StudentID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === student.id &&
+                    {showActionMenu.studentId === student.StudentID &&
                       showActionMenu.isOpen && (
                         <div
                           className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
@@ -218,7 +220,7 @@ function ListStudent() {
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Họ tên:</label>
                   <input
-                    id="username"
+                    id="FirstName"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -233,7 +235,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Ngày sinh:</label>
                   <input
                     type="date"
-                    id="date"
+                    id="DateOfBirth"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -247,7 +249,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Quê quán:</label>
                   <input
                     type="text"
-                    id="address"
+                    id="Address"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -263,7 +265,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Giới tính:</label>
                   <select
                     type="text"
-                    id="gender"
+                    id="Gender"
                     className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -277,8 +279,8 @@ function ListStudent() {
                       className="border-b-[1px] bg-white p-[10px] text-left"
                     >
                       <option hidden></option>
-                      <option value="0">Nam</option>
-                      <option value="1">Nữ</option>
+                      <option value="1">Nam</option>
+                      <option value="0">Nữ</option>
                     </optgroup>
                   </select>
                 </div>{" "}
@@ -286,7 +288,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Dân tộc:</label>
                   <input
                     type="text"
-                    id="ethnic"
+                    id="Nation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -300,7 +302,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Quốc tịch:</label>
                   <input
                     type="text"
-                    id="nation"
+                    id="Nationality"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -316,7 +318,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Email:</label>
                   <input
                     type="text"
-                    id="email"
+                    id="Email"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -332,7 +334,7 @@ function ListStudent() {
                   </label>
                   <input
                     type="text"
-                    id="phonenumber"
+                    id="PhoneNumber"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -348,7 +350,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="yearAdmission"
+                    id="YearOfAdmission"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -373,7 +375,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="major"
+                    id="MajorName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -397,7 +399,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="academicProgram"
+                    id="ProgramName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -408,8 +410,8 @@ function ListStudent() {
                   >
                     <optgroup label="Chương trình đào tạo">
                       <option hidden></option>
-                      <option value="T">Thường</option>
-                      <option value="CMU">Chuẩn CMU</option>
+                      <option value="ThườngT">Thường</option>
+                      <option value="Chuẩn CMU">Chuẩn CMU</option>
                     </optgroup>
                   </select>
                 </div>{" "}
@@ -421,7 +423,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="modeofStudy"
+                    id="ModeofStudy"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -443,7 +445,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="timeStudy"
+                    id="DurationOfTraning"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -493,11 +495,11 @@ function ListStudent() {
               </div>
             </div>
 
-            {students.map(
+            {studentss?.map(
               (student, index) =>
-                showActionMenu.studentId === student.id && (
+                showActionMenu.studentId === student.StudentID && (
                   <div
-                    key={student.id}
+                    key={index}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
                     <div className="mb-[10px] flex gap-[30px]">
@@ -506,26 +508,30 @@ function ListStudent() {
                           Họ tên:
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].username}
+                          defaultValue={objectPayload[1].FirstName}
                           type="text"
-                          id="username"
+                          id="FirstName"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "username")
+                            handledOnchangeEdit(
+                              e,
+                              student.StudentID,
+                              "FirstName",
+                            )
                           }
                         />
                       </div>{" "}
-                      <div className="flex flex-col gap-[5px]">
+                      {/* <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Ngày sinh:
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].date}
+                          defaultValue={objectPayload[student.StudentID].date}
                           type="date"
                           id="date"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "date")
+                            handledOnchangeEdit(e, student.StudentID, "date")
                           }
                         />
                       </div>{" "}
@@ -534,17 +540,19 @@ function ListStudent() {
                           Quê quán:
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].address}
+                          defaultValue={
+                            objectPayload[student.StudentID].address
+                          }
                           type="text"
                           id="address"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "address")
+                            handledOnchangeEdit(e, student.StudentID, "address")
                           }
                         />
-                      </div>{" "}
+                      </div>{" "} */}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    {/* <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Giới tính:
@@ -553,9 +561,9 @@ function ListStudent() {
                           type="text"
                           id="gender"
                           className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].gender}
+                          defaultValue={objectPayload[student.StudentID].gender}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "gender")
+                            handledOnchangeEdit(e, student.StudentID, "gender")
                           }
                         >
                           <optgroup
@@ -563,8 +571,8 @@ function ListStudent() {
                             className="border-b-[1px] bg-white p-[10px] text-left"
                           >
                             <option hidden></option>
-                            <option value="0">Nam</option>
-                            <option value="1">Nữ</option>
+                            <option value="1">Nam</option>
+                            <option value="0">Nữ</option>
                           </optgroup>
                         </select>
                       </div>{" "}
@@ -576,9 +584,9 @@ function ListStudent() {
                           type="text"
                           id="ethnic"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].ethnic}
+                          defaultValue={objectPayload[student.StudentID].ethnic}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "ethnic")
+                            handledOnchangeEdit(e, student.StudentID, "ethnic")
                           }
                         />
                       </div>{" "}
@@ -590,9 +598,9 @@ function ListStudent() {
                           type="text"
                           id="nation"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].nation}
+                          defaultValue={objectPayload[student.StudentID].nation}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "nation")
+                            handledOnchangeEdit(e, student.StudentID, "nation")
                           }
                         />
                       </div>{" "}
@@ -606,9 +614,9 @@ function ListStudent() {
                           type="text"
                           id="email"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].email}
+                          defaultValue={objectPayload[student.StudentID].email}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "email")
+                            handledOnchangeEdit(e, student.StudentID, "email")
                           }
                         />
                       </div>{" "}
@@ -620,9 +628,15 @@ function ListStudent() {
                           type="text"
                           id="phonenumber"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].phonenumber}
+                          defaultValue={
+                            objectPayload[student.StudentID].phonenumber
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "phonenumber")
+                            handledOnchangeEdit(
+                              e,
+                              student.StudentID,
+                              "phonenumber",
+                            )
                           }
                         />
                       </div>{" "}
@@ -634,9 +648,15 @@ function ListStudent() {
                           type="text"
                           id="yearAdmission"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].yearAdmission}
+                          defaultValue={
+                            objectPayload[student.StudentID].yearAdmission
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "yearAdmission")
+                            handledOnchangeEdit(
+                              e,
+                              student.StudentID,
+                              "yearAdmission",
+                            )
                           }
                         >
                           <optgroup label="Năm nhập học">
@@ -657,9 +677,9 @@ function ListStudent() {
                           type="text"
                           id="major"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].major}
+                          defaultValue={objectPayload[student.StudentID].major}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "major")
+                            handledOnchangeEdit(e, student.StudentID, "major")
                           }
                         >
                           <optgroup label="Chuyên ngành">
@@ -680,12 +700,12 @@ function ListStudent() {
                           id="academicProgram"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.id].academicProgram
+                            objectPayload[student.StudentID].academicProgram
                           }
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.id,
+                              student.StudentID,
                               "academicProgram",
                             )
                           }
@@ -707,9 +727,15 @@ function ListStudent() {
                           type="text"
                           id="modeofStudy"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].modeofStudy}
+                          defaultValue={
+                            objectPayload[student.StudentID].modeofStudy
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "modeofStudy")
+                            handledOnchangeEdit(
+                              e,
+                              student.StudentID,
+                              "modeofStudy",
+                            )
                           }
                         >
                           <optgroup label="Loại hình đào tạo">
@@ -727,9 +753,15 @@ function ListStudent() {
                           type="text"
                           id="timeStudy"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].timeStudy}
+                          defaultValue={
+                            objectPayload[student.StudentID].timeStudy
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "timeStudy")
+                            handledOnchangeEdit(
+                              e,
+                              student.StudentID,
+                              "timeStudy",
+                            )
                           }
                         >
                           <optgroup label="Thời gian đào tạo">
@@ -739,7 +771,7 @@ function ListStudent() {
                           </optgroup>
                         </select>
                       </div>{" "}
-                    </div>
+                    </div> */}
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
@@ -755,7 +787,9 @@ function ListStudent() {
                         textColor={"text-[#16A34A] "}
                         justify
                         text16
-                        onClick={(e) => handleSaveInformation(student.id)}
+                        onClick={(e) =>
+                          handleSaveInformation(student.StudentID)
+                        }
                       />
                     </div>
                   </div>
