@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-const InputForm = ({ text, setValue, keyObject }) => {
+const InputForm = ({ text, setValue, keyObject, typeInput }) => {
   return (
     <div className="mb-4">
       <label
@@ -10,7 +10,7 @@ const InputForm = ({ text, setValue, keyObject }) => {
         {text}
       </label>
       <input
-        type=""
+        type={typeInput ? `${typeInput}` : ""}
         id=""
         className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
         placeholder=""

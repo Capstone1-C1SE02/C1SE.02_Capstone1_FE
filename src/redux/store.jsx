@@ -1,7 +1,10 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
-import userReducer from "./userSlice";
+import addReducer from "./addSlice"; // Assuming you still need these reducers
+import deleteReducer from "./deleteSlice";
+import editReducer from "./editSlice";
 import {
+  createMigrate,
   persistStore,
   persistReducer,
   FLUSH,
@@ -13,13 +16,22 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-const persistConfig = {
-  key: "root",
+const authPersistConfig = {
+  key: "auth",
   version: 1,
   storage,
 };
-const rootReducer = combineReducers({ auth: authReducer, users: userReducer });
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const rootReducer = combineReducers({
+  auth: persistReducer(authPersistConfig, authReducer),
+  addAction: addReducer,
+  deleteAction: deleteReducer,
+  editAction: editReducer,
+});
+
+const persistedReducer = persistReducer(
+  { key: "root", version: 1, storage },
+  rootReducer,
+);
 
 export const store = configureStore({
   reducer: persistedReducer,

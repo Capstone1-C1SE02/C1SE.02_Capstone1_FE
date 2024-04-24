@@ -2,25 +2,85 @@ import axios from "axios";
 // require("dotenv").config();
 
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: "http://127.0.0.1:8000/api",
 });
 
 instance.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
-    // gắn token vào header
-    // let token =
-    //   window.localStorage.getItem("persist:auth") &&
-    //   JSON.parse(window.localStorage.getItem("persist:auth"))?.token?.slice(
-    //     1,
-    //     -1,
-    //   );
-    // config.headers = {
-    //   authorization: token ? `Bearer ${token}` : null,
-    // };
-    return config;
+    try {
+      let data =
+        window.localStorage?.getItem("persist:auth") &&
+        JSON.parse(window.localStorage.getItem("persist:auth"));
+      const dataRaw = data && data?.access;
+      const token = JSON.parse(dataRaw);
+
+      console.log("token storage TOKEN", token);
+      config.headers = {
+        authorization: token ? `Bearer ${token}` : "",
+      };
+
+      console.log("ok11111 ");
+      return config;
+    } catch (error) {
+      console.log(error);
+    }
   },
   function (error) {
+    return Promise.reject(error, "lỗi token");
+  },
+);
+
+instance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    let data =
+      window.localStorage?.getItem("persist:auth") &&
+      JSON.parse(window.localStorage.getItem("persist:auth"));
+
+    const refreshRaw = data.refresh;
+    const refresh = JSON.parse(refreshRaw);
+    console.log("REFRESH before call api", refresh);
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      console.log("ok 1");
+      try {
+        const newAccessToken = await instance.post("/token/refresh/", {
+          refresh,
+        });
+        const newAccess = newAccessToken?.data?.access;
+        const newRefresh = newAccessToken?.data?.refresh;
+        console.log("access after call api ", newAccess);
+        console.log("refresh after call api ", newRefresh);
+
+        const localStorageDataRaw = JSON.parse(
+          localStorage.getItem("persist:auth"),
+        );
+        console.log("localStorageData1", localStorageDataRaw.refresh);
+
+        const newAccess1 = `"${newAccess}"`;
+        const newRefresh1 = `"${newRefresh}"`;
+
+        localStorageDataRaw.refresh = newRefresh1;
+        localStorageDataRaw.access = newAccess1;
+        console.log("localStorageData2", localStorageDataRaw.refresh);
+        console.log("localStorageData3", localStorageDataRaw);
+        localStorage.setItem(
+          "persist:auth",
+          JSON.stringify(localStorageDataRaw),
+        );
+
+        originalRequest.headers.Authorization = newAccess
+          ? `Bearer ${newAccess}`
+          : "";
+
+        return instance(error.config);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+      }
+    }
+
     return Promise.reject(error);
   },
 );

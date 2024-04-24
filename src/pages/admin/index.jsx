@@ -5,5 +5,5 @@ export { default as ListYear } from "./ListYear";
 export { default as ListAcademicProgram } from "./ListAcademicProgram";
 export { default as ListAcademicProgramYear } from "./ListAcademicProgramYear";
 export { default as ListMajored } from "./ListMajored";
-export { default as DegreeBook } from "./DegreeBook";
+export { default as DegreeInfomation } from "./DegreeInfomation";
 export { default as DegreeList } from "./DegreeList";

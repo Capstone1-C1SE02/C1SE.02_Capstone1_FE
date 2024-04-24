@@ -4,188 +4,105 @@ import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
+import axiosConfig from "@/axiosConfig";
 
-const students = [
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    classification: "Giỏi",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    graduationyear: "2025",
-    numbergraduationdecisions: "0011",
-    decisionday: "2023-3-12",
-  },
-];
-function DegreeBook() {
-  const [showActionMenu, setShowActionMenu] = useState({
-    studentId: null,
-    isOpen: false,
-  });
+function DegreeInfomation() {
+  // const [degreeinfomations, setDegreeinfomations] = useState([]);
+  // useEffect(() => {
+  //   async function fetchDegreeInfomationsData() {
+  //     try {
+  //       const response = await axiosConfig.get("/degreeinfomation");
+  //       setDegreeinfomations(response.data);
+  //     } catch (error) {
+  //       console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
+  //     }
+  //   }
+  //   fetchDegreeInfomationsData();
+  // }, []);
 
-  const [idStudent, setIdStudent] = useState("");
-  const [addAction, showAddAction] = useState(false);
-  const [editAction, showEditAction] = useState(false);
-  const [deleteAction, showDeleteAction] = useState(false);
-  const [payload, setPayload] = useState({
-    username: "",
-    id: "",
-    academicprogram: "",
-    classification: "",
-    numerical: "",
-    degreebook: "",
-    graduationyear: "",
-    numbergraduationdecisions: "",
-    decisionday: "",
-  });
+  // console.log("DATA ", degreeinfomations);
+  // const [showActionMenu, setShowActionMenu] = useState({
+  //   degreeinfomationId: null,
+  //   isOpen: false,
+  // });
 
-  const [objectPayload, setObjectPayload] = useState(() =>
-    students.reduce((acc, user) => {
-      acc[user.id] = {
-        username: user.username,
-        id: user.id,
-        academicprogram: user.academicprogram,
-        classification: user.classification,
-        numerical: user.numerical,
-        degreebook: user.degreebook,
-        graduationyear: user.graduationyear,
-        numbergraduationdecisions: user.numbergraduationdecisions,
-        decisionday: user.decisionday,
-      };
-      return acc;
-    }, {}),
-  );
+  // const [iddegreeinfomation, setIddegreeinfomation] = useState("");
+  // const [addAction, showAddAction] = useState(false);
+  // const [editAction, showEditAction] = useState(false);
+  // const [deleteAction, showDeleteAction] = useState(false);
+  // const [payload, setPayload] = useState({
+  //   DegreeID: "",
+  //   FirstName: "",
+  //   LastName: "",
+  //   ProgramName: "",
+  //   Classification: "",
+  //   SerialNumber: "",
+  //   NumberInTheDegreeInfomation: "",
+  //   YearOfGraduation: "",
+  //   NumberOfGraduationDecision: "",
+  //   YearOfGraduation: "",
+  // });
 
-  //add
-  const handleAddANew = () => {
-    console.log("paylod", payload);
-  };
+  // const [objectPayload, setObjectPayload] = useState(() =>
+  //   degreeinfomations.reduce((acc, degreeinfomation) => {
+  //     acc[degreeinfomation.id] = {
+  //       DegreeID: degreeinfomation.DegreeID,
+  //       FirstName: degreeinfomation.FirstName,
+  //       LastName: degreeinfomation.LastName,
+  //       ProgramName: degreeinfomation.ProgramName,
+  //       Classification: degreeinfomation.Classification,
+  //       SerialNumber: degreeinfomation.SerialNumber,
+  //       NumberInTheDegreeInfomation:
+  //         degreeinfomation.NumberInTheDegreeInfomation,
+  //       YearOfGraduation: degreeinfomation.YearOfGraduation,
+  //       NumberOfGraduationDecision: degreeinfomation.NumberOfGraduationDecision,
+  //       YearOfGraduation: degreeinfomation.YearOfGraduation,
+  //     };
+  //     return acc;
+  //   }, {}),
+  // );
 
-  const handleAddAction = () => {
-    showAddAction(!addAction);
-    console.log(addAction);
-  };
+  // //add
+  // const handleAddANew = () => {
+  //   console.log("paylod", payload);
+  // };
 
-  const handleEditAction = () => {
-    showEditAction(!editAction);
-  };
+  // const handleAddAction = () => {
+  //   showAddAction(!addAction);
+  //   console.log(addAction);
+  // };
 
-  const handleDeleteAction = () => {
-    showDeleteAction(!deleteAction);
-  };
+  // const handleEditAction = () => {
+  //   showEditAction(!editAction);
+  // };
 
-  const handleCloseAll = () => {
-    showAddAction(false);
-    showEditAction(false);
-    showDeleteAction(false);
-  };
+  // const handleDeleteAction = () => {
+  //   showDeleteAction(!deleteAction);
+  // };
 
-  const handleActionClick = (studentId) => {
-    setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
-    setIdStudent(studentId);
-  };
+  // const handleCloseAll = () => {
+  //   showAddAction(false);
+  //   showEditAction(false);
+  //   showDeleteAction(false);
+  // };
 
-  const handledOnchangeEdit = (e, id, property) => {
-    const newValue = e.target.value;
-    setObjectPayload((pre) => ({
-      ...pre,
-      [id]: { ...pre[id], [property]: newValue },
-    }));
-  };
+  // const handleActionClick = (degreeinfomationId) => {
+  //   setShowActionMenu({ degreeinfomationId, isOpen: !showActionMenu.isOpen });
+  //   setIddegreeinfomation(degreeinfomationId);
+  // };
 
-  // edit
-  const handleSaveInformation = (id) => {
-    console.log("ok131", objectPayload[id]);
-  };
+  // const handledOnchangeEdit = (e, id, property) => {
+  //   const newValue = e.target.value;
+  //   setObjectPayload((pre) => ({
+  //     ...pre,
+  //     [id]: { ...pre[id], [property]: newValue },
+  //   }));
+  // };
+
+  // // edit
+  // const handleSaveInformation = (id) => {
+  //   console.log("ok131", objectPayload[id]);
+  // };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <HeaderAndInput lable={"Sổ cấp bằng"} onClick={handleAddAction} />
@@ -213,60 +130,66 @@ function DegreeBook() {
               </tr>
             </thead>
             <tbody className=" w-full">
-              {students.map((student, index) => (
+              {degreeinfomations.map((degreeinfomation, index) => (
                 <tr
-                  key={student.id}
+                  key={degreeinfomation.DegreeID}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.username}
+                    {degreeinfomation.degreeBook.student.LastName +
+                      " " +
+                      degreeinfomation.degreeBook.student.FirstName}
                   </td>
                   <td className="min-w-[300px] px-4 py-2">
-                    {student.academicprogram}
+                    {
+                      degreeinfomation.degreeBook.student
+                        .yearbasedacademicprogram.program.ProgramName
+                    }
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.classification}
+                    {degreeinfomation.Classification}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.numerical}
+                    {degreeinfomation.SerialNumber}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.degreebook}
+                    {degreeinfomation.degreeBook.NumberInTheDegreeBook}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.graduationyear}
+                    {degreeinfomation.YearOfGraduation}
                   </td>
                   <td className="min-w-[250px] px-4 py-2">
-                    {student.numbergraduationdecisions}
+                    {degreeinfomation.degreeBook.NumberOfGraduationDecision}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.decisionday}
+                    {degreeinfomation.YearOfGraduation}
                   </td>
                   <td
-                    onClick={() => handleActionClick(student.id)}
+                    onClick={() => handleActionClick(degreeinfomation.id)}
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === student.id &&
+                      showActionMenu.degreeinfomationId ===
+                        degreeinfomation.id &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === student.id &&
+                    {showActionMenu.degreeinfomationId ===
+                      degreeinfomation.id &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -296,7 +219,7 @@ function DegreeBook() {
                     Tên sinh viên:
                   </label>
                   <input
-                    id="username"
+                    id="FirstName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -313,7 +236,7 @@ function DegreeBook() {
                   </label>
                   <select
                     type="text"
-                    id="academicProgram"
+                    id="ProgramName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -335,7 +258,7 @@ function DegreeBook() {
                   <label className="text-[16px] font-normal">Xếp loại:</label>
                   <input
                     type="text"
-                    id="classification"
+                    id="Classification"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -351,7 +274,7 @@ function DegreeBook() {
                   </label>
                   <input
                     type="text"
-                    id="numerical"
+                    id="SerialNumber"
                     className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -367,7 +290,7 @@ function DegreeBook() {
                   </label>
                   <input
                     type="text"
-                    id="degreebook"
+                    id="NumberInTheDegreeInfomation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -385,7 +308,7 @@ function DegreeBook() {
                   </label>
                   <input
                     type="text"
-                    id="graduationyear"
+                    id="YearOfGraduation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -401,7 +324,7 @@ function DegreeBook() {
                   </label>
                   <input
                     type="text"
-                    id="numbergraduationdecisions"
+                    id="NumberOfGraduationDecision"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -417,7 +340,7 @@ function DegreeBook() {
                   </label>
                   <input
                     type="text"
-                    id="decisionday"
+                    id="YearOfGraduation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -439,8 +362,6 @@ function DegreeBook() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}
@@ -461,11 +382,11 @@ function DegreeBook() {
               </div>
             </div>
 
-            {students.map(
-              (student, index) =>
-                showActionMenu.studentId === student.id && (
+            {degreeinfomations.map(
+              (degreeinfomation, index) =>
+                showActionMenu.degreeinfomationId === degreeinfomation.id && (
                   <div
-                    key={student.id}
+                    key={degreeinfomation.id}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
                     <div className="mb-[10px] flex gap-[30px]">
@@ -474,12 +395,18 @@ function DegreeBook() {
                           Tên sinh viên:
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].username}
+                          defaultValue={
+                            objectPayload[degreeinfomation.id].username
+                          }
                           type="text"
                           id="username"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "username")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "username",
+                            )
                           }
                         />
                       </div>{" "}
@@ -489,7 +416,7 @@ function DegreeBook() {
                         </label>
                         <select
                           defaultValue={
-                            objectPayload[student.id].academicprogram
+                            objectPayload[degreeinfomation.id].academicprogram
                           }
                           type="text"
                           id="academicprogram"
@@ -497,7 +424,7 @@ function DegreeBook() {
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.id,
+                              degreeinfomation.id,
                               "academicprogram",
                             )
                           }
@@ -517,13 +444,17 @@ function DegreeBook() {
                         </label>
                         <input
                           defaultValue={
-                            objectPayload[student.id].classification
+                            objectPayload[degreeinfomation.id].classification
                           }
                           type="text"
                           id="classification"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "classification")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "classification",
+                            )
                           }
                         />
                       </div>{" "}
@@ -535,9 +466,15 @@ function DegreeBook() {
                           type="text"
                           id="numerical"
                           className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].numerical}
+                          defaultValue={
+                            objectPayload[degreeinfomation.id].numerical
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "numerical")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "numerical",
+                            )
                           }
                         />
                       </div>{" "}
@@ -547,11 +484,17 @@ function DegreeBook() {
                         </label>
                         <input
                           type="text"
-                          id="degreebook"
+                          id="DegreeInfomation"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].degreebook}
+                          defaultValue={
+                            objectPayload[degreeinfomation.id].DegreeInfomation
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "degreebook")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "DegreeInfomation",
+                            )
                           }
                         />
                       </div>{" "}
@@ -566,10 +509,14 @@ function DegreeBook() {
                           id="graduationyear"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.id].graduationyear
+                            objectPayload[degreeinfomation.id].graduationyear
                           }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "graduationyear")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "graduationyear",
+                            )
                           }
                         />
                       </div>{" "}
@@ -582,12 +529,13 @@ function DegreeBook() {
                           id="numbergraduationdecisions"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.id].numbergraduationdecisions
+                            objectPayload[degreeinfomation.id]
+                              .numbergraduationdecisions
                           }
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.id,
+                              degreeinfomation.id,
                               "numbergraduationdecisions",
                             )
                           }
@@ -601,9 +549,15 @@ function DegreeBook() {
                           type="text"
                           id="yearAdecisiondaydmission"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].decisionday}
+                          defaultValue={
+                            objectPayload[degreeinfomation.id].decisionday
+                          }
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "decisionday")
+                            handledOnchangeEdit(
+                              e,
+                              degreeinfomation.id,
+                              "decisionday",
+                            )
                           }
                         />
                       </div>{" "}
@@ -624,7 +578,9 @@ function DegreeBook() {
                         textColor={"text-[#16A34A] "}
                         justify
                         text16
-                        onClick={(e) => handleSaveInformation(student.id)}
+                        onClick={(e) =>
+                          handleSaveInformation(degreeinfomation.id)
+                        }
                       />
                     </div>
                   </div>
@@ -670,7 +626,7 @@ function DegreeBook() {
                 textColor={"text-custom-text-active-nav"}
                 justify
                 text16
-                onClick={(e) => alert("xoá sinh viên mã", idStudent)}
+                onClick={(e) => alert("xoá sinh viên mã", iddegreeinfomation)}
               />
             </div>
           </div>
@@ -686,4 +642,4 @@ function DegreeBook() {
   );
 }
 
-export default DegreeBook;
+export default DegreeInfomation;

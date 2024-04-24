@@ -5,13 +5,20 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 function App() {
+  // const data = localStorage.getItem("persist:root");
+  // const checkIsLoggedIn = JSON.parse(JSON.parse(data)?.auth)?.login?.isLoggedIn;
+  // console.log("checkIsLoggedIn", checkIsLoggedIn);
+
+  // const router = checkIsLoggedIn ? publicAdminRoutes : publicUserRoutes;
+
+  const router = publicAdminRoutes;
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <div className="App">
+          <div className="App overflow-hidden">
             <Routes>
-              {publicAdminRoutes.map((route, index) => {
+              {router.map((route, index) => {
                 const Component = route.component;
                 const Layout = route.layout;
                 return (

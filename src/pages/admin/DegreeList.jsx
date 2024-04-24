@@ -4,43 +4,22 @@ import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
+import axiosConfig from "@/axiosConfig";
 
-const students = [
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    academicprogram: "T",
-    major: "CNTT",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    modeofStudy: "CQ",
-    classification: "Giỏi",
-    graduationyear: "2025",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000002",
-    academicprogram: "T",
-    major: "CNTT",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    modeofStudy: "CQ",
-    classification: "Giỏi",
-    graduationyear: "2025",
-  },
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000003",
-    academicprogram: "T",
-    major: "CNTT",
-    numerical: "0012",
-    degreebook: "Quốc Gia",
-    modeofStudy: "CQ",
-    classification: "Giỏi",
-    graduationyear: "2025",
-  },
-];
 function DegreeList() {
+  const [degreebooks, setDegreebooks] = useState([]);
+  useEffect(() => {
+    async function fetchDegreesData() {
+      try {
+        const response = await axiosConfig.get("/degreebook");
+        setDegreebooks(response.data);
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
+      }
+    }
+    fetchDegreesData();
+  }, []);
+
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -51,29 +30,33 @@ function DegreeList() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    username: "",
-    academicprogram: "",
-    id: "",
-    major: "",
-    numerical: "",
-    degreebook: "",
-    modeofStudy: "",
-    classification: "",
-    graduationyear: "",
+    DegreeBookID: "",
+    FirstName: "",
+    LastName: "",
+    ProgramName: "",
+    StudentID: "",
+    MajorName: "",
+    NumberOfGraduationDecision: "",
+    NumberInTheDegreeBook: "",
+    ModeofStudy: "",
+    Classification: "",
+    YearOfGraduation: "",
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
-    students.reduce((acc, user) => {
-      acc[user.id] = {
-        username: user.username,
-        academicprogram: user.academicprogram,
-        id: user.id,
-        major: user.major,
-        numerical: user.numerical,
-        degreebook: user.degreebook,
-        modeofStudy: user.modeofStudy,
-        classification: user.classification,
-        graduationyear: user.graduationyear,
+    degreebooks.reduce((acc, DegreeList) => {
+      acc[DegreeList.id] = {
+        DegreeBookID: DegreeList.DegreeBookID,
+        FirstName: DegreeList.FirstName,
+        LastName: DegreeList.LastName,
+        ProgramName: DegreeList.ProgramName,
+        StudentID: DegreeList.StudentID,
+        MajorName: DegreeList.MajorName,
+        NumberOfGraduationDecision: DegreeList.NumberOfGraduationDecision,
+        NumberInTheDegreeBook: DegreeList.NumberInTheDegreeBook,
+        ModeofStudy: DegreeList.ModeofStudy,
+        Classification: DegreeList.Classification,
+        YearOfGraduation: DegreeList.YearOfGraduation,
       };
       return acc;
     }, {}),
@@ -136,7 +119,7 @@ function DegreeList() {
                   Chương trình đào tạo
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">Chuyên ngành</th>
+                <th className=" min-w-[350px] px-4 py-2">Chuyên ngành</th>
                 <th className=" min-w-[200px] px-4 py-2">Số hiệu bằng</th>
                 <th className=" min-w-[200px] px-4 py-2">Sổ vào cấp bằng</th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
@@ -146,60 +129,74 @@ function DegreeList() {
               </tr>
             </thead>
             <tbody className=" w-full">
-              {students.map((student, index) => (
+              {degreebooks.map((degreebook, index) => (
                 <tr
-                  key={student.id}
+                  key={degreebook.DegreeBookID}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.username}
+                    {degreebook.student.LastName +
+                      " " +
+                      degreebook.student.FirstName}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.academicprogram}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.id}</td>
-                  <td className="min-w-[200px] px-4 py-2">{student.major}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.numerical}
+                    {
+                      degreebook.student.yearbasedacademicprogram.program
+                        .ProgramName
+                    }
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.degreebook}
+                    {degreebook.student.StudentID}
+                  </td>
+                  <td className="min-w-[350px] px-4 py-2">
+                    {
+                      degreebook.student.yearbasedacademicprogram.program.major
+                        .MajorName
+                    }
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.modeofStudy}
+                    {degreebook.NumberOfGraduationDecision}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.classification}
+                    {degreebook.NumberInTheDegreeBook}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {
+                      degreebook.student.yearbasedacademicprogram.program
+                        .ModeofStudy
+                    }
                   </td>
 
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.graduationyear}
+                    {"không tồn tại Classification"}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {"không tồn tại YearOfGraduation"}
                   </td>
                   <td
-                    onClick={() => handleActionClick(student.id)}
+                    onClick={() => handleActionClick(degreebook.id)}
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === student.id &&
+                      showActionMenu.studentId === degreebook.id &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === student.id &&
+                    {showActionMenu.studentId === degreebook.id &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -229,7 +226,7 @@ function DegreeList() {
                     Tên sinh viên:
                   </label>
                   <input
-                    id="username"
+                    id="FirstName"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -246,7 +243,7 @@ function DegreeList() {
                   </label>
                   <select
                     type="text"
-                    id="academicprogram"
+                    id="ProgramName"
                     className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -270,7 +267,7 @@ function DegreeList() {
                   </label>
                   <input
                     type="text"
-                    id="id"
+                    id="StudentID"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -286,7 +283,7 @@ function DegreeList() {
                   </label>
                   <select
                     type="text"
-                    id="major"
+                    id="MajorName"
                     className="block  w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -312,7 +309,7 @@ function DegreeList() {
                   </label>
                   <input
                     type="text"
-                    id="numerical"
+                    id="NumberOfGraduationDecision"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -328,7 +325,7 @@ function DegreeList() {
                   </label>
                   <input
                     type="text"
-                    id="degreebook"
+                    id="NumberInTheDegreeBook"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -346,7 +343,7 @@ function DegreeList() {
                   </label>
                   <select
                     type="text"
-                    id="modeofStudy"
+                    id="ModeofStudy"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -366,7 +363,7 @@ function DegreeList() {
                   <label className="text-[16px] font-normal">Xếp loại:</label>
                   <input
                     type="text"
-                    id="classification"
+                    id="Classification"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -382,7 +379,7 @@ function DegreeList() {
                   </label>
                   <input
                     type="text"
-                    id="graduationyear"
+                    id="YearOfGraduation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -404,8 +401,6 @@ function DegreeList() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}
@@ -425,9 +420,8 @@ function DegreeList() {
                 <FaTimes onClick={handleEditAction} />
               </div>
             </div>
-
-            {students.map(
-              (student, index) =>
+            {degreebooks.map(
+              (student) =>
                 showActionMenu.studentId === student.id && (
                   <div
                     key={student.id}

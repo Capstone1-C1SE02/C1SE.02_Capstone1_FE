@@ -25,56 +25,88 @@ function Nav({ onClick }) {
           <ul>
             <li
               // onClick={(e) => handleSetIsactive(0)}
-              onClick={onClick}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/"}>Danh sách sinh viên đã nhận bằng</NavLink>
+              <NavLink to={"/"} className={" block w-full px-[20px] py-[5px]"}>
+                Danh sách sinh viên đã nhận bằng
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(1)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 1 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/list-student"}>Danh sách sinh viên </NavLink>
+              <NavLink
+                to={"/list-student"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách sinh viên{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(2)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 2 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/list-year"}>Danh sách năm học </NavLink>
+              <NavLink
+                to={"/list-year"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách năm học{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(3)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 3 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/list-academic-program"}>
+              <NavLink
+                to={"/list-academic-program"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
                 Danh sách chương trình đào tạo{" "}
               </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(4)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 4 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/list-academic-program-year"}>
+              <NavLink
+                to={"/list-academic-program-year"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
                 Danh sách chương trình đào tạo theo năm{" "}
               </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(5)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 5 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/list-majored"}>Danh sách ngành học </NavLink>
+              <NavLink
+                to={"/list-majored"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách ngành học{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(6)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 6 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/degree-book"}>Sổ cấp bằng </NavLink>
+              <NavLink
+                to={"/degree-book"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Sổ cấp bằng{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(7)}
-              className={`list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 7 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/degree-list"}>Danh sách bằng </NavLink>
+              <NavLink
+                to={"/degree-list"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách bằng{" "}
+              </NavLink>
             </li>
           </ul>
         </div>

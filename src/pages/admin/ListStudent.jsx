@@ -3,43 +3,30 @@ import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
-const students = [
-  {
-    username: "Nguyễn Hữu Tuấn",
-    id: "1000001",
-    date: "2021-01-20",
-    address: "Quảng Nam",
-    gender: 0,
-    ethnic: "Kinh",
-    nation: "Việt Nam",
-    email: "Nguyenhuutuan0901@gmail.com",
-    phonenumber: "07080000123",
-    yearAdmission: 2021,
-    major: "CNTT",
-    academicProgram: "T",
-    modeofStudy: "CQ",
-    timeStudy: 4,
-  },
-  {
-    username: "Nguyễn Tuấn",
-    id: "1000002",
-    date: "2021-01-20",
-    address: "Quảng Nam",
-    gender: 0,
-    ethnic: "Kinh",
-    nation: "Việt Nam",
-    email: "Nguyenhuutuan0901@gmail.com",
-    phonenumber: "07080000123",
-    yearAdmission: 2021,
-    major: "CNTT",
-    academicProgram: "T",
-    modeofStudy: "CQ",
-    timeStudy: 4,
-  },
-];
+import axiosConfig from "@/axiosConfig";
+import { addStudent } from "@/redux/apiRequestAdd";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const { BsThreeDotsVertical, FaTimes } = icon;
 
 function ListStudent() {
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.addAction);
+  const [students, setStudentsData] = useState([]);
+  useEffect(() => {
+    async function fetchStudentsData() {
+      try {
+        const response = await axiosConfig.get("/student");
+        setStudentsData(response.data);
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
+      }
+    }
+    fetchStudentsData();
+  }, []);
+
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -50,46 +37,41 @@ function ListStudent() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    username: "",
-    date: "",
-    address: "",
-    gender: "",
-    ethnic: "",
-    nation: "",
-    email: "",
-    phonenumber: "",
-    yearAdmission: "",
-    major: "",
-    academicProgram: "",
-    modeofStudy: "",
-    timeStudy: "",
+    StudentID: "",
+    StudentName: "",
+    DateOfBirth: "",
+    Address: "",
+    Gender: "",
+    Nation: "",
+    Nationality: "",
+    Email: "",
+    PhoneNumber: "",
+    major_name: "",
+    program_name: "",
+    YearOfAdmission: "",
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
-    students.reduce((acc, user) => {
-      acc[user.id] = {
-        username: user.username,
-        date: user.date,
-        address: user.address,
-        gender: user.gender,
-        ethnic: user.ethnic,
-        nation: user.nation,
-        email: user.email,
-        phonenumber: user.phonenumber,
-        yearAdmission: user.yearAdmission,
-        major: user.major,
-        academicProgram: user.academicProgram,
-        modeofStudy: user.modeofStudy,
-        timeStudy: user.timeStudy,
+    students.reduce((acc, student) => {
+      acc[student.id] = {
+        program_name: student.program_name,
+        major_name: student.major_name,
+        FirstName: student.FirstName,
+        LastName: student.LastName,
+        Gender: student.Gender,
+        DateOfBirth: student.DateOfBirth,
+        Address: student.Address,
+        Nation: student.Nation,
+        Nationality: student.Nationality,
+        PhoneNumber: student.PhoneNumber,
+        Email: student.Email,
+        MSSV: student.MSSV,
+        YearOfAdmission: student.YearOfAdmission,
+        YBAP_ID: student.YBAP_ID,
       };
       return acc;
     }, {}),
   );
-
-  //add
-  const handleAddANew = () => {
-    console.log("paylod", payload);
-  };
 
   const handleAddAction = () => {
     showAddAction(!addAction);
@@ -122,75 +104,102 @@ function ListStudent() {
     }));
   };
 
+  //add
+  const handleAddANew = () => {
+    addStudent(payload, dispatch);
+    toast.success(`${data.addAction}`);
+  };
+
   // edit
   const handleSaveInformation = (id) => {
     console.log("ok131", objectPayload[id]);
   };
 
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput lable={"Danh sách sinh viên"} onClick={handleAddAction} />
+      <ToastContainer />
+
       <div className=" relative h-full rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`block h-40 min-h-[100%] w-full border-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={` block h-full w-full overflow-x-auto border-x-[30px] border-t-[30px] border-white`}
           >
-            <thead className=" w-full ">
-              <tr className="block w-full text-left text-[12px] font-medium uppercase text-header-text">
+            <thead className=" relative w-full">
+              <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[200px] px-4 py-2">Tên sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
+                <th className=" min-w-[200px] px-4 py-2">Ngày sinh</th>
+                <th className=" min-w-[200px] px-4 py-2">Quê quán</th>
+                <th className=" min-w-[200px] px-4 py-2">Giới tính</th>
+                <th className=" min-w-[200px] px-4 py-2">Dân tộc</th>
+                <th className=" min-w-[200px] px-4 py-2">Quốc tịch</th>
+                <th className=" min-w-[200px] px-4 py-2">Email</th>
+                <th className=" min-w-[200px] px-4 py-2">Số điện thoại</th>
                 <th className=" min-w-[200px] px-4 py-2">Chuyên ngành</th>
-                <th className=" min-w-[500px] px-4 py-2">
+                <th className=" min-w-[200px] px-4 py-2">
                   Chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Xếp loại</th>
-                <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
+                <th className=" min-w-[200px] px-4 py-2">Năm nhập học</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className=" w-full   ">
-              {students.map((student, index) => (
+            <tbody className=" relative  w-full ">
+              {students?.map((student, index) => (
                 <tr
-                  key={student.id}
+                  key={student.StudentID}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.username}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.id}</td>
-                  <td className="min-w-[200px] px-4 py-2">{student.major}</td>
-                  <td className="min-w-[500px] px-4 py-2">{student.program}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.classification}
+                    {student.StudentName}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.graduationYear}
+                    {student.DateOfBirth}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.Address}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.Gender ? "Nam" : "Nữ"}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.Nation}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.Nationality}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.Email}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.PhoneNumber}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.yearbasedacademicprogram.majorName}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.yearbasedacademicprogram.programName}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.YearOfAdmission}
                   </td>
                   <td
-                    onClick={() => handleActionClick(student.id)}
+                    onClick={() => handleActionClick(student.StudentID)}
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === student.id &&
+                      showActionMenu.studentId === student.StudentID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === student.id &&
+                    {showActionMenu.studentId === student.StudentID &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -218,7 +227,7 @@ function ListStudent() {
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Họ tên:</label>
                   <input
-                    id="username"
+                    id="StudentName"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -233,7 +242,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Ngày sinh:</label>
                   <input
                     type="date"
-                    id="date"
+                    id="DateOfBirth"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -247,7 +256,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Quê quán:</label>
                   <input
                     type="text"
-                    id="address"
+                    id="Address"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -263,7 +272,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Giới tính:</label>
                   <select
                     type="text"
-                    id="gender"
+                    id="Gender"
                     className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -277,8 +286,8 @@ function ListStudent() {
                       className="border-b-[1px] bg-white p-[10px] text-left"
                     >
                       <option hidden></option>
-                      <option value="0">Nam</option>
-                      <option value="1">Nữ</option>
+                      <option value={true}>Nam</option>
+                      <option value={false}>Nữ</option>
                     </optgroup>
                   </select>
                 </div>{" "}
@@ -286,7 +295,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Dân tộc:</label>
                   <input
                     type="text"
-                    id="ethnic"
+                    id="Nation"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -300,7 +309,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Quốc tịch:</label>
                   <input
                     type="text"
-                    id="nation"
+                    id="Nationality"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -316,7 +325,7 @@ function ListStudent() {
                   <label className="text-[16px] font-normal">Email:</label>
                   <input
                     type="text"
-                    id="email"
+                    id="Email"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -332,7 +341,7 @@ function ListStudent() {
                   </label>
                   <input
                     type="text"
-                    id="phonenumber"
+                    id="PhoneNumber"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -348,7 +357,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="yearAdmission"
+                    id="YearOfAdmission"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -373,7 +382,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="major"
+                    id="majorName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -397,7 +406,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="academicProgram"
+                    id="programName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -414,14 +423,14 @@ function ListStudent() {
                   </select>
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              {/* <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
                     Loại hình đào tạo:
                   </label>
                   <select
                     type="text"
-                    id="modeofStudy"
+                    id="ModeofStudy"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -443,7 +452,7 @@ function ListStudent() {
                   </label>
                   <select
                     type="text"
-                    id="timeStudy"
+                    id="YearOfAdmission"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -459,7 +468,7 @@ function ListStudent() {
                     </optgroup>
                   </select>
                 </div>{" "}
-              </div>
+              </div> */}
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
               <Button
@@ -471,8 +480,6 @@ function ListStudent() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}

@@ -1,4 +1,86 @@
-id: "1",
-    year: "7480103",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
+//////////////////////////////// student
+StudentID
+StudentName
+DateOfBirth
+Address
+Gender
+Nation
+Nationality
+Email
+PhoneNumber
+majorName
+programName
+YearOfAdmission
+
+form add không có ModeofStudy (443)
+
+
+//add student
+{
+    program_name: ,
+    major_name: ,
+    FirstName: ,
+    LastName:,
+    Gender: ,
+    DateOfBirth: ,
+    Address: ,
+    Nation: ,
+    Nationality:  ,
+    PhoneNumber: ,
+    Email: ,
+    MSSV: ,
+    YearOfAdmission: ,
+    YBAP_ID: 
+}
+
+
+////////////////////////////////
+ProgramID: "",
+ProgramName: "",
+MajorName: "",
+ModeofStudy: "",
+DurationOfTraning: "",
+
+////////////////////////////////
+FirstName
+LastName
+ProgramName
+
+//////////////////////////////// yearbasedacademicprogram
+Year
+MajorName
+ProgramName
+
+
+//////////////////////////////// degreeinfomation
+DegreeID
+FirstName
+LastName
+ProgramName
+Classification
+SerialNumber
+NumberInTheDegreeBook
+YearOfGraduation
+NumberOfGraduationDecision
+YearOfGraduation
+
+
+//////////////////////////////// degreelist
+DegreeBookID
+FirstName
+LastName
+ProgramName
+StudentID
+MajorName
+NumberOfGraduationDecision
+NumberInTheDegreeBook
+ModeofStudy
+Classification
+YearOfGraduation
+
+
+//////////////////////////////// major
+MajorID
+MajorName
+Description
+MajorCode

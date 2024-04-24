@@ -4,7 +4,7 @@ import {
   Login,
   Home as AdminHome,
   ListStudent,
-  DegreeBook,
+  DegreeInfomation,
   DegreeList,
   ListAcademicProgram,
   ListAcademicProgramYear,
@@ -39,7 +39,7 @@ const publicAdminRoutes = [
   },
   {
     path: "/degree-book",
-    component: DegreeBook,
+    component: DegreeInfomation,
     layout: adminLayout,
   },
   {

@@ -1,7 +1,8 @@
-import { Button } from "@/components/admin";
 import React, { useEffect, useState } from "react";
-import icon from "@/ultils/icon";
-import { Label } from "@/components/admin";
+
+import { ToastContainer, toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+
 const students = [
   {
     name: "Nguyễn Hữu Tuấn",
@@ -38,6 +39,7 @@ const students = [
 ];
 
 function Home() {
+  const token = useSelector((state) => state.auth);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -71,12 +73,13 @@ function Home() {
 
   const handleActionClick = (studentId) => {
     setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
-    console.log("49 actions clicked", studentId);
   };
 
-  console.log(window.innerWidth >= 600 ? "ok" : "no ok");
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+      {/* {toast.success(`${token?.login?.currentUser?.message}`)} */}
+      <ToastContainer />
+
       <h1 className="text-[30px] font-semibold">
         Danh sách sinh viên đã nhận bằng
       </h1>

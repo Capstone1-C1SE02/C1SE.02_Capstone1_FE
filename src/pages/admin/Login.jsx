@@ -2,87 +2,86 @@ import React, { useState } from "react";
 import { InputForm, Button } from "@/components/admin";
 import { useNavigate } from "react-router-dom";
 import { login } from "@/redux/apiRequests";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import HashLoader from "react-spinners/HashLoader";
+import { ToastContainer, toast } from "react-toastify";
 
 const Login = () => {
+  const token = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [payload, setPayload] = useState({
     username: "",
     password: "",
     email: "",
   });
 
-  const handleSetIsloggedIn = () => {
-    setIsLoggedIn(!isLoggedIn);
+  const handleSetIsloggedIn = () => {};
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    await login(payload, dispatch, navigate);
+    setIsLoading(false);
+    {
+      token && toast.warning("Login failed");
+    }
   };
 
-  const handleSubmit = () => {
-    console.log(payload);
-    console.log("payload");
-    login(payload, dispatch, navigate);
-  };
-
-  return (
+  return isLoading ? (
+    <div className="flex min-h-screen w-full items-center justify-center bg-secondary">
+      <ToastContainer />
+      <HashLoader
+        color={"#000"}
+        loading={true}
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+    </div>
+  ) : (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-secondary">
-      <div className="w-1/4 rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
-        <h1 className="mb-4 text-center text-2xl font-bold dark:text-gray-200 ">
-          {isLoggedIn ? "Đăng nhập" : "Đăng kí"}
-        </h1>
-        <div>
-          <InputForm
-            text={"Địa chỉ email"}
-            setValue={setPayload}
-            keyObject={"email"}
-          ></InputForm>
-
-          {!isLoggedIn && (
+      <ToastContainer />
+      <div className="h-[396px] w-[638px] rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
+        <div className="h-[66px] w-[576px]">
+          <img
+            className="m-auto block h-[50px] w-[170px] text-center"
+            src="https://reviewedu.net/wp-content/uploads/2021/09/dai-hoc-duy-tan.png"
+            alt="logo"
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center border-t-[1px]">
+          <h1 className="my-[20px] text-center text-[30px] font-semibold text-[#C7383EE5]">
+            Đăng nhập
+          </h1>
+          <div
+            className={"m-auto flex w-[390px] flex-col gap-[2px] font-[16px]"}
+          >
             <InputForm
+              className={"!w-[390px]"}
               text={"Tên người dùng"}
               setValue={setPayload}
               keyObject={"username"}
             ></InputForm>
-          )}
-          <InputForm
-            text={"Mật khẩu"}
-            keyObject={"password"}
-            setValue={setPayload}
-          ></InputForm>
+
+            <InputForm
+              typeInput="password"
+              text={"Mật khẩu"}
+              keyObject={"password"}
+              setValue={setPayload}
+            ></InputForm>
+          </div>
+          <div className="mt-10px">
+            <Button
+              className={"left-0 right-0 m-auto block"}
+              text={"Đăng nhập"}
+              bgColor={"bg-custom-bg-active-nav"}
+              textColor={"text-custom-text-active-nav"}
+              justify
+              onClick={handleSubmit}
+            ></Button>
+          </div>
         </div>
-        <div className="mb-4 flex items-center justify-between">
-          {isLoggedIn && (
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:outline-none focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-              >
-                Nhớ tôi
-              </label>
-            </div>
-          )}
-          <span
-            onClick={handleSetIsloggedIn}
-            className="cursor-pointer text-xs text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            {isLoggedIn ? "Tạo tài khoản mới" : "Bạn dã có tài khoản"}
-          </span>
-        </div>
-        <Button
-          text={"Huỷ"}
-          bgColor={"bg-[#0c66e4]"}
-          justify
-          text16
-          onClick={handleSubmit}
-          wFull
-        >
-          {isLoggedIn ? "Đăng nhập" : "Đăng kí"}
-        </Button>
       </div>
     </div>
   );

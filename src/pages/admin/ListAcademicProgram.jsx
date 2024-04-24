@@ -4,30 +4,27 @@ import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
-const academicprograms = [
-  {
-    idAcademicprogram: "7480103",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-    modeofStudy: "DH",
-    graduationyear: "2025",
-  },
-  {
-    idAcademicprogram: "7480104",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-    modeofStudy: "DH",
-    graduationyear: "2025",
-  },
-  {
-    idAcademicprogram: "7480105",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-    modeofStudy: "DH",
-    graduationyear: "2025",
-  },
-];
+import axiosConfig from "../../axiosConfig";
+import { addAcademiYear } from "@/redux/apiRequestAdd";
+import { useDispatch } from "react-redux";
+
 function ListAcademicProgram() {
+  const dispatch = useDispatch();
+  const [academicprograms, setAcademicPrograms] = useState([]);
+  useEffect(() => {
+    async function fetchaAademicPrograms() {
+      try {
+        const response = await axiosConfig.get("/academicprogram");
+        setAcademicPrograms(response.data);
+      } catch (error) {
+        console.error(
+          "Đã xảy ra lỗi khi lấy danh sách chương trình đào tạo:",
+          error,
+        );
+      }
+    }
+    fetchaAademicPrograms();
+  }, []);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -38,28 +35,29 @@ function ListAcademicProgram() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    idAcademicprogram: "",
-    academicprogram: "",
-    major: "",
-    modeofStudy: "",
-    graduationyear: "",
+    ProgramID: "",
+    ProgramName: "",
+    MajorName: "",
+    ModeofStudy: "",
+    DurationOfTraning: "",
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
     academicprograms.reduce((acc, academicprogram) => {
-      acc[academicprogram.idAcademicprogram] = {
-        idAcademicprogram: academicprogram.idAcademicprogram,
-        academicprogram: academicprogram.academicprogram,
-        major: academicprogram.major,
-        modeofStudy: academicprogram.modeofStudy,
-        graduationyear: academicprogram.graduationyear,
+      acc[academicprogram.ProgramID] = {
+        ProgramID: academicprogram.ProgramID,
+        ProgramName: academicprogram.ProgramName,
+        MajorName: academicprogram.MajorName,
+        ModeofStudy: academicprogram.ModeofStudy,
+        DurationOfTraning: academicprogram.DurationOfTraning,
       };
       return acc;
     }, {}),
   );
 
   //add
-  const handleAddANew = () => {
+  const handleAddANew = async () => {
+    addAcademiYear(payload, dispatch);
     console.log("paylod", payload);
   };
 
@@ -115,59 +113,54 @@ function ListAcademicProgram() {
                 <th className=" min-w-[200px] px-4 py-2">
                   Chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Ngành học</th>
+                <th className=" min-w-[400px] px-4 py-2">Ngành học</th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">THời gian đào tạo</th>
+                <th className=" min-w-[200px] px-4 py-2">Thời gian đào tạo</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className="flex w-full flex-col ">
               {academicprograms.map((academicprogram, index) => (
                 <tr
-                  key={academicprogram.idAcademicprogram}
+                  key={academicprogram.ProgramID}
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                 >
                   <td className="w-[200px] px-4 py-2">
-                    {academicprogram.academicprogram}
+                    {academicprogram.ProgramName}
+                  </td>
+                  <td className="w-[400px] px-4 py-2">
+                    {academicprogram.MajorName}
                   </td>
                   <td className="w-[200px] px-4 py-2">
-                    {academicprogram.major}
+                    {academicprogram.ModeofStudy}
                   </td>
                   <td className="w-[200px] px-4 py-2">
-                    {academicprogram.modeofStudy}
-                  </td>
-                  <td className="w-[200px] px-4 py-2">
-                    {academicprogram.graduationyear}
+                    {academicprogram.DurationOfTraning}
                   </td>
                   <td
-                    onClick={() =>
-                      handleActionClick(academicprogram.idAcademicprogram)
-                    }
+                    onClick={() => handleActionClick(academicprogram.ProgramID)}
                     className={`relative right-0 flex h-[39px] min-w-[10px] items-center ${
-                      showActionMenu.studentId ===
-                        academicprogram.idAcademicprogram &&
+                      showActionMenu.studentId === academicprogram.ProgramID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId ===
-                      academicprogram.idAcademicprogram &&
+                    {showActionMenu.studentId === academicprogram.ProgramID &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -199,7 +192,7 @@ function ListAcademicProgram() {
                     Chương trình đào tạo
                   </label>
                   <input
-                    id="academicprogram"
+                    id="ProgramName"
                     className="block h-[40px] w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -215,7 +208,7 @@ function ListAcademicProgram() {
                     Loại hình đào tạo
                   </label>
                   <select
-                    id="modeofStudy"
+                    id="ModeofStudy"
                     className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -239,7 +232,7 @@ function ListAcademicProgram() {
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Ngành học</label>
                   <input
-                    id="major"
+                    id="MajorName"
                     className="block h-[40px] w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -255,7 +248,7 @@ function ListAcademicProgram() {
                     Thời gian đào tạo
                   </label>
                   <input
-                    id="graduationyear"
+                    id="DurationOfTraning"
                     className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -278,8 +271,6 @@ function ListAcademicProgram() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}
@@ -304,10 +295,9 @@ function ListAcademicProgram() {
 
             {academicprograms.map(
               (academicprogram, index) =>
-                showActionMenu.studentId ===
-                  academicprogram.idAcademicprogram && (
+                showActionMenu.studentId === academicprogram.ProgramID && (
                   <div
-                    key={academicprogram.idAcademicprogram}
+                    key={academicprogram.ProgramID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
                     <div className="mb-[10px] flex gap-[30px]">
@@ -317,17 +307,16 @@ function ListAcademicProgram() {
                         </label>
                         <input
                           defaultValue={
-                            objectPayload[academicprogram.idAcademicprogram]
-                              .idAcademicprogram
+                            objectPayload[academicprogram.ProgramID].ProgramID
                           }
                           type="text"
-                          id="idAcademicprogram"
+                          id="ProgramID"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              academicprogram.idAcademicprogram,
-                              "idAcademicprogram",
+                              academicprogram.ProgramID,
+                              "ProgramID",
                             )
                           }
                         />
@@ -338,8 +327,7 @@ function ListAcademicProgram() {
                         </label>
                         <input
                           defaultValue={
-                            objectPayload[academicprogram.idAcademicprogram]
-                              .modeofStudy
+                            objectPayload[academicprogram.ProgramID].modeofStudy
                           }
                           type="text"
                           id="modeofStudy"
@@ -347,7 +335,7 @@ function ListAcademicProgram() {
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              academicprogram.idAcademicprogram,
+                              academicprogram.ProgramID,
                               "modeofStudy",
                             )
                           }
@@ -362,8 +350,7 @@ function ListAcademicProgram() {
                           </label>
                           <input
                             defaultValue={
-                              objectPayload[academicprogram.idAcademicprogram]
-                                .major
+                              objectPayload[academicprogram.ProgramID].major
                             }
                             type="text"
                             id="major"
@@ -371,7 +358,7 @@ function ListAcademicProgram() {
                             onChange={(e) =>
                               handledOnchangeEdit(
                                 e,
-                                academicprogram.idAcademicprogram,
+                                academicprogram.ProgramID,
                                 "major",
                               )
                             }
@@ -383,7 +370,7 @@ function ListAcademicProgram() {
                           </label>
                           <input
                             defaultValue={
-                              objectPayload[academicprogram.idAcademicprogram]
+                              objectPayload[academicprogram.ProgramID]
                                 .graduationyear
                             }
                             type="text"
@@ -392,7 +379,7 @@ function ListAcademicProgram() {
                             onChange={(e) =>
                               handledOnchangeEdit(
                                 e,
-                                academicprogram.idAcademicprogram,
+                                academicprogram.ProgramID,
                                 "graduationyear",
                               )
                             }
@@ -416,9 +403,7 @@ function ListAcademicProgram() {
                         justify
                         text16
                         onClick={(e) =>
-                          handleSaveInformation(
-                            academicprogram.idAcademicprogram,
-                          )
+                          handleSaveInformation(academicprogram.ProgramID)
                         }
                       />
                     </div>

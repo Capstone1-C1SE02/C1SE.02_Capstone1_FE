@@ -1,25 +1,30 @@
-import { Button } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Label } from "@/components/admin";
-import { HeaderAndInput } from "@/components/admin";
+import { HeaderAndInput, Button, Label } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
-const majors = [
-  {
-    id: "7480103",
-    major: "Kỹ thuật phần mềm (Đạt kiểm định ABET)",
-  },
-  {
-    id: "7480104",
-    major: "Kỹ thuật phần mềm (Đạt kiểm định ABET)",
-  },
-  {
-    id: "7480105",
-    major: "Kỹ thuật phần mềm (Đạt kiểm định ABET)",
-  },
-];
+import axiosConfig from "@/axiosConfig";
+import { addMajor } from "@/redux/apiRequestAdd";
+import { deleleMajor } from "@/redux/apiRequestDelete";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 
 function ListMajored() {
+  const [count, setCount] = useState(0);
+  const dispatch = useDispatch();
+  const dataDelete = useSelector((state) => state.deleteAction);
+  const dataAdd = useSelector((state) => state.addAction);
+  const [majors, setMajors] = useState([]);
+  useEffect(() => {
+    async function fetchMajorsData() {
+      try {
+        const response = await axiosConfig.get("/major");
+        setMajors(response.data);
+      } catch (error) {
+        console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
+      }
+    }
+    fetchMajorsData();
+  }, [count]);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -30,24 +35,47 @@ function ListMajored() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    id: "",
-    major: "",
+    MajorName: "",
+    Description: "",
+    MajorCode: "",
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
     majors.reduce((acc, major) => {
-      acc[major.id] = {
-        id: major.id,
-        major: major.major,
+      acc[major.MajorID] = {
+        MajorName: major.MajorName,
+        Description: major.Description,
+        MajorCode: major.MajorCode,
       };
       return acc;
     }, {}),
   );
 
   //add
-  const handleAddANew = () => {
-    console.log("paylod", payload);
+  const handleAddANew = async () => {
+    await addMajor(payload, dispatch);
+    console.log("dataAdd.data", dataAdd.addAction.data);
+    toast.success("Thêm thành công");
+    showAddAction(!addAction);
+    setCount(count + 1);
   };
+
+  //delete
+  const handleDeleteMajor = async () => {
+    try {
+      await deleleMajor(showActionMenu.studentId, dispatch);
+      toast.success("Xoá thành công");
+    } catch (error) {
+      toast.error("Xoá thất bại");
+      console.log(error.response);
+    }
+    showDeleteAction(!deleteAction);
+    setCount(count + 1);
+  };
+  // dataDelete.deleteAction.mode
+  //   ? toast.success("Xoá thành công")
+  //   : toast.error("Xoá thất bại");
+  // showDeleteAction(!deleteAction);
 
   const handleAddAction = () => {
     showAddAction(!addAction);
@@ -89,6 +117,7 @@ function ListMajored() {
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
+      <ToastContainer />
       <HeaderAndInput lable={"Danh sách ngành học"} onClick={handleAddAction} />
       <div className=" relative h-full rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -97,44 +126,45 @@ function ListMajored() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Mã ngành</th>
-                <th className=" min-w-[1000px] px-4 py-2">Năm học</th>
+                <th className=" min-w-[300px] px-4 py-2">Mã ngành</th>
+                <th className=" min-w-[300px] px-4 py-2">Tên ngành</th>
+                <th className=" min-w-[500px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className="flex w-full flex-col ">
               {majors.map((major, index) => (
                 <tr
-                  key={major.id}
+                  key={major.MajorID}
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                 >
-                  <td className="w-[200px] px-4 py-2">{major.id}</td>
-                  <td className="w-[1000px] px-4 py-2">{major.major}</td>
+                  <td className="w-[300px] px-4 py-2">{major.MajorCode}</td>
+                  <td className="w-[300px] px-4 py-2">{major.MajorName}</td>
+                  <td className="w-[500px] px-4 py-2">{major.Description}</td>
                   <td
-                    onClick={() => handleActionClick(major.id)}
+                    onClick={() => handleActionClick(major.MajorID)}
                     className={`relative right-0 min-w-[10px] ${
-                      showActionMenu.studentId === major.id &&
+                      showActionMenu.studentId === major.MajorID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === major.id &&
+                    {showActionMenu.studentId === major.MajorID &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -147,7 +177,7 @@ function ListMajored() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[300px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[600px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Ngành học</h1>
@@ -161,7 +191,7 @@ function ListMajored() {
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Mã ngành</label>
                   <input
-                    id="id"
+                    id="MajorCode"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -173,10 +203,28 @@ function ListMajored() {
                   />
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Ngành học</label>
+                  <label className="text-[16px] font-normal">Tên ngành</label>
                   <input
-                    id="major"
+                    id="MajorName"
                     className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="text"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Mô tả</label>
+                  <textarea
+                    id="Description"
+                    rows="10"
+                    cols="50"
+                    className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -198,8 +246,6 @@ function ListMajored() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}
@@ -318,7 +364,7 @@ function ListMajored() {
                 textColor={"text-custom-text-active-nav"}
                 justify
                 text16
-                onClick={(e) => alert("xoá sinh viên mã", idStudent)}
+                onClick={handleDeleteMajor}
               />
             </div>
           </div>

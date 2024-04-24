@@ -4,28 +4,35 @@ import icon from "@/ultils/icon";
 import { Label } from "@/components/admin";
 import { HeaderAndInput } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
-const academicprograms = [
-  {
-    id: "1",
-    year: "7480103",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-  },
-  {
-    id: "2",
-    year: "7480103",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-  },
-  {
-    id: "3",
-    year: "7480103",
-    academicprogram: "T",
-    major: "Công nghệ thông tin",
-  },
-];
+import axiosConfig from "../../axiosConfig";
+
+///// ----------------///// ----------------
+//// Fetch Year Based Academic Program
 
 function ListAcademicProgramYear() {
+  const YBAPData = [
+    {
+      id: "1",
+      year: "7480103",
+      academicprogram: "T",
+      major: "Công nghệ thông tin",
+    },
+  ];
+  // const [YBAPData, setYBAPData] = useState([]);
+  // useEffect(() => {
+  //   async function fetchYBAPData() {
+  //     try {
+  //       const response = await axiosConfig.get("/yearbasedacademicprogram");
+  //       setYBAPData(response.data);
+  //     } catch (error) {
+  //       console.error(
+  //         "Đã xảy ra lỗi khi lấy danh sách chương trình học theo năm:",
+  //         error,
+  //       );
+  //     }
+  //   }
+  //   fetchYBAPData();
+  // }, []);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -43,7 +50,7 @@ function ListAcademicProgramYear() {
   });
 
   const [objectPayload, setObjectPayload] = useState(() =>
-    academicprograms.reduce((acc, academicprogram) => {
+    YBAPData.reduce((acc, academicprogram) => {
       acc[academicprogram.id] = {
         id: academicprogram.id,
         year: academicprogram.year,
@@ -109,7 +116,7 @@ function ListAcademicProgramYear() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[100px] px-4 py-2">Năm học</th>
+                <th className=" min-w-[200px] px-4 py-2">Năm học</th>
                 <th className=" min-w-[300px] px-4 py-2">Ngành học</th>
                 <th className=" min-w-[400px] px-4 py-2">
                   Chương trình đào tạo
@@ -118,45 +125,44 @@ function ListAcademicProgramYear() {
               </tr>
             </thead>
             <tbody className="flex w-full flex-col ">
-              {academicprograms.map((academicprogram, index) => (
+              {YBAPData.map((YBAP, index) => (
                 <tr
-                  key={academicprogram.id}
+                  key={index}
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                 >
-                  <td className="w-[100px] px-4 py-2">
-                    {academicprogram.year}
+                  <td className="w-[200px] px-4 py-2">
+                    {YBAP.academic_year.Year}
                   </td>
                   <td className="w-[300px] px-4 py-2">
-                    {academicprogram.major}
+                    {YBAP.program.major.MajorName}
                   </td>
                   <td className="w-[400px] px-4 py-2">
-                    {academicprogram.academicprogram}
+                    {YBAP.program.ProgramName}
                   </td>
                   <td
-                    onClick={() => handleActionClick(academicprogram.id)}
+                    onClick={() => handleActionClick(YBAP.id)}
                     className={`relative right-0 flex h-[39px] min-w-[10px] items-center ${
-                      showActionMenu.studentId === academicprogram.id &&
+                      showActionMenu.studentId === YBAP.id &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === academicprogram.id &&
+                    {showActionMenu.studentId === YBAP.id &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[37px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
-                            bgColor={"bg-custom-bg-notActive-nav"}
                             onClick={showEditAction}
                           ></Button>
 
                           <Button
                             text={"Xoá"}
-                            bgColor={"bg-custom-bg-active-nav"}
-                            textColor={"text-custom-text-active-nav"}
                             onClick={showDeleteAction}
+                            bgHover
+                            textHover
                           ></Button>
                         </div>
                       )}
@@ -262,8 +268,6 @@ function ListAcademicProgramYear() {
               />
               <Button
                 text={"Thêm mới"}
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
                 justify
                 text16
                 onClick={handleAddANew}

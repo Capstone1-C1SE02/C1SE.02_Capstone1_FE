@@ -5,13 +5,7 @@ function HeaderAndInput({ lable, onClick }) {
     <div className="flex flex-col gap-[10px]">
       <h1 className="text-[30px] font-semibold">{lable}</h1>
       <div className="">
-        <Button
-          text="Thêm mới"
-          bgColor="bg-bg-button-add"
-          textColor="text-[#16A34A]"
-          justify
-          onClick={onClick}
-        />
+        <Button text="Thêm mới" justify onClick={onClick} />
       </div>
     </div>
   );
