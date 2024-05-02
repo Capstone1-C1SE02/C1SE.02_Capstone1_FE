@@ -1,2 +1,9 @@
-export {default as Login} from "./Login"
-export {default as Home} from "./Home"
+export { default as Login } from "./Login";
+export { default as AcademicIntakeSessionAcademicProgramCurriculum } from "./AcademicIntakeSessionAcademicProgramCurriculum";
+export { default as ListStudent } from "./ListStudent";
+export { default as ListYear } from "./ListYear";
+export { default as ListAcademicProgram } from "./ListAcademicProgram";
+export { default as StudentAcademicIntakeSessionAcademicProgram } from "./StudentAcademicIntakeSessionAcademicProgram";
+export { default as ListMajored } from "./ListMajored";
+export { default as DiplopmaManagementProfile } from "./DiplopmaManagementProfile";
+export { default as DegreeList } from "./Curriculum";

@@ -1,79 +1,120 @@
-import { Button } from "@/components/ui/button";
-import ErrorMessage from "@/components/user/Form/error-message";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import SideBar from "@/components/user/SideBar";
+import { Button } from "@/components/ui/button";
 
 function Home() {
-  const [chonAnh, setChonAnh] = useState("/images/noPicture.svg");
-  const [tenAnh, setTenAnh] = useState("Chưa có tệp nào được chọn");
+  const [soHieuVanBang, setSoHieuVanBang] = useState("");
+  const [soVaoSo, setSoVaoSo] = useState("");
+  const [hoTen, setHoTen] = useState("");
+  const [maXacNhan, setMaXacNhan] = useState("");
 
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-
-  const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setMessage("");
-      setTenAnh(e.target.files[0].name);
-      setChonAnh(URL.createObjectURL(e.target.files[0]));
-    }
-  };
-
-  const handleImageSelected = () => {
-    if (chonAnh === "/images/noPicture.svg") {
-      return "";
-    }
-    return "w-full h-full object-cover rounded-[10px]";
+  const inputClassName = () => {
+    return "text-[16px] p-[10px] border border-[#5B6B79] focus:outline-none focus:ring-2 focus:ring-[#607180] focus:ring-opacity-50 rounded-md flex-grow leading-none";
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (chonAnh === "/images/noPicture.svg") {
-      setMessage("Vui lòng chọn ảnh trước khi tra cứu");
-      return;
-    }
-    navigate("/result");
+    console.log("Số hiệu văn bằng:", soHieuVanBang);
+    console.log("Số vào sổ:", soVaoSo);
+    console.log("Họ tên:", hoTen);
+    console.log("Mã xác nhận:", maXacNhan);
   };
 
   return (
-    <div className="flex flex-grow flex-col gap-[15px]">
-      <div className="mt-[10px] flex min-h-[180px] w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#E8EBED]">
-        <img src={chonAnh} alt="Picture" className={handleImageSelected()} />
-      </div>
-      <form
-        method="POST"
-        className="flex flex-col items-end gap-[20px]"
-        onSubmit={handleSubmit}
-      >
-        <div className="flex w-full items-center gap-[30px]">
-          <label htmlFor="ChonAnh" className="w-[200px] text-right font-[500]">
-            Chọn ảnh
-          </label>
-          <input
-            type="file"
-            name="ChonAnh"
-            id="ChonAnh"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImageChange}
-          />
-          <label
-            htmlFor="ChonAnh"
-            className="flex-grow cursor-pointer rounded-md border border-[#AEB8C2] p-[10px] text-[16px] leading-none focus:outline-none"
-          >
-            {tenAnh}
-          </label>
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <ErrorMessage message={message} />
+    <main className="flex min-h-min flex-col gap-[20px] rounded-[20px] bg-white p-[30px]">
+      <h1 className="text-[30px] font-bold">Tra cứu thông tin văn bằng</h1>
+      <div className="flex flex-grow items-center gap-[30px]">
+        <SideBar />
+        <div className="h-[100%] w-[3px] rounded-full bg-[--primaryBackgroundColor]" />
+        <form
+          className="flex w-full flex-col items-center space-y-[20px] p-[10px]"
+          onSubmit={handleSubmit}
+          method="POST"
+        >
+          <div className="w-full space-y-[15px]">
+            <div className="flex items-center gap-[30px]">
+              <label
+                htmlFor="SoHieuVanBang"
+                className="w-[200px] text-right font-[500]"
+              >
+                Số hiệu Văn bằng
+              </label>
+              <input
+                type="text"
+                name="SoHieuVanBang"
+                id="SoHieuVanBang"
+                value={soHieuVanBang}
+                onChange={(e) => setSoHieuVanBang(e.target.value)}
+                className={inputClassName()}
+              />
+            </div>
+            <div className="flex items-center gap-[30px]">
+              <label
+                htmlFor="SoVaoSo"
+                className="w-[200px] text-right font-[500]"
+              >
+                Số vào sổ
+              </label>
+              <input
+                type="text"
+                name="SoVaoSo"
+                id="SoVaoSo"
+                value={soVaoSo}
+                onChange={(e) => setSoVaoSo(e.target.value)}
+                className={inputClassName()}
+              />
+            </div>
+            <div className="flex items-center gap-[30px]">
+              <label
+                htmlFor="HoTen"
+                className="w-[200px] text-right font-[500]"
+              >
+                Họ và tên
+              </label>
+              <input
+                type="text"
+                name="HoTen"
+                id="HoTen"
+                value={hoTen}
+                onChange={(e) => setHoTen(e.target.value)}
+                className={inputClassName()}
+              />
+            </div>
+            <div className="flex items-center gap-[30px]">
+              <label
+                htmlFor="MaXacNhan"
+                className="w-[200px] flex-shrink text-right font-[500]"
+              >
+                Mã xác nhận
+              </label>
+              <div className="flex flex-grow items-center gap-[30px]">
+                <input
+                  type="text"
+                  name="MaXacNhan"
+                  id="MaXacNhan"
+                  value={maXacNhan}
+                  onChange={(e) => setMaXacNhan(e.target.value)}
+                  className={inputClassName()}
+                />
+                <img
+                  className="flex h-[100%] w-[150px] rounded-md border border-[#5B6B79] object-cover"
+                  src="/images/captchaImage.png"
+                  alt="Captcha"
+                />
+              </div>
+            </div>
+          </div>
           <Button
-            className="ml-auto cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 text-[18px] hover:bg-primary-0.9"
+            className="cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 hover:bg-primary-0.9"
             type="submit"
+            asChild
           >
-            Tra cứu
+            <span className="text-[20px]">Tra cứu</span>
           </Button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </main>
   );
 }
 

@@ -18,10 +18,21 @@ module.exports = {
     },
     extend: {
       colors: {
+        "text-delete-form": "rgba(199, 56, 62, 0.90)",
+        "bg-delete-form": "rgba(199, 56, 62, 0.30)",
+        "table-bg": "#FFF",
+        "label-bg": "rgba(51, 51, 51, 0.70)",
+        "form-bg": "#F2F2F2",
+        "border-input": "#94A3B8",
+        "border-body-form": "rgba(37, 47, 74, 0.10)",
+        "text-button-logout": "#4680FF",
+        "bg-button-logout": "rgba(70, 128, 255, 0.20)",
+        "bg-button-add": "rgba(22, 163, 74, 0.30)",
+        "header-text": "#99A1B7",
         "custom-text-notActive-nav": "color: #5B6B79",
-        "custom-text-active-nav": "rgba(199, 56, 62, 0.9)", //bg-nav-text-hover by BAO
-        "custom-bg-notActive-nav": "#E8EBED;", //bg-nav-bg-hover by BAO
-        "custom-bg-active-nav": "rgba(199, 56, 62, 0.2)", //bg-nav-bg-hover by BAO
+        "custom-text-active-nav": "rgba(199, 56, 62, 0.9)",
+        "custom-bg-notActive-nav": "#E8EBED;",
+        "custom-bg-active-nav": "rgba(199, 56, 62, 0.2)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

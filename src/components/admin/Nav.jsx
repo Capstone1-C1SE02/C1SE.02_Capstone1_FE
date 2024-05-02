@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-function Nav() {
+function Nav({ onClick }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const active = "bg-custom-bg-notActive-nav text-custom-text-notActive-nav";
@@ -11,7 +11,7 @@ function Nav() {
   };
 
   return (
-    <div className="border-r-2 p-[10px]">
+    <div className=" w-[350px] p-[10px]">
       <img
         className="mx-auto my-[20px] h-[50px] w-[169.39px] "
         src={"/images/logo.svg"}
@@ -24,54 +24,90 @@ function Nav() {
         <div>
           <ul>
             <li
-              onClick={(e) => handleSetIsactive(0)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 0 ? active : ""}`}
-            >
-              <NavLink to={"/login"}>Danh sách sinh viên đã nhận bằng</NavLink>
-            </li>
-            <li
               onClick={(e) => handleSetIsactive(1)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 1 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách sinh viên </NavLink>
-            </li>
-            <li
-              onClick={(e) => handleSetIsactive(2)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 2 ? active : ""}`}
-            >
-              <NavLink to={"/login"}>Danh sách năm học </NavLink>
-            </li>
-            <li
-              onClick={(e) => handleSetIsactive(3)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 3 ? active : ""}`}
-            >
-              <NavLink to={"/login"}>Danh sách chương trình đào tạo </NavLink>
-            </li>
-            <li
-              onClick={(e) => handleSetIsactive(4)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 4 ? active : ""}`}
-            >
-              <NavLink to={"/login"}>
-                Danh sách chương trình đào tạo theo năm{" "}
+              <NavLink
+                to={"/list-student"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách sinh viên{" "}
               </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(5)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 5 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách ngành học </NavLink>
-            </li>
-            <li
-              onClick={(e) => handleSetIsactive(6)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 6 ? active : ""}`}
-            >
-              <NavLink to={"/login"}>Sổ cấp bằng </NavLink>
+              <NavLink
+                to={"/list-majored"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách văn bằng{" "}
+              </NavLink>
             </li>
             <li
               onClick={(e) => handleSetIsactive(7)}
-              className={`hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav list-none rounded-[10px] px-[20px] py-[5px] text-[14px] font-medium ${activeIndex === 7 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/login"}>Danh sách bằng </NavLink>
+              <NavLink
+                to={"/degree-list"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách khoá đào tạo
+              </NavLink>
+            </li>
+            <li
+              onClick={(e) => handleSetIsactive(3)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/list-academic-program"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách chương trình đào tạo{" "}
+              </NavLink>
+            </li>
+            <li
+              onClick={(e) => handleSetIsactive(2)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/list-year"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Danh sách kỳ tuyển sinh{" "}
+              </NavLink>
+            </li>
+            <li
+              onClick={(e) => handleSetIsactive(4)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/list-academic-program-year"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Hồ sơ học tập của sinh viên
+              </NavLink>
+            </li>
+            <li
+              // onClick={(e) => handleSetIsactive(0)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink to={"/"} className={" block w-full px-[20px] py-[5px]"}>
+                Chương trình đào & tạo kỳ tuyển sinh
+              </NavLink>
+            </li>
+
+            <li
+              onClick={(e) => handleSetIsactive(6)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/degree-book"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Quản lý hồ sơ văn bằng
+              </NavLink>
             </li>
           </ul>
         </div>
