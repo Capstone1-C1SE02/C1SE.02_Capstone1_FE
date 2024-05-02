@@ -10,22 +10,64 @@ const Login = () => {
   const token = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [invalidFields, setInvalidFields] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [payload, setPayload] = useState({
     username: "",
     password: "",
-    email: "",
   });
 
   const handleSetIsloggedIn = () => {};
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-    await login(payload, dispatch, navigate);
-    setIsLoading(false);
-    {
-      token && toast.warning("Login failed");
+    let invalids = validate(payload);
+    console.log("invalids", invalids, invalidFields);
+    if (+invalids == +0) {
+      setIsLoading(true);
+      await login(payload, dispatch, navigate);
+      setIsLoading(false);
+      {
+        token && toast.warning("Login failed");
+      }
+    } else {
+      console.log("no ok");
     }
+  };
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item) => {
+      if (item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    fields.forEach((item) => {
+      switch (item[0]) {
+        case "password":
+          if (item[1].length < 6) {
+            setInvalidFields((prev) => [
+              ...prev,
+              {
+                name: item[0],
+                message: "Mật khẩu phải có tối thiểu 6 kí tự.",
+              },
+            ]);
+            invalids++;
+          }
+          break;
+
+        default:
+          break;
+      }
+    });
+    return invalids;
   };
 
   return isLoading ? (
@@ -62,6 +104,8 @@ const Login = () => {
               text={"Tên người dùng"}
               setValue={setPayload}
               keyObject={"username"}
+              setInvalidFields={setInvalidFields}
+              invalidFields={invalidFields}
             ></InputForm>
 
             <InputForm
@@ -69,6 +113,8 @@ const Login = () => {
               text={"Mật khẩu"}
               keyObject={"password"}
               setValue={setPayload}
+              setInvalidFields={setInvalidFields}
+              invalidFields={invalidFields}
             ></InputForm>
           </div>
           <div className="mt-10px">

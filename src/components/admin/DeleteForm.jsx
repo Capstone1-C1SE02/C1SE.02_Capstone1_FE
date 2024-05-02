@@ -3,7 +3,7 @@ import icon from "@/ultils/icon";
 const { FaTimes } = icon;
 import { Button } from "./index";
 
-const DeleteForm = ({ text, handleDeleteAction, handleDeleteYear }) => {
+const DeleteForm = ({ text, handleDeleteAction, handleDelete }) => {
   return (
     <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[298px] w-[870px] bg-[white]">
       <div className="m-[30px]">
@@ -32,7 +32,7 @@ const DeleteForm = ({ text, handleDeleteAction, handleDeleteYear }) => {
             textHover
             justify
             text16
-            onClick={handleDeleteYear}
+            onClick={handleDelete}
           />
         </div>
       </div>

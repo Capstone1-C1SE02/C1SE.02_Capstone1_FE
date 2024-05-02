@@ -1,86 +1,98 @@
 //////////////////////////////// student
-StudentID
-StudentName
-DateOfBirth
-Address
-Gender
-Nation
-Nationality
-Email
-PhoneNumber
-majorName
-programName
-YearOfAdmission
+LAST_NAME
+FIRST_NAME
+MIDDLE_NAME
+STUDENT_ID_NUMBER
+GENDER
+BIRTH_DATE
+BIRTH_PLACE
+NATION
+NATIONALITY
+PEOPLE_ID_NUMBER
+PHONE_NUMBER
+EMAIL
+COMMENTS
+LEARNING_STATUS_TYPE_ID
+ACADEMIC_LEVEL_TYPE_ID
 
-form add không có ModeofStudy (443)
+StudentAcademicIntakeSessionAcademicProgram
+////////////////////////////////  STUDENT_ACADEMIC_INTAKE_SESSION_ACADEMIC_PROGRAM 
+STUDENT_ID_NUMBER
+ACADEMIC_INTAKE_SESSION_ID
+ACADEMIC_PROGRAM_ID
+LEARNING_STATUS_TYPE_ID 
 
+//////////////////////////////// LEARNINN_STATUS_TYPE
+LEARNING_STATUS_TYPE_ID
+LEARNING_STATUS_TYPE_NAME
 
-//add student
-{
-    program_name: ,
-    major_name: ,
-    FirstName: ,
-    LastName:,
-    Gender: ,
-    DateOfBirth: ,
-    Address: ,
-    Nation: ,
-    Nationality:  ,
-    PhoneNumber: ,
-    Email: ,
-    MSSV: ,
-    YearOfAdmission: ,
-    YBAP_ID: 
-}
+//////////////////////////////// ACADEMIC_INTAKE_SESSION
+ACADEMIC_INTAKE_SESSION_ID
+ACADEMIC_INTAKE_SESSION_NAME
+START_DATE
 
 
-////////////////////////////////
-ProgramID: "",
-ProgramName: "",
-MajorName: "",
-ModeofStudy: "",
-DurationOfTraning: "",
+//////////////////////////////// ACADEMIC_INTAKE_SESSION_ACADEMIC_PROGRAM_CURRICULUM
+ACADEMIC_INTAKE_SESSION_ID
+ACADEMIC_PROGRAM_ID
+CURRICULUM_ID
+STATUS_NAME
 
-////////////////////////////////
-FirstName
-LastName
-ProgramName
-
-//////////////////////////////// yearbasedacademicprogram
-Year
-MajorName
-ProgramName
+//////////////////////////////// CURRICULUM 
+CURRICULUM_ID
+CURRICULUM_NAME
+DESCRIPTION
+CURRICULUM_STATUS_NAME
+ACADEMIC_PROGRAM_ID
 
 
-//////////////////////////////// degreeinfomation
-DegreeID
-FirstName
-LastName
-ProgramName
-Classification
-SerialNumber
-NumberInTheDegreeBook
-YearOfGraduation
-NumberOfGraduationDecision
-YearOfGraduation
+//////////////////////////////// DEGREE
+DEGREE_ID
+DEGREE_CODE
+DEGREE_NAME
+DEGREE_STATUS
+DESCRIPTION
+
+//////////////////////////////// ACADEMIC_PROGRAM
+ACADEMIC_PROGRAM_ID
+
+ACADEMIC_PROGRAM_CODE
+ACADEMIC_LEVEL_TYPE_ID
+MODE_OF_STUDY
+ACADEMIC_PROGRAM_NAME
+DEGREE_DURATION
+DEGREE_ID
+DESCRIPTION
+
+//////////////////////////////// ACADEMIC_LEVEL_TYPE
+ACADEMIC_LEVEL_TYPE_ID
+ACADEMIC_LEVEL_TYPE_NAME
+
+//////////////////////////////// DIPLOMA_MANAGEMENT_PROFILE DiplopmaManagementProfile
+DIPLOMA_MANAGEMENT_PROFILE_ID
+
+STUDENT_ID_NUMBER
+ACADEMIC_PROGRAM_ID
+GRADUATION_YEAR
+MODE_OF_STUDY
+CLASSIFEILD_BY_ACADEMIC-RECORDS
+CERTIFICATE_NUMBER
+NUMBER_ENTERRD_INTO_THE_DEGREE_TRACKING_BOOK
+DATE_OF_DECISION_ANNOUNCEMENT
+COMMENT
+DATE_UPDATED
+
+ACCOUNT_ID
+ACCOUNT_NAME
+
+APPROVED
 
 
-//////////////////////////////// degreelist
-DegreeBookID
-FirstName
-LastName
-ProgramName
-StudentID
-MajorName
-NumberOfGraduationDecision
-NumberInTheDegreeBook
-ModeofStudy
-Classification
-YearOfGraduation
 
 
-//////////////////////////////// major
-MajorID
-MajorName
-Description
-MajorCode
+
+
+const [learningStatusType, setLearningStatusType] = useState();
+  const [academicProgram, setAcademicProgram] = useState();
+  const [student, setStudent] = useState();
+  const [academicintakesession, setAcademicintakesession] = useState();

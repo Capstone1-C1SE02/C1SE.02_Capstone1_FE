@@ -4,10 +4,10 @@ import {
   Login,
   Home as AdminHome,
   ListStudent,
-  DegreeInfomation,
+  DiplopmaManagementProfile,
   DegreeList,
   ListAcademicProgram,
-  ListAcademicProgramYear,
+  StudentAcademicIntakeSessionAcademicProgram,
   ListMajored,
   ListYear,
 } from "@/pages/admin";
@@ -29,7 +29,7 @@ const publicAdminRoutes = [
   },
   {
     path: "/list-academic-program-year",
-    component: ListAcademicProgramYear,
+    component: StudentAcademicIntakeSessionAcademicProgram,
     layout: adminLayout,
   },
   {
@@ -39,7 +39,7 @@ const publicAdminRoutes = [
   },
   {
     path: "/degree-book",
-    component: DegreeInfomation,
+    component: DiplopmaManagementProfile,
     layout: adminLayout,
   },
   {

@@ -5,13 +5,15 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 function App() {
-  // const data = localStorage.getItem("persist:root");
+  const data = localStorage.getItem("persist:auth");
   // const checkIsLoggedIn = JSON.parse(JSON.parse(data)?.auth)?.login?.isLoggedIn;
-  // console.log("checkIsLoggedIn", checkIsLoggedIn);
+  const checkIsLoggedIn = JSON.parse(data)?.isLoggedIn;
+  console.log("checkIsLoggedIn", checkIsLoggedIn);
 
-  // const router = checkIsLoggedIn ? publicAdminRoutes : publicUserRoutes;
-
+  // const router = checkIsLoggedIn == true ? publicAdminRoutes : publicUserRoutes;
   const router = publicAdminRoutes;
+
+  console.log("router", router);
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

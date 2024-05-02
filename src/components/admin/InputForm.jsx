@@ -1,6 +1,13 @@
 import { memo } from "react";
 
-const InputForm = ({ text, setValue, keyObject, typeInput }) => {
+const InputForm = ({
+  text,
+  setValue,
+  keyObject,
+  typeInput,
+  invalidFields,
+  setInvalidFields,
+}) => {
   return (
     <div className="mb-4">
       <label
@@ -17,7 +24,14 @@ const InputForm = ({ text, setValue, keyObject, typeInput }) => {
         onChange={(e) =>
           setValue((pre) => ({ ...pre, [keyObject]: e.target.value }))
         }
+        onFocus={() => setInvalidFields("")}
       />
+      {invalidFields.length > 0 &&
+        invalidFields.some((item) => item.name === keyObject) && (
+          <small className="italic text-red-500">
+            {invalidFields.find((i) => i.name === keyObject)?.message}
+          </small>
+        )}
     </div>
   );
 };

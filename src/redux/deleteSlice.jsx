@@ -22,7 +22,6 @@ const deleteSlice = createSlice({
     deleteActionFailed: (state) => {
       state.isFetching = false;
       state.error = true;
-      // state.mode = false;
     },
   },
 });

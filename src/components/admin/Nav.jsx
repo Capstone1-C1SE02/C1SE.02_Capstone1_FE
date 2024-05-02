@@ -11,7 +11,7 @@ function Nav({ onClick }) {
   };
 
   return (
-    <div className=" w-[400px] p-[10px]">
+    <div className=" w-[350px] p-[10px]">
       <img
         className="mx-auto my-[20px] h-[50px] w-[169.39px] "
         src={"/images/logo.svg"}
@@ -83,7 +83,7 @@ function Nav({ onClick }) {
                 to={"/list-majored"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Danh sách ngành học{" "}
+                Danh sách văn bằng{" "}
               </NavLink>
             </li>
             <li
@@ -105,7 +105,7 @@ function Nav({ onClick }) {
                 to={"/degree-list"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Danh sách bằng{" "}
+                Danh sách khoá đào tạo
               </NavLink>
             </li>
           </ul>

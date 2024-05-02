@@ -29,6 +29,7 @@ instance.interceptors.request.use(
     return Promise.reject(error, "lỗi token");
   },
 );
+let retryCount = 0;
 
 instance.interceptors.response.use(
   (response) => response,
@@ -42,9 +43,15 @@ instance.interceptors.response.use(
     const refresh = JSON.parse(refreshRaw);
     console.log("REFRESH before call api", refresh);
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      retryCount < 6
+    ) {
       originalRequest._retry = true;
-      console.log("ok 1");
+      retryCount++;
+      console.log("retryCount", retryCount);
+      console.log("call refresh token");
       try {
         const newAccessToken = await instance.post("/token/refresh/", {
           refresh,
@@ -77,7 +84,13 @@ instance.interceptors.response.use(
 
         return instance(error.config);
       } catch (refreshError) {
-        console.error("Refresh token failed:", refreshError);
+        let alertShown = false;
+        if (!alertShown) {
+          alert("Refresh token hết hạn. Vui lòng đăng nhập lại.");
+          alertShown = true;
+        }
+        window.location.href = "/login";
+        localStorage.clear();
       }
     }
 

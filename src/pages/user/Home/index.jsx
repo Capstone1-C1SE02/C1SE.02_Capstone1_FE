@@ -106,7 +106,7 @@ function Home() {
             </div>
           </div>
           <Button
-            className="hover:bg-primary-0.9 cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2"
+            className="cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 hover:bg-primary-0.9"
             type="submit"
             asChild
           >

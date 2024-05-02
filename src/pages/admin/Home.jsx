@@ -87,7 +87,7 @@ function Home() {
       <div className="  h-full rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`block h-40 min-h-[100%] w-full border-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={`block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
           >
             <thead className=" w-full ">
               <tr className="block w-full text-left text-[12px] font-medium uppercase text-header-text">

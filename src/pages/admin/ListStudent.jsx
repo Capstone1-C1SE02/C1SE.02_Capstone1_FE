@@ -1,34 +1,60 @@
-import { Button } from "@/components/admin";
+import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Label } from "@/components/admin";
-import { HeaderAndInput } from "@/components/admin";
 import axiosConfig from "@/axiosConfig";
 import { addStudent } from "@/redux/apiRequestAdd";
+import { deleleStudent } from "@/redux/apiRequestDelete";
+import { editStudent } from "@/redux/apiRequestEdit";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import { LearningStatusType, Academicleveltype } from "@/components/dropList";
 import "react-toastify/dist/ReactToastify.css";
 
 const { BsThreeDotsVertical, FaTimes } = icon;
 
 function ListStudent() {
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.addAction);
+  const data = useSelector((state) => state.addAction.data);
+  const dataDelete = useSelector((state) => state.deleteAction);
+  const dataEdit = useSelector((state) => state.EditAction);
+  console.log("ADD DATA", data);
+
+  const [render, setRender] = useState(0);
+
+  const [learningStatusType, setLearningStatusType] = useState();
+  const [academicleveltype, setAcademicleveltype] = useState();
+
+  const [page, setPage] = useState(2);
   const [students, setStudentsData] = useState([]);
   useEffect(() => {
     async function fetchStudentsData() {
       try {
-        const response = await axiosConfig.get("/student");
-        setStudentsData(response.data);
+        const response = await axiosConfig.get(`/student?page=1`);
+        setStudentsData(response.data.results.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
       }
     }
     fetchStudentsData();
+  }, [render]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const learningStatus = await LearningStatusType();
+        const academiclevel = await Academicleveltype();
+        setLearningStatusType(learningStatus.data);
+        setAcademicleveltype(academiclevel.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, []);
 
+  console.log("learningStatusType", learningStatusType, academicleveltype);
   const [showActionMenu, setShowActionMenu] = useState({
-    studentId: null,
+    STUDENT_ID_NUMBER: null,
     isOpen: false,
   });
 
@@ -37,63 +63,71 @@ function ListStudent() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    StudentID: "",
-    StudentName: "",
-    DateOfBirth: "",
-    Address: "",
-    Gender: "",
-    Nation: "",
-    Nationality: "",
-    Email: "",
-    PhoneNumber: "",
-    major_name: "",
-    program_name: "",
-    YearOfAdmission: "",
+    STUDENT_ID_NUMBER: "",
+    LAST_NAME: "",
+    FIRST_NAME: "",
+    MIDDLE_NAME: "",
+    GENDER: "",
+    BIRTH_DATE: "",
+    BIRTH_PLACE: "",
+    NATION: "",
+    NATIONALITY: "",
+    PEOPLE_ID_NUMBER: "",
+    PHONE_NUMBER: "",
+    EMAIL: "",
+    COMMENTS: "",
+    LEARNING_STATUS_TYPE_ID: "",
+    ACADEMIC_LEVEL_TYPE_ID: "",
   });
 
-  const [objectPayload, setObjectPayload] = useState(() =>
-    students.reduce((acc, student) => {
-      acc[student.id] = {
-        program_name: student.program_name,
-        major_name: student.major_name,
-        FirstName: student.FirstName,
-        LastName: student.LastName,
-        Gender: student.Gender,
-        DateOfBirth: student.DateOfBirth,
-        Address: student.Address,
-        Nation: student.Nation,
-        Nationality: student.Nationality,
-        PhoneNumber: student.PhoneNumber,
-        Email: student.Email,
-        MSSV: student.MSSV,
-        YearOfAdmission: student.YearOfAdmission,
-        YBAP_ID: student.YBAP_ID,
-      };
-      return acc;
-    }, {}),
-  );
+  const [objectPayload, setObjectPayload] = useState([]);
+  useEffect(() => {
+    setObjectPayload(
+      students.reduce((acc, student) => {
+        acc[student.STUDENT_ID_NUMBER] = {
+          STUDENT_ID_NUMBER: student.STUDENT_ID_NUMBER,
+          LAST_NAME: student.LAST_NAME,
+          FIRST_NAME: student.FIRST_NAME,
+          MIDDLE_NAME: student.MIDDLE_NAME,
+          GENDER: student.GENDER,
+          BIRTH_DATE: student.BIRTH_DATE,
+          BIRTH_PLACE: student.BIRTH_PLACE,
+          NATION: student.NATION,
+          NATIONALITY: student.NATIONALITY,
+          PEOPLE_ID_NUMBER: student.PEOPLE_ID_NUMBER,
+          PHONE_NUMBER: student.PHONE_NUMBER,
+          EMAIL: student.EMAIL,
+          COMMENTS: student.COMMENTS,
+          LEARNING_STATUS_TYPE_ID:
+            student.learningstatustype.LEARNING_STATUS_TYPE_ID,
+          ACADEMIC_LEVEL_TYPE_ID:
+            student.academicleveltype.ACADEMIC_LEVEL_TYPE_ID,
+        };
+        return acc;
+      }, {}),
+    );
+  }, [students]);
 
+  console.log("objectPayload", objectPayload);
   const handleAddAction = () => {
     showAddAction(!addAction);
   };
-
   const handleEditAction = () => {
     showEditAction(!editAction);
   };
-
   const handleDeleteAction = () => {
     showDeleteAction(!deleteAction);
   };
-
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
   };
 
-  const handleActionClick = (studentId) => {
-    setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
-    setIdStudent(studentId);
+  const handleActionClick = (STUDENT_ID_NUMBER) => {
+    setShowActionMenu({ STUDENT_ID_NUMBER, isOpen: !showActionMenu.isOpen });
+    setIdStudent(STUDENT_ID_NUMBER);
+    console.log(STUDENT_ID_NUMBER, idStudent);
   };
 
   const handledOnchangeEdit = (e, id, property) => {
@@ -105,14 +139,33 @@ function ListStudent() {
   };
 
   //add
-  const handleAddANew = () => {
-    addStudent(payload, dispatch);
-    toast.success(`${data.addAction}`);
+  const handleAddANew = async () => {
+    await addStudent(payload, dispatch);
+    toast.success(`${data?.message}`);
+    console.log("paylooad", payload);
+    console.log("paylooad data.addAction", data);
+    showAddAction(!addAction);
+    setRender(render + 1);
+  };
+  // edit
+  const handleSaveInformation = async (id) => {
+    await editStudent(objectPayload[id], dispatch);
+    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
+    console.log("ok131", objectPayload[id]);
+    console.log("data edit", dataEdit);
+    showEditAction(!editAction);
+    setRender(render + 1);
   };
 
-  // edit
-  const handleSaveInformation = (id) => {
-    console.log("ok131", objectPayload[id]);
+  //delele
+  const handleDelete = async () => {
+    await deleleStudent(showActionMenu.STUDENT_ID_NUMBER, dispatch);
+    console.log("paylooad", dataDelete.data);
+    dataDelete.data == 204
+      ? toast.success("Xoá thành công")
+      : toast.error("Xoá thất bại");
+    showDeleteAction(!deleteAction);
+    setRender(render + 1);
   };
 
   return (
@@ -127,68 +180,80 @@ function ListStudent() {
           >
             <thead className=" relative w-full">
               <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Tên sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">Ngày sinh</th>
-                <th className=" min-w-[200px] px-4 py-2">Quê quán</th>
+                <th className=" min-w-[200px] px-4 py-2">Họ </th>
+                <th className=" min-w-[200px] px-4 py-2">Tên</th>
+                <th className=" min-w-[200px] px-4 py-2">MSSV</th>
                 <th className=" min-w-[200px] px-4 py-2">Giới tính</th>
-                <th className=" min-w-[200px] px-4 py-2">Dân tộc</th>
+                <th className=" min-w-[200px] px-4 py-2">Ngày sinh</th>
+                <th className=" min-w-[500px] px-4 py-2">Nơi sinh</th>
                 <th className=" min-w-[200px] px-4 py-2">Quốc tịch</th>
-                <th className=" min-w-[200px] px-4 py-2">Email</th>
+                <th className=" min-w-[200px] px-4 py-2">Dân tộc</th>
+                <th className=" min-w-[200px] px-4 py-2">CCCD</th>
                 <th className=" min-w-[200px] px-4 py-2">Số điện thoại</th>
-                <th className=" min-w-[200px] px-4 py-2">Chuyên ngành</th>
-                <th className=" min-w-[200px] px-4 py-2">
-                  Chương trình đào tạo
-                </th>
-                <th className=" min-w-[200px] px-4 py-2">Năm nhập học</th>
+                <th className=" min-w-[200px] px-4 py-2">Email</th>
+                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[200px] px-4 py-2">Trạng thái học tập</th>
+                <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className=" relative  w-full ">
-              {students?.map((student, index) => (
+              {students?.map((student) => (
                 <tr
-                  key={student.StudentID}
+                  key={student.STUDENT_ID_NUMBER}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.StudentName}
+                    {student.LAST_NAME + " " + student.MIDDLE_NAME}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.DateOfBirth}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.Address}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.Gender ? "Nam" : "Nữ"}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.Nation}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.Nationality}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.Email}</td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.PhoneNumber}
+                    {student.FIRST_NAME}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.yearbasedacademicprogram.majorName}
+                    {student.STUDENT_ID_NUMBER}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.yearbasedacademicprogram.programName}
+                    {student.GENDER ? "Nam" : "Nữ"}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.YearOfAdmission}
+                    {student.BIRTH_DATE}
+                  </td>
+                  <td className="min-w-[500px] px-4 py-2">
+                    {student.BIRTH_PLACE}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.NATION}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.NATIONALITY}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.PEOPLE_ID_NUMBER}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.PHONE_NUMBER}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.EMAIL}</td>
+                  <td className="min-w-[200px] px-4 py-2">{student.COMMENT}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.academicleveltype.ACADEMIC_LEVEL_TYPE_NAME}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.learningstatustype.LEARNING_STATUS_TYPE_NAME}
                   </td>
                   <td
-                    onClick={() => handleActionClick(student.StudentID)}
+                    onClick={() => handleActionClick(student.STUDENT_ID_NUMBER)}
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === student.StudentID &&
+                      showActionMenu.STUDENT_ID_NUMBER ===
+                        student.STUDENT_ID_NUMBER &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
                     } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === student.StudentID &&
+                    {showActionMenu.STUDENT_ID_NUMBER ===
+                      student.STUDENT_ID_NUMBER &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
@@ -213,7 +278,7 @@ function ListStudent() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -225,9 +290,9 @@ function ListStudent() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Họ tên:</label>
+                  <label className="text-[16px] font-normal">Họ:</label>
                   <input
-                    id="StudentName"
+                    id="LAST_NAME"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -237,12 +302,56 @@ function ListStudent() {
                       }))
                     }
                   />
-                </div>{" "}
+                </div>
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Tên lót:</label>
+                  <input
+                    type="text"
+                    id="MIDDLE_NAME"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Tên:</label>
+                  <input
+                    type="text"
+                    id="FIRST_NAME"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">MSSV:</label>
+                  <input
+                    id="STUDENT_ID_NUMBER"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="text"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Ngày sinh:</label>
                   <input
                     type="date"
-                    id="DateOfBirth"
+                    id="BIRTH_DATE"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -253,10 +362,10 @@ function ListStudent() {
                   />
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Quê quán:</label>
+                  <label className="text-[16px] font-normal">Nơi sinh:</label>
                   <input
                     type="text"
-                    id="Address"
+                    id="BIRTH_PLACE"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -270,10 +379,11 @@ function ListStudent() {
               <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Giới tính:</label>
+
                   <select
-                    type="text"
-                    id="Gender"
-                    className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="checkbox"
+                    id="GENDER"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
                         ...pre,
@@ -281,21 +391,16 @@ function ListStudent() {
                       }))
                     }
                   >
-                    <optgroup
-                      label="Giới tính"
-                      className="border-b-[1px] bg-white p-[10px] text-left"
-                    >
-                      <option hidden></option>
-                      <option value={true}>Nam</option>
-                      <option value={false}>Nữ</option>
-                    </optgroup>
+                    <option hidden></option>
+                    <option value={true}>Nam</option>
+                    <option value={false}>Nữ</option>
                   </select>
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Dân tộc:</label>
+                  <label className="text-[16px] font-normal">Quốc tịch:</label>
                   <input
                     type="text"
-                    id="Nation"
+                    id="NATION"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -306,10 +411,10 @@ function ListStudent() {
                   />
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Quốc tịch:</label>
+                  <label className="text-[16px] font-normal">Dân tộc:</label>
                   <input
                     type="text"
-                    id="Nationality"
+                    id="NATIONALITY"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -322,10 +427,10 @@ function ListStudent() {
               </div>
               <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Email:</label>
+                  <label className="text-[16px] font-normal">CCCD:</label>
                   <input
                     type="text"
-                    id="Email"
+                    id="PEOPLE_ID_NUMBER"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -341,7 +446,7 @@ function ListStudent() {
                   </label>
                   <input
                     type="text"
-                    id="PhoneNumber"
+                    id="PHONE_NUMBER"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -352,12 +457,10 @@ function ListStudent() {
                   />
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Năm nhập học:
-                  </label>
-                  <select
+                  <label className="text-[16px] font-normal">Email:</label>
+                  <input
                     type="text"
-                    id="YearOfAdmission"
+                    id="EMAIL"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -365,110 +468,83 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                  />
+                </div>{" "}
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                {" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Trạng thái học tập:
+                  </label>
+                  <select
+                    type="text"
+                    id="LEARNING_STATUS_TYPE_ID"
+                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
                   >
-                    <optgroup label="Năm nhập học">
-                      <option hidden></option>
-                      <option value="2020">2020</option>
-                      <option value="2021">2021</option>
-                      <option value="2022">2022</option>
-                    </optgroup>
+                    <option hidden></option>
+                    {learningStatusType &&
+                      learningStatusType?.map((item) => (
+                        <option
+                          value={item.LEARNING_STATUS_TYPE_ID}
+                          key={item.LEARNING_STATUS_TYPE_ID}
+                        >
+                          {item.LEARNING_STATUS_TYPE_NAME}
+                        </option>
+                      ))}
+                  </select>
+                </div>{" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Bậc đào tạo:
+                  </label>
+                  <select
+                    type="text"
+                    id="ACADEMIC_LEVEL_TYPE_ID"
+                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option hidden></option>
+                    {academicleveltype &&
+                      academicleveltype?.map((item) => (
+                        <option
+                          value={item.ACADEMIC_LEVEL_TYPE_ID}
+                          key={item.ACADEMIC_LEVEL_TYPE_ID}
+                        >
+                          {item.ACADEMIC_LEVEL_TYPE_NAME}
+                        </option>
+                      ))}
                   </select>
                 </div>{" "}
               </div>
               <div className="mb-[10px] flex gap-[30px]">
+                {" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Chuyên ngành:
-                  </label>
-                  <select
+                  <label className="text-[16px] font-normal">Mô tả:</label>
+                  <input
                     type="text"
-                    id="majorName"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    id="COMMENTS"
+                    className="block w-[820px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
                         ...pre,
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  >
-                    <optgroup label="Chuyên ngành">
-                      <option hidden></option>
-                      <option value="CNTT">Công nghệ thông tin</option>
-                      <option value="CNTT-CMU">
-                        Công nghệ thông tin chuẩn CMU
-                      </option>
-                    </optgroup>
-                  </select>
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Chương trình đào tạo:
-                  </label>
-                  <select
-                    type="text"
-                    id="programName"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <optgroup label="Chương trình đào tạo">
-                      <option hidden></option>
-                      <option value="T">Thường</option>
-                      <option value="CMU">Chuẩn CMU</option>
-                    </optgroup>
-                  </select>
+                  />
                 </div>{" "}
               </div>
-              {/* <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Loại hình đào tạo:
-                  </label>
-                  <select
-                    type="text"
-                    id="ModeofStudy"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <optgroup label="Loại hình đào tạo">
-                      <option hidden></option>
-                      <option value="DH">Đại học</option>
-                      <option value="CD">Cao đẳng</option>
-                    </optgroup>
-                  </select>
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Thời gian đào tạo:
-                  </label>
-                  <select
-                    type="text"
-                    id="YearOfAdmission"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <optgroup label="Thời gian đào tạo">
-                      <option hidden></option>
-                      <option value="4">4</option>
-                      <option value="4.5">4.5</option>
-                    </optgroup>
-                  </select>
-                </div>{" "}
-              </div> */}
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
               <Button
@@ -491,7 +567,7 @@ function ListStudent() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -500,53 +576,132 @@ function ListStudent() {
               </div>
             </div>
 
-            {students.map(
+            {console.log("students", students)}
+            {students?.map(
               (student, index) =>
-                showActionMenu.studentId === student.id && (
+                showActionMenu.STUDENT_ID_NUMBER ===
+                  student.STUDENT_ID_NUMBER && (
                   <div
-                    key={student.id}
+                    key={student.STUDENT_ID_NUMBER}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Họ tên:
-                        </label>
+                        <label className="text-[16px] font-normal">Họ:</label>
                         <input
-                          defaultValue={objectPayload[student.id].username}
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].LAST_NAME
+                          }
                           type="text"
-                          id="username"
+                          id="LAST_NAME"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "username")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "LAST_NAME",
+                            )
                           }
                         />
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Ngày sinh:
+                          Tên lót:
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].date}
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].MIDDLE_NAME
+                          }
+                          type="text"
+                          id="MIDDLE_NAME"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "MIDDLE_NAME",
+                            )
+                          }
+                        />
+                      </div>{" "}
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">Tên :</label>
+                        <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].FIRST_NAME
+                          }
+                          type="text"
+                          id="FIRST_NAME"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "FIRST_NAME",
+                            )
+                          }
+                        />
+                      </div>{" "}
+                    </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          MSSV :
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER]
+                              .STUDENT_ID_NUMBER
+                          }
+                          type="text"
+                          id="STUDENT_ID_NUMBER"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "STUDENT_ID_NUMBER",
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Ngày sinh :
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].BIRTH_DATE
+                          }
                           type="date"
-                          id="date"
+                          id="BIRTH_DATE"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "date")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "BIRTH_DATE",
+                            )
                           }
                         />
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Quê quán:
+                          Nơi sinh :
                         </label>
                         <input
-                          defaultValue={objectPayload[student.id].address}
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].BIRTH_PLACE
+                          }
                           type="text"
-                          id="address"
+                          id="BIRTH_PLACE"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "address")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "BIRTH_PLACE",
+                            )
                           }
                         />
                       </div>{" "}
@@ -557,196 +712,219 @@ function ListStudent() {
                           Giới tính:
                         </label>
                         <select
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].GENDER
+                          }
                           type="text"
-                          id="gender"
-                          className="block  w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].gender}
+                          id="GENDER"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "gender")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "GENDER",
+                            )
                           }
                         >
-                          <optgroup
-                            label="Giới tính"
-                            className="border-b-[1px] bg-white p-[10px] text-left"
-                          >
-                            <option hidden></option>
-                            <option value="0">Nam</option>
-                            <option value="1">Nữ</option>
-                          </optgroup>
+                          <option hidden></option>
+                          <option value={true}>Nam</option>
+                          <option value={false}>Nữ</option>
                         </select>
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Dân tộc:
+                          Quốc tịch :
                         </label>
                         <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].NATIONALITY
+                          }
                           type="text"
-                          id="ethnic"
+                          id="NATIONALITY"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].ethnic}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "ethnic")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "NATIONALITY",
+                            )
                           }
                         />
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Quốc tịch:
+                          Dân tộc :
                         </label>
                         <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].NATION
+                          }
                           type="text"
-                          id="nation"
+                          id="NATION"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].nation}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "nation")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "NATION",
+                            )
                           }
                         />
-                      </div>{" "}
+                      </div>
                     </div>
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Email:
+                          CCCD :
                         </label>
                         <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER]
+                              .PEOPLE_ID_NUMBER
+                          }
                           type="text"
-                          id="email"
+                          id="PEOPLE_ID_NUMBER"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].email}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "email")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "PEOPLE_ID_NUMBER",
+                            )
                           }
                         />
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Số điện thoại:
                         </label>
                         <input
-                          type="text"
-                          id="phonenumber"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].phonenumber}
-                          onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "phonenumber")
-                          }
-                        />
-                      </div>{" "}
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Năm nhập học:
-                        </label>
-                        <select
-                          type="text"
-                          id="yearAdmission"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].yearAdmission}
-                          onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "yearAdmission")
-                          }
-                        >
-                          <optgroup label="Năm nhập học">
-                            <option hidden></option>
-                            <option value="2020">2020</option>
-                            <option value="2021">2021</option>
-                            <option value="2022">2022</option>
-                          </optgroup>
-                        </select>
-                      </div>{" "}
-                    </div>
-                    <div className="mb-[10px] flex gap-[30px]">
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Chuyên ngành:
-                        </label>
-                        <select
-                          type="text"
-                          id="major"
-                          className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].major}
-                          onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "major")
-                          }
-                        >
-                          <optgroup label="Chuyên ngành">
-                            <option hidden></option>
-                            <option value="CNTT">Công nghệ thông tin</option>
-                            <option value="CNTT-CMU">
-                              Công nghệ thông tin chuẩn CMU
-                            </option>
-                          </optgroup>
-                        </select>
-                      </div>{" "}
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Chương trình đào tạo:
-                        </label>
-                        <select
-                          type="text"
-                          id="academicProgram"
-                          className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.id].academicProgram
+                            objectPayload[student.STUDENT_ID_NUMBER]
+                              .PHONE_NUMBER
                           }
+                          type="text"
+                          id="PHONE_NUMBER"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.id,
-                              "academicProgram",
+                              student.STUDENT_ID_NUMBER,
+                              "PHONE_NUMBER",
                             )
                           }
-                        >
-                          <optgroup label="Chương trình đào tạo">
-                            <option hidden></option>
-                            <option value="T">Thường</option>
-                            <option value="CMU">Chuẩn CMU</option>
-                          </optgroup>
-                        </select>
-                      </div>{" "}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Email:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].EMAIL
+                          }
+                          type="text"
+                          id="EMAIL"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "EMAIL",
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Loại hình đào tạo:
+                          Trạng thái học tập:
                         </label>
                         <select
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER]
+                              .ACADEMIC_LEVEL_TYPE_ID
+                          }
                           type="text"
-                          id="modeofStudy"
+                          id="LEARNING_STATUS_TYPE_NAME"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].modeofStudy}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "modeofStudy")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "LEARNING_STATUS_TYPE_NAME",
+                            )
                           }
                         >
-                          <optgroup label="Loại hình đào tạo">
-                            <option hidden></option>
-                            <option value="CQ">Đại học</option>
-                            <option value="CD">Cao đẳng</option>
-                          </optgroup>
+                          <option hidden></option>
+                          {learningStatusType &&
+                            learningStatusType?.map((item) => (
+                              <option
+                                value={item.LEARNING_STATUS_TYPE_ID}
+                                key={item.LEARNING_STATUS_TYPE_ID}
+                              >
+                                {item.LEARNING_STATUS_TYPE_NAME}
+                              </option>
+                            ))}
                         </select>
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Thời gian đào tạo:
+                          Bậc đào tạo:
                         </label>
                         <select
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER]
+                              .ACADEMIC_LEVEL_TYPE_ID
+                          }
                           type="text"
-                          id="timeStudy"
+                          id="ACADEMIC_LEVEL_TYPE_ID"
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          defaultValue={objectPayload[student.id].timeStudy}
                           onChange={(e) =>
-                            handledOnchangeEdit(e, student.id, "timeStudy")
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "ACADEMIC_LEVEL_TYPE_ID",
+                            )
                           }
                         >
-                          <optgroup label="Thời gian đào tạo">
-                            <option hidden></option>
-                            <option value="4">4</option>
-                            <option value="4.5">4.5</option>
-                          </optgroup>
+                          <option hidden></option>
+                          {academicleveltype &&
+                            academicleveltype.map((item) => (
+                              <option
+                                value={item.ACADEMIC_LEVEL_TYPE_ID}
+                                key={item.ACADEMIC_LEVEL_TYPE_ID}
+                              >
+                                {item.ACADEMIC_LEVEL_TYPE_NAME}
+                              </option>
+                            ))}
                         </select>
-                      </div>{" "}
+                      </div>
                     </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Mô tả:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[student.STUDENT_ID_NUMBER].COMMENTS
+                          }
+                          type="text"
+                          id="COMMENTS"
+                          className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              student.STUDENT_ID_NUMBER,
+                              "COMMENTS",
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
@@ -762,7 +940,9 @@ function ListStudent() {
                         textColor={"text-[#16A34A] "}
                         justify
                         text16
-                        onClick={(e) => handleSaveInformation(student.id)}
+                        onClick={(e) =>
+                          handleSaveInformation(student.STUDENT_ID_NUMBER)
+                        }
                       />
                     </div>
                   </div>
@@ -774,45 +954,10 @@ function ListStudent() {
 
       {/* delete action */}
       {deleteAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[298px] w-[870px] bg-[white]">
-          <div className="m-[30px]">
-            <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">
-                Bạn có muốn xoá nội dung này?
-              </h1>
-              <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
-                <FaTimes onClick={handleDeleteAction} />
-              </div>
-            </div>
-            <div className="my-[20px] rounded-[10px] border-y-[1px] border-border-body-form bg-bg-delete-form p-[20px] text-text-delete-form">
-              <div>
-                <span className="font-semibold">Lưu ý:</span>
-                <ul className=" ml-[20px] list-disc">
-                  <li>Hành động này không thể hoàn tác </li>
-                  <li>Nội dung sẽ bị xóa vĩnh viễn khỏi hệ thống</li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-[30px] flex justify-end gap-[20px]">
-              <Button
-                text={"Huỷ"}
-                justify
-                bgColor={"bg-bg-button-add"}
-                textColor={"text-[#16A34A] "}
-                text16
-                onClick={handleDeleteAction}
-              />
-              <Button
-                text={"Xoá"}
-                bgColor={"bg-custom-bg-active-nav"}
-                textColor={"text-custom-text-active-nav"}
-                justify
-                text16
-                onClick={(e) => alert("xoá sinh viên mã", idStudent)}
-              />
-            </div>
-          </div>
-        </div>
+        <DeleteForm
+          handleDeleteAction={handleDeleteAction}
+          handleDelete={handleDelete}
+        />
       )}
 
       {(addAction || editAction || deleteAction) && (
