@@ -2,28 +2,26 @@ import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
 import {
-  LearningStatusType,
+  Curiculum,
   AcademicProgram,
-  Student,
   Academicintakesession,
 } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "@/axiosConfig";
-import { addStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestAdd";
-import { deleleStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestDelete";
-import { editStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestEdit";
+import { addAcademicInTakeCessionAcademicProgramCurriculum } from "@/redux/apiRequestAdd";
+import { deleleAcademicInTakeCessionAcademicProgramCurriculum } from "@/redux/apiRequestDelete";
+import { editAcademicInTakeCessionAcademicProgramCurriculum } from "@/redux/apiRequestEdit";
 import { ToastContainer, toast } from "react-toastify";
 
-function StudentAcademicIntakeSessionAcademicProgram() {
+function AcademicIntakeSessionAcademicProgramCurriculum() {
   const data = useSelector((state) => state.addAction.data);
   const dataDelete = useSelector((state) => state.deleteAction);
   const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
-  const [learningStatusType, setLearningStatusType] = useState();
+  const [curiculum, setCuriculum] = useState();
   const [academicProgram, setAcademicProgram] = useState();
-  const [student, setStudent] = useState();
   const [academicintakesession, setAcademicintakesession] = useState();
 
   const [YBAPData, setYBAPData] = useState([]);
@@ -31,7 +29,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     async function fetchYBAPData() {
       try {
         const response = await axiosConfig.get(
-          "/studentacademicintakesessionacademicprogram",
+          "/academicintakesessionacademicprogramcurriculum",
         );
         setYBAPData(response.data.results.data);
       } catch (error) {
@@ -47,14 +45,13 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const learningStatus = await LearningStatusType();
         const academicProgram = await AcademicProgram();
-        const student = await Student();
+        const curriculum = await Curiculum();
         const academicintakesession = await Academicintakesession();
-        setLearningStatusType(learningStatus.data);
+
+        setCuriculum(curriculum.data.results.data);
         setAcademicProgram(academicProgram.data.results.data);
         setAcademicintakesession(academicintakesession.data.results.data);
-        setStudent(student.data.results.data);
       } catch (error) {
         console.log(error);
       }
@@ -62,6 +59,8 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     fetchData();
   }, []);
 
+  console.log("setCuriculum", curiculum);
+  console.log("academicintakesession", academicintakesession);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -72,33 +71,33 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    STUDENT_ID_NUMBER: "",
     ACADEMIC_INTAKE_SESSION_ID: "",
     ACADEMIC_PROGRAM_ID: "",
-    LEARNING_STATUS_TYPE_ID: "",
+    CURRICULUM_ID: "",
+    STATUS_NAME: "",
   });
 
   const [objectPayload, setObjectPayload] = useState();
+
   useEffect(() => {
     setObjectPayload(
       YBAPData.reduce((acc, academicprogram) => {
         acc[academicprogram.id] = {
-          id: academicprogram.id,
-          STUDENT_ID_NUMBER: academicprogram.STUDENT_ID_NUMBER,
           ACADEMIC_INTAKE_SESSION_ID:
             academicprogram.ACADEMIC_INTAKE_SESSION_ID,
           ACADEMIC_PROGRAM_ID: academicprogram.ACADEMIC_PROGRAM_ID,
-          LEARNING_STATUS_TYPE_ID: academicprogram.LEARNING_STATUS_TYPE_ID,
+          CURRICULUM_ID: academicprogram.CURRICULUM_ID,
+          STATUS_NAME: academicprogram.STATUS_NAME,
         };
         return acc;
       }, {}),
     );
+    console.log("objectPayload", objectPayload);
   }, [YBAPData]);
 
-  console.log("objectPayload", objectPayload);
   //add
   const handleAddANew = async () => {
-    await addStudentAcademicIntakeSessionAcademicProgram(payload, dispatch);
+    await addAcademicInTakeCessionAcademicProgramCurriculum(payload, dispatch);
     toast.success(`${data?.message}`);
     console.log("paylod", payload);
     showAddAction(!addAction);
@@ -107,7 +106,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
 
   // edit
   const handleSaveInformation = async (id) => {
-    await editStudentAcademicIntakeSessionAcademicProgram(
+    await addAcademicInTakeCessionAcademicProgramCurriculum(
       objectPayload[id],
       id,
       dispatch,
@@ -124,7 +123,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   //delete
   const handleDelete = async () => {
     console.log("showActionMenu.STUDENT_ID_NUMBER", showActionMenu.studentId);
-    await deleleStudentAcademicIntakeSessionAcademicProgram(
+    await deleleAcademicInTakeCessionAcademicProgramCurriculum(
       showActionMenu.studentId,
       dispatch,
     );
@@ -167,12 +166,13 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       [id]: { ...pre[id], [property]: newValue },
     }));
   };
-
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
       <HeaderAndInput
-        lable={"Hồ sơ học tập của sinh viên trong chương trình đào tạo"}
+        lable={
+          "Thông tin về chương trình đào tạo và khóa học cung cấp trong kỳ tuyển sinh"
+        }
         onClick={handleAddAction}
       />
       <ToastContainer />
@@ -183,12 +183,12 @@ function StudentAcademicIntakeSessionAcademicProgram() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[300px] px-4 py-2">Tên sinh viên</th>
                 <th className=" min-w-[300px] px-4 py-2">Tên kỳ tuyển sinh</th>
-                <th className=" min-w-[300px] px-4 py-2">Trạng thái</th>
+                <th className=" min-w-[300px] px-4 py-2">Tên khoá đào tạo</th>
                 <th className=" min-w-[300px] px-4 py-2">
                   Tên chương trình đào tạo
                 </th>
+                <th className=" min-w-[300px] px-4 py-2">Trạng thái</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
@@ -199,13 +199,6 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                 >
                   <td className="w-[300px] px-4 py-2">
-                    {student?.map(
-                      (item) =>
-                        item.STUDENT_ID_NUMBER === YBAP.STUDENT_ID_NUMBER &&
-                        `${item.LAST_NAME}`,
-                    )}
-                  </td>
-                  <td className="w-[300px] px-4 py-2">
                     {academicintakesession?.map(
                       (item) =>
                         item.ACADEMIC_INTAKE_SESSION_ID ===
@@ -214,20 +207,21 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     )}
                   </td>
                   <td className="w-[300px] px-4 py-2">
-                    {learningStatusType?.map(
+                    {curiculum?.map(
                       (item) =>
-                        item.LEARNING_STATUS_TYPE_ID ===
-                          YBAP.LEARNING_STATUS_TYPE_ID &&
-                        `${item.LEARNING_STATUS_TYPE_NAME}`,
+                        item.CURRICULUM_ID === YBAP.CURRICULUM_ID &&
+                        `${item.CURRICULUM_NAME}`,
                     )}
                   </td>
                   <td className="w-[300px] px-4 py-2">
+                    {" "}
                     {academicProgram?.map(
                       (item) =>
                         item.ACADEMIC_PROGRAM_ID === YBAP.ACADEMIC_PROGRAM_ID &&
                         `${item.ACADEMIC_PROGRAM_NAME}`,
                     )}
                   </td>
+                  <td className="w-[300px] px-4 py-2">{YBAP.STATUS_NAME}</td>
                   <td
                     onClick={() => handleActionClick(YBAP.id)}
                     className={`relative right-0 flex h-[39px] min-w-[10px] items-center ${
@@ -264,11 +258,12 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[390px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách chương trình đào tạo theo năm
+                Thông tin về chương trình đào tạo và khóa học cung cấp trong kỳ
+                tuyển sinh
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -277,32 +272,6 @@ function StudentAcademicIntakeSessionAcademicProgram() {
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên sinh viên:
-                  </label>
-                  <select
-                    id="STUDENT_ID_NUMBER"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {student?.map((item) => (
-                      <option
-                        key={item.STUDENT_ID_NUMBER}
-                        value={item.STUDENT_ID_NUMBER}
-                      >
-                        {`${item.LAST_NAME} ${item.MIDDLE_NAME} ${item.FIRST_NAME}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
                     Tên kỳ tuyển sinh:
@@ -330,9 +299,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                   </select>
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Trạng thái:</label>
+                  <label className="text-[16px] font-normal">
+                    Tên khoá đào tạo:
+                  </label>
                   <select
-                    id="LEARNING_STATUS_TYPE_ID"
+                    id="CURRICULUM_ID"
                     className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     type="text"
                     onChange={(e) =>
@@ -343,14 +314,31 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     }
                   >
                     <option hidden></option>
-                    {learningStatusType?.map((item) => (
+                    {curiculum?.map((item) => (
                       <option
-                        key={item.LEARNING_STATUS_TYPE_ID}
-                        value={item.LEARNING_STATUS_TYPE_ID}
+                        key={item.CURRICULUM_ID}
+                        value={item.CURRICULUM_ID}
                       >
-                        {item.LEARNING_STATUS_TYPE_NAME}
+                        {`${item.CURRICULUM_NAME} `}
                       </option>
                     ))}
+                  </select>
+                </div>{" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Trạng thái:</label>
+                  <select
+                    id="STATUS_NAME"
+                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="text"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option hidden></option>
+                    <option value={"Đang mở"}>Đang mở</option>
                   </select>
                 </div>{" "}
               </div>
@@ -403,11 +391,12 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[390px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách chương trình đào tạo theo năm
+                Thông tin về chương trình đào tạo và khóa học cung cấp trong kỳ
+                tuyển sinh
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
@@ -415,7 +404,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
             </div>
 
             {YBAPData.map(
-              (academicprogram, index) =>
+              (academicprogram) =>
                 showActionMenu.studentId === academicprogram.id && (
                   <div
                     key={academicprogram.id}
@@ -424,51 +413,20 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên sinh viên:
-                        </label>
-                        <select
-                          defaultValue={
-                            objectPayload[academicprogram.id].STUDENT_ID_NUMBER
-                          }
-                          type="text"
-                          id="STUDENT_ID_NUMBER"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          onChange={(e) =>
-                            handledOnchangeEdit(
-                              e,
-                              academicprogram.id,
-                              "STUDENT_ID_NUMBER",
-                            )
-                          }
-                        >
-                          <option hidden></option>
-                          {student?.map((item) => (
-                            <option
-                              key={item.STUDENT_ID_NUMBER}
-                              value={item.STUDENT_ID_NUMBER}
-                            >
-                              {`${item.LAST_NAME} ${item.MIDDLE_NAME} ${item.FIRST_NAME}`}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
                           Tên kỳ tuyển sinh:
                         </label>
                         <select
                           defaultValue={
-                            objectPayload[academicprogram.id]
-                              .ACADEMIC_INTAKE_SESSION_ID
+                            objectPayload[academicprogram.id].CURRICULUM_ID
                           }
                           type="text"
-                          id="ACADEMIC_INTAKE_SESSION_ID"
+                          id="CURRICULUM_ID"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
                               academicprogram.id,
-                              "ACADEMIC_INTAKE_SESSION_ID",
+                              "CURRICULUM_ID",
                             )
                           }
                         >
@@ -478,7 +436,37 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                               key={item.ACADEMIC_INTAKE_SESSION_ID}
                               value={item.ACADEMIC_INTAKE_SESSION_ID}
                             >
-                              {item.ACADEMIC_INTAKE_SESSION_NAME}
+                              {`${item.ACADEMIC_INTAKE_SESSION_NAME} `}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Tên khoá đào tạo:
+                        </label>
+                        <select
+                          defaultValue={
+                            objectPayload[academicprogram.id].CURRICULUM_ID
+                          }
+                          type="text"
+                          id="CURRICULUM_ID"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              academicprogram.id,
+                              "CURRICULUM_ID",
+                            )
+                          }
+                        >
+                          <option hidden></option>
+                          {curiculum?.map((item) => (
+                            <option
+                              key={item.CURRICULUM_ID}
+                              value={item.CURRICULUM_ID}
+                            >
+                              {item.CURRICULUM_NAME}
                             </option>
                           ))}
                         </select>
@@ -489,29 +477,21 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                         </label>
                         <select
                           defaultValue={
-                            objectPayload[academicprogram.id]
-                              .LEARNING_STATUS_TYPE_ID
+                            objectPayload[academicprogram.id].STATUS_NAME
                           }
                           type="text"
-                          id="LEARNING_STATUS_TYPE_ID"
+                          id="STATUS_NAME"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
                               academicprogram.id,
-                              "LEARNING_STATUS_TYPE_ID",
+                              "STATUS_NAME",
                             )
                           }
                         >
                           <option hidden></option>
-                          {learningStatusType?.map((item) => (
-                            <option
-                              key={item.LEARNING_STATUS_TYPE_ID}
-                              value={item.LEARNING_STATUS_TYPE_ID}
-                            >
-                              {item.LEARNING_STATUS_TYPE_NAME}
-                            </option>
-                          ))}
+                          <option value={"Đang mở"}>Đang mở</option>
                         </select>
                       </div>
                     </div>
@@ -592,4 +572,4 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   );
 }
 
-export default StudentAcademicIntakeSessionAcademicProgram;
+export default AcademicIntakeSessionAcademicProgramCurriculum;

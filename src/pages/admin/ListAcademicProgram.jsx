@@ -176,7 +176,7 @@ function ListAcademicProgram() {
                 <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo </th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Thời gian đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Mã bằng cấp</th>
+                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
@@ -202,7 +202,7 @@ function ListAcademicProgram() {
                     {academicprogram.DEGREE_DURATION}
                   </td>
                   <td className="w-[200px] px-4 py-2">
-                    {academicprogram.DEGREE_ID}
+                    {academicprogram.DESCRIPTION}
                   </td>
                   <td
                     onClick={() =>

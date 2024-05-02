@@ -2,7 +2,7 @@ import Home from "@/pages/user/Home";
 import DefaultLayoutUser from "@/layouts/user";
 import {
   Login,
-  Home as AdminHome,
+  AcademicIntakeSessionAcademicProgramCurriculum,
   ListStudent,
   DiplopmaManagementProfile,
   DegreeList,
@@ -19,7 +19,11 @@ const publicUserRoutes = [
 
 const publicAdminRoutes = [
   { path: "/login", component: Login, layout: adminLoginLayout },
-  { path: "/", component: AdminHome, layout: adminLayout },
+  {
+    path: "/",
+    component: AcademicIntakeSessionAcademicProgramCurriculum,
+    layout: adminLayout,
+  },
   { path: "/list-student", component: ListStudent, layout: adminLayout },
   { path: "/list-year", component: ListYear, layout: adminLayout },
   {

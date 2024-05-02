@@ -17,6 +17,8 @@ const ListYear = () => {
   const dataEdit = useSelector((state) => state.editAction);
   const [render, setRender] = useState(0);
 
+  console.log("dataAdd 1 ", dataAdd.data.errCode);
+  console.log("dataAdd 2", dataAdd.data);
   const [years, setYears] = useState([]);
   useEffect(() => {
     async function fetchYearsData() {
@@ -63,9 +65,12 @@ const ListYear = () => {
   const handleAddNew = async () => {
     console.log("payload", payload);
     await addAcademiYear(payload, dispatch);
-    dataAdd?.addAction?.data?.message
-      ? toast.success("Thêm thành công")
-      : toast.error("Thêm thất bại");
+
+    if (dataAdd.data === -1) {
+      return toast.error("Thêm thất bại");
+    } else if (dataAdd?.data?.errCode === 0) {
+      return toast.success("Thêm thành công");
+    }
     showAddAction(!addAction);
     setRender(render + 1);
   };

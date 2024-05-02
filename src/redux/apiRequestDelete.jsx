@@ -44,7 +44,7 @@ export const deleleStudent = async (StudentId, dispatch) => {
 export const deleleCurriculum = async (id, dispatch) => {
   dispatch(deleteActionStart());
   try {
-    const res = await axiosConfig.delete(`/curriculum/${id}`);
+    const res = await axiosConfig.delete(`/diplomamanagementprofile/${id}`);
     console.log("36 res.data", res);
     console.log("36 res.status", res.status);
     dispatch(deleteActionSuccess(res.status));
@@ -73,6 +73,23 @@ export const deleleStudentAcademicIntakeSessionAcademicProgram = async (
   try {
     const res = await axiosConfig.delete(
       `/studentacademicintakesessionacademicprogram/${id}`,
+    );
+    console.log("36 res.data", res);
+    console.log("36 res.status", res.status);
+    dispatch(deleteActionSuccess(res.status));
+  } catch {
+    dispatch(deleteActionFailed());
+  }
+};
+
+export const deleleAcademicInTakeCessionAcademicProgramCurriculum = async (
+  id,
+  dispatch,
+) => {
+  dispatch(deleteActionStart());
+  try {
+    const res = await axiosConfig.delete(
+      `/academicintakesessionacademicprogramcurriculum/${id}`,
     );
     console.log("36 res.data", res);
     console.log("36 res.status", res.status);

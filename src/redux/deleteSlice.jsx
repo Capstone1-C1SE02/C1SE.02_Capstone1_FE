@@ -19,9 +19,10 @@ const deleteSlice = createSlice({
       // state.mode = true;
       state.error = false;
     },
-    deleteActionFailed: (state) => {
+    deleteActionFailed: (state, action) => {
       state.isFetching = false;
       state.error = true;
+      // state.data = action.payload;
     },
   },
 });

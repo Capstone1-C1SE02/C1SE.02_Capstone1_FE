@@ -7,3 +7,4 @@ export { default as DeleteForm } from "./DeleteForm";
 export { default as AddForm } from "./AddForm";
 export { default as FooterPage } from "./FooterPage";
 export { default as Nav } from "./Nav";
+export { default as ModalNotif } from "./ModalNotif";

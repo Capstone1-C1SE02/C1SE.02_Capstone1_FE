@@ -49,13 +49,10 @@ export const editMajor = async (major, dispatch) => {
   }
 };
 
-export const editCurriculum = async (item, dispatch) => {
+export const editCurriculum = async (item, id, dispatch) => {
   dispatch(editActionStart());
   try {
-    const res = await axiosConfig.put(
-      `/curriculum/${item.CURRICULUM_ID}`,
-      item,
-    );
+    const res = await axiosConfig.put(`/diplomamanagementprofile/${id}`, item);
     console.log("res.data 29 ", res.data);
     console.log("res.data 30 ", res);
     dispatch(editActionSuccess(res.data));
@@ -86,10 +83,25 @@ export const editStudentAcademicIntakeSessionAcademicProgram = async (
 ) => {
   dispatch(editActionStart());
   try {
-    console.log("res.data 89--------------- ", item.id);
-
     const res = await axiosConfig.put(
       `/studentacademicintakesessionacademicprogram/${id}`,
+      item,
+    );
+    dispatch(editActionSuccess(res.data));
+  } catch {
+    dispatch(editActionFailed());
+  }
+};
+
+export const editAcademicInTakeCessionAcademicProgramCurriculum = async (
+  item,
+  id,
+  dispatch,
+) => {
+  dispatch(editActionStart());
+  try {
+    const res = await axiosConfig.put(
+      `/academicintakesessionacademicprogramcurriculum/${id}`,
       item,
     );
     dispatch(editActionSuccess(res.data));

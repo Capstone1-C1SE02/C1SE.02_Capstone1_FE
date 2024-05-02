@@ -13,7 +13,6 @@ export const login = async (user, dispatch, navigate) => {
   try {
     const res = await axiosConfig.post("/login", user);
     dispatch(loginSuccess(res.data["token:"]));
-    console.log("res.data[token:]", res.data["token:"]);
     navigate("/");
   } catch {
     dispatch(loginFailed());

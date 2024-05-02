@@ -16,9 +16,10 @@ const addSlice = createSlice({
       state.data = action.payload;
       state.error = false;
     },
-    addActionFailed: (state) => {
+    addActionFailed: (state, action) => {
       state.isFetching = false;
       state.error = true;
+      state.data = action.payload;
     },
   },
 });

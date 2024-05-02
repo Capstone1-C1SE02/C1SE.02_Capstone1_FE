@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
-import { LearningStatusType, AcademicProgram } from "@/components/dropList";
+import { Student, AcademicProgram } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "@/axiosConfig";
@@ -9,21 +9,23 @@ import { addCurriculum } from "@/redux/apiRequestAdd";
 import { deleleCurriculum } from "@/redux/apiRequestDelete";
 import { editCurriculum } from "@/redux/apiRequestEdit";
 import { ToastContainer, toast } from "react-toastify";
+import getAdminId from "@/ultils/getAdminId";
 
 function DiplopmaManagementProfile() {
+  const adminId = getAdminId();
   const data = useSelector((state) => state.addAction.data);
   const dataDelete = useSelector((state) => state.deleteAction);
   const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [degreebooks, setDegreebooks] = useState([]);
-  const [learningStatusType, setLearningStatusType] = useState();
+  const [student, setStudent] = useState();
   const [academicProgram, setAcademicProgram] = useState();
 
   useEffect(() => {
     async function fetchDegreesData() {
       try {
-        const response = await axiosConfig.get("/curriculum");
+        const response = await axiosConfig.get("/diplomamanagementprofile");
         setDegreebooks(response.data.results.data);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
@@ -34,9 +36,9 @@ function DiplopmaManagementProfile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const learningStatus = await LearningStatusType();
+        const student = await Student();
         const academicProgram = await AcademicProgram();
-        setLearningStatusType(learningStatus.data);
+        setStudent(student.data.results.data);
         setAcademicProgram(academicProgram.data.results.data);
       } catch (error) {
         console.log(error);
@@ -45,7 +47,6 @@ function DiplopmaManagementProfile() {
     fetchData();
   }, []);
 
-  console.log("degreebooks", degreebooks);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -55,37 +56,55 @@ function DiplopmaManagementProfile() {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    //     STUDENT_ID_NUMBER
-    // ACADEMIC_PROGRAM_ID
-    // GRADUATION_YEAR
-    // MODE_OF_STUDY
-    // CLASSIFEILD_BY_ACADEMIC-RECORDS
-    // CERTIFICATE_NUMBER
-    // NUMBER_ENTERRD_INTO_THE_DEGREE_TRACKING_BOOK
-    // DATE_OF_DECISION_ANNOUNCEMENT
-    // COMMENT
-    // DATE_UPDATED
-    // APPROVED
+    LAST_NAME: "",
+    FIRST_NAME: "",
+    MIDDLE_NAME: "",
+    STUDENT_ID_NUMBER: "",
+    GRADUATION_YEAR: "",
+    MODE_OF_STUDY: "",
+    ACADEMIC_PROGRAM_ID: "",
+    CLASSIFIED_BY_ACADEMIC_RECORDS: "",
+
+    NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "",
+    CERTIFICATE_NUMBER: "",
+    DATE_OF_DECISION_ANNOUNCEMENT: "",
+    DATE_UPDATED: "",
+    APPORVEDY: "",
+    COMMENT: "",
+    user: adminId,
   });
 
   const [objectPayload, setObjectPayload] = useState();
 
   useEffect(() => {
     setObjectPayload(
-      degreebooks.reduce((acc, curriculum) => {
-        acc[curriculum.CURRICULUM_ID] = {
-          CURRICULUM_ID: curriculum.CURRICULUM_ID,
-          CURRICULUM_NAME: curriculum.CURRICULUM_NAME,
-          DESCRIPTION: curriculum.DESCRIPTION,
-          CURRICULUM_STATUS_NAME: curriculum.CURRICULUM_STATUS_NAME,
-          ACADEMIC_PROGRAM_ID: curriculum.ACADEMIC_PROGRAM_ID,
+      degreebooks.reduce((acc, diplopmaMP) => {
+        acc[diplopmaMP.DIPLOMA_MANAGEMENT_PROFILE_ID] = {
+          LAST_NAME: diplopmaMP.LAST_NAME,
+          FIRST_NAME: diplopmaMP.FIRST_NAME,
+          MIDDLE_NAME: diplopmaMP.MIDDLE_NAME,
+          STUDENT_ID_NUMBER: diplopmaMP.STUDENT_ID_NUMBER,
+          GRADUATION_YEAR: diplopmaMP.GRADUATION_YEAR,
+          MODE_OF_STUDY: diplopmaMP.MODE_OF_STUDY,
+          ACADEMIC_PROGRAM_ID: diplopmaMP.ACADEMIC_PROGRAM_ID,
+          CLASSIFIED_BY_ACADEMIC_RECORDS:
+            diplopmaMP.CLASSIFIED_BY_ACADEMIC_RECORDS,
+
+          NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK:
+            diplopmaMP.NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK,
+          CERTIFICATE_NUMBER: diplopmaMP.CERTIFICATE_NUMBER,
+          DATE_OF_DECISION_ANNOUNCEMENT:
+            diplopmaMP.DATE_OF_DECISION_ANNOUNCEMENT,
+          DATE_UPDATED: diplopmaMP.DATE_UPDATED,
+          APPORVEDY: diplopmaMP.APPORVEDY,
+          COMMENT: diplopmaMP.COMMENT,
+          user: adminId,
         };
         return acc;
       }, {}),
     );
   }, [degreebooks]);
 
-  console.log("objectPayload objectPayload", objectPayload);
   //add
   const handleAddANew = async () => {
     await addCurriculum(payload, dispatch);
@@ -97,7 +116,7 @@ function DiplopmaManagementProfile() {
 
   // edit
   const handleSaveInformation = async (id) => {
-    await editCurriculum(objectPayload[id], dispatch);
+    await editCurriculum(objectPayload[id], id, dispatch);
     dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
     console.log("ok131", objectPayload[id]);
     console.log("data edit", dataEdit);
@@ -148,67 +167,103 @@ function DiplopmaManagementProfile() {
     }));
   };
 
+  console.log("degreebooks", degreebooks);
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
-      <ToastContainer />
+    <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput
         lable={"Quản lý hồ sơ văn bằng"}
         onClick={handleAddAction}
       />
+      <ToastContainer />
 
       <div className=" relative h-full rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={` block h-full w-full overflow-x-auto border-x-[30px] border-t-[30px] border-white`}
           >
-            <thead className=" flex w-full flex-col justify-center ">
-              <tr className="flex w-full justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Mã khoá đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Tên khoá đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
-                <th className=" min-w-[350px] px-4 py-2">
-                  Tên chương trình đào tạo
+            <thead className=" relative w-full">
+              <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
+                <th className=" min-w-[200px] px-4 py-2">Tên </th>
+                <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
+                <th className=" min-w-[200px] px-4 py-2">
+                  Chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
-
+                <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
+                <th className=" min-w-[200px] px-4 py-2">Loại đào tạo</th>
+                <th className=" min-w-[500px] px-4 py-2">Xếp loại</th>
+                <th className=" min-w-[200px] px-4 py-2">Số hiệu bằng</th>
+                <th className=" min-w-[200px] px-4 py-2">Số vào sổ</th>
+                <th className=" min-w-[200px] px-4 py-2">Ngày tốt nghiệp</th>
+                <th className=" min-w-[200px] px-4 py-2">Ghi chú</th>
+                <th className=" min-w-[200px] px-4 py-2">Ngày sửa đổi</th>
+                <th className=" min-w-[200px] px-4 py-2">Trạng thái</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className=" flex w-full flex-col justify-center">
-              {degreebooks?.map((degreebook, index) => (
+            <tbody className=" relative  w-full ">
+              {degreebooks?.map((student, index) => (
                 <tr
-                  key={degreebook.CURRICULUM_ID}
-                  className="flex justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  key={index}
+                  className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {degreebook.CURRICULUM_ID}
+                    {student.LAST_NAME +
+                      " " +
+                      student.MIDDLE_NAME +
+                      " " +
+                      student.FIRST_NAME}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {degreebook.CURRICULUM_NAME}
-                  </td>
-                  <td className="min-w-[350px] px-4 py-2">
-                    {degreebook.CURRICULUM_STATUS_NAME ? "Đang" : "Chưa"}
+                    {student.STUDENT_ID_NUMBER}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {degreebook.ACADEMIC_PROGRAM_ID}
+                    {student.ACADEMIC_PROGRAM_ID}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {degreebook.DESCRIPTION}
+                    {student.GRADUATION_YEAR}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.MODE_OF_STUDY}
+                  </td>
+                  <td className="min-w-[500px] px-4 py-2">
+                    {student.CLASSIFIED_BY_ACADEMIC_RECORDS}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.CERTIFICATE_NUMBER}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.DATE_OF_DECISION_ANNOUNCEMENT}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">{student.COMMENT}</td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.DATE_UPDATED}
+                  </td>
+                  <td className="min-w-[200px] px-4 py-2">
+                    {student.APPORVEDY === true
+                      ? "Được phê duyệt"
+                      : "Đang xử lý"}
                   </td>
 
                   <td
-                    onClick={() => handleActionClick(degreebook.CURRICULUM_ID)}
+                    onClick={() =>
+                      handleActionClick(student.DIPLOMA_MANAGEMENT_PROFILE_ID)
+                    }
                     className={`relative min-w-[10px] ${
-                      showActionMenu.studentId === degreebook.CURRICULUM_ID &&
+                      showActionMenu.studentId ===
+                        student.DIPLOMA_MANAGEMENT_PROFILE_ID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
-                    } flex cursor-pointer items-center rounded-[3px] px-2`}
+                    } cursor-pointer rounded-[3px] px-2 `}
                   >
                     <BsThreeDotsVertical />
-                    {showActionMenu.studentId === degreebook.CURRICULUM_ID &&
+                    {showActionMenu.studentId ===
+                      student.DIPLOMA_MANAGEMENT_PROFILE_ID &&
                       showActionMenu.isOpen && (
                         <div
-                          className={`absolute right-0 top-[45px] z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
+                          className={`absolute right-0 z-10 flex flex-col gap-[5px] rounded border-[1px] bg-white p-[5px]`}
                         >
                           <Button
                             text={"Sửa"}
@@ -233,11 +288,11 @@ function DiplopmaManagementProfile() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[380px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách sách khoá đào tạo
+                Quản lý hồ sơ văn bằng
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -247,12 +302,24 @@ function DiplopmaManagementProfile() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Mã khoá đào tạo:
-                  </label>
+                  <label className="text-[16px] font-normal">Họ:</label>
+                  <input
+                    id="LAST_NAME"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="text"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Tên lót:</label>
                   <input
                     type="text"
-                    id="CURRICULUM_ID"
+                    id="MIDDLE_NAME"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -261,14 +328,12 @@ function DiplopmaManagementProfile() {
                       }))
                     }
                   />
-                </div>{" "}
+                </div>
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên khoá đào tạo:
-                  </label>
+                  <label className="text-[16px] font-normal">Tên:</label>
                   <input
                     type="text"
-                    id="CURRICULUM_NAME"
+                    id="FIRST_NAME"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -277,14 +342,16 @@ function DiplopmaManagementProfile() {
                       }))
                     }
                   />
-                </div>{" "}
+                </div>
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
-                    Trạng thái đào tạo
+                    Mã sinh viên:
                   </label>
-                  <select
+                  <input
                     type="text"
-                    id="CURRICULUM_STATUS_NAME"
+                    id="STUDENT_ID_NUMBER"
                     className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
@@ -292,22 +359,50 @@ function DiplopmaManagementProfile() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  >
-                    <option hidden></option>
-                    <option value={true}>Đang</option>
-                    <option value={false}>Chưa</option>
-                  </select>
+                  />
+                </div>
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Năm tốt nghiệp:
+                  </label>
+                  <input
+                    type="text"
+                    id="GRADUATION_YEAR"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Loại đào tạo:
+                  </label>
+                  <input
+                    type="text"
+                    id="MODE_OF_STUDY"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
                 </div>{" "}
               </div>
               <div className="mb-[10px] flex gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
-                    Tên chương trình đào tạo:
+                    Chương trình đào tạo:
                   </label>
                   <select
-                    type="text"
                     id="ACADEMIC_PROGRAM_ID"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    type="text"
                     onChange={(e) =>
                       setPayload((pre) => ({
                         ...pre,
@@ -325,13 +420,109 @@ function DiplopmaManagementProfile() {
                       </option>
                     ))}
                   </select>
-                </div>{" "}
+                </div>
                 <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mô tả:</label>
+                  <label className="text-[16px] font-normal">Xếp loại:</label>
                   <input
                     type="text"
-                    id="DESCRIPTION"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    id="CLASSIFIED_BY_ACADEMIC_RECORDS"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  ></input>
+                </div>{" "}
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Số hiệu bằng:
+                  </label>
+                  <input
+                    type="text"
+                    id="CERTIFICATE_NUMBER"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Số vào sổ:</label>
+                  <input
+                    type="text"
+                    id="NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Ngày tốt nghiệp:
+                  </label>
+                  <input
+                    type="date"
+                    id="DATE_OF_DECISION_ANNOUNCEMENT"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Ngày sửa đổi:
+                  </label>
+                  <input
+                    type="date"
+                    id="DATE_UPDATED"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Trạng thái:</label>
+                  <input
+                    type="text"
+                    id="APPORVEDY"
+                    className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>{" "}
+              </div>
+              <div className="mb-[10px] flex gap-[30px]">
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">Ghi chú:</label>
+                  <input
+                    type="text"
+                    id="COMMENT"
+                    className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                     onChange={(e) =>
                       setPayload((pre) => ({
                         ...pre,
@@ -363,106 +554,166 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[527px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Danh sách bằng</h1>
+              <h1 className="text-[30px] font-semibold">Sinh viên</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
               </div>
             </div>
+
             {degreebooks?.map(
-              (student) =>
-                showActionMenu.studentId === student.CURRICULUM_ID && (
+              (item) =>
+                showActionMenu.studentId ===
+                  item.DIPLOMA_MANAGEMENT_PROFILE_ID && (
                   <div
-                    key={student.CURRICULUM_ID}
+                    key={item.DIPLOMA_MANAGEMENT_PROFILE_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Mã khoá đào tạo:
-                        </label>
+                        <label className="text-[16px] font-normal">Họ:</label>
                         <input
                           defaultValue={
-                            objectPayload[student.CURRICULUM_ID].CURRICULUM_ID
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .LAST_NAME
                           }
                           type="text"
-                          id="CURRICULUM_ID"
+                          id="LAST_NAME"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.CURRICULUM_ID,
-                              "CURRICULUM_ID",
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "LAST_NAME",
                             )
                           }
                         />
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên khoá đào tạo:
+                          Tên lót:
                         </label>
                         <input
-                          type="text"
-                          id="CURRICULUM_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.CURRICULUM_ID].CURRICULUM_NAME
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .MIDDLE_NAME
                           }
+                          type="text"
+                          id="MIDDLE_NAME"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.CURRICULUM_ID,
-                              "CURRICULUM_NAME",
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "MIDDLE_NAME",
                             )
                           }
                         />
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Trạng thái đào tạo
-                        </label>
-
-                        <select
+                        <label className="text-[16px] font-normal">Tên:</label>
+                        <input
                           defaultValue={
-                            objectPayload[student.CURRICULUM_ID]
-                              .CURRICULUM_STATUS_NAME
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .FIRST_NAME
                           }
                           type="text"
-                          id="CURRICULUM_STATUS_NAME"
+                          id="FIRST_NAME"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.CURRICULUM_ID,
-                              "CURRICULUM_STATUS_NAME",
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "FIRST_NAME",
                             )
                           }
-                        >
-                          <option hidden></option>
-                          <option value={true}>Đang</option>
-                          <option value={false}>Chưa</option>
-                        </select>
-                      </div>{" "}
+                        />
+                      </div>
                     </div>
                     <div className="mb-[10px] flex gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên chương trình đào tạo:
+                          Mã sinh viên:
                         </label>
-                        <select
-                          type="text"
+                        <input
                           defaultValue={
-                            objectPayload[student.CURRICULUM_ID]
-                              .ACADEMIC_PROGRAM_ID
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .STUDENT_ID_NUMBER
                           }
-                          id="ACADEMIC_PROGRAM_ID"
-                          className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          type="text"
+                          id="STUDENT_ID_NUMBER"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.CURRICULUM_ID,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "STUDENT_ID_NUMBER",
+                            )
+                          }
+                        />
+                      </div>{" "}
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Năm tốt nghiệp:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .GRADUATION_YEAR
+                          }
+                          type="text"
+                          id="GRADUATION_YEAR"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "GRADUATION_YEAR",
+                            )
+                          }
+                        />
+                      </div>{" "}
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Loại đào tạo:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .MODE_OF_STUDY
+                          }
+                          type="text"
+                          id="MODE_OF_STUDY"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "MODE_OF_STUDY",
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Chương trình đào tạo:
+                        </label>
+                        <select
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .ACADEMIC_PROGRAM_ID
+                          }
+                          type="text"
+                          id="ACADEMIC_PROGRAM_ID"
+                          className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
                               "ACADEMIC_PROGRAM_ID",
                             )
                           }
@@ -477,23 +728,156 @@ function DiplopmaManagementProfile() {
                             </option>
                           ))}
                         </select>
-                      </div>{" "}
+                      </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mô tả:
+                          Xếp loại:
                         </label>
                         <input
-                          type="text"
-                          id="DESCRIPTION"
-                          className="block  w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
-                            objectPayload[student.CURRICULUM_ID].DESCRIPTION
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .CLASSIFIED_BY_ACADEMIC_RECORDS
                           }
+                          type="text"
+                          id="CLASSIFIED_BY_ACADEMIC_RECORDS"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
-                              student.CURRICULUM_ID,
-                              "DESCRIPTION",
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "CLASSIFIED_BY_ACADEMIC_RECORDS",
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Số hiệu bằng:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .CERTIFICATE_NUMBER
+                          }
+                          type="text"
+                          id="CERTIFICATE_NUMBER"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "CERTIFICATE_NUMBER",
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Số vào sổ:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK
+                          }
+                          type="text"
+                          id="NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK",
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Ngày tốt nghiệp:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .DATE_OF_DECISION_ANNOUNCEMENT
+                          }
+                          type="date"
+                          id="DATE_OF_DECISION_ANNOUNCEMENT"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "DATE_OF_DECISION_ANNOUNCEMENT",
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Ngày sửa đổi:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .DATE_UPDATED
+                          }
+                          type="date"
+                          id="DATE_UPDATED"
+                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "DATE_UPDATED",
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Trạng thái:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .APPORVEDY
+                          }
+                          type="text"
+                          id="APPORVEDY"
+                          className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "APPORVEDY",
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-[10px] flex gap-[30px]">
+                      <div className="flex flex-col gap-[5px]">
+                        <label className="text-[16px] font-normal">
+                          Ghi chú:
+                        </label>
+                        <input
+                          defaultValue={
+                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
+                              .COMMENT
+                          }
+                          type="text"
+                          id="COMMENT"
+                          className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onChange={(e) =>
+                            handledOnchangeEdit(
+                              e,
+                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                              "COMMENT",
                             )
                           }
                         />
@@ -516,7 +900,9 @@ function DiplopmaManagementProfile() {
                         justify
                         text16
                         onClick={(e) =>
-                          handleSaveInformation(student.CURRICULUM_ID)
+                          handleSaveInformation(
+                            item.DIPLOMA_MANAGEMENT_PROFILE_ID,
+                          )
                         }
                       />
                     </div>

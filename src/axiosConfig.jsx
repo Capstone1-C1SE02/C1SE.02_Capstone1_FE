@@ -1,5 +1,4 @@
 import axios from "axios";
-// require("dotenv").config();
 
 const instance = axios.create({
   baseURL: "http://127.0.0.1:8000/api",
@@ -50,8 +49,6 @@ instance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       retryCount++;
-      console.log("retryCount", retryCount);
-      console.log("call refresh token");
       try {
         const newAccessToken = await instance.post("/token/refresh/", {
           refresh,
@@ -64,7 +61,6 @@ instance.interceptors.response.use(
         const localStorageDataRaw = JSON.parse(
           localStorage.getItem("persist:auth"),
         );
-        console.log("localStorageData1", localStorageDataRaw.refresh);
 
         const newAccess1 = `"${newAccess}"`;
         const newRefresh1 = `"${newRefresh}"`;
@@ -86,7 +82,7 @@ instance.interceptors.response.use(
       } catch (refreshError) {
         let alertShown = false;
         if (!alertShown) {
-          alert("Refresh token hết hạn. Vui lòng đăng nhập lại.");
+          alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại");
           alertShown = true;
         }
         window.location.href = "/login";
