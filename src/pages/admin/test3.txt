@@ -1,0 +1,229 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : root
+ Source Server Type    : MySQL
+ Source Server Version : 80300 (8.3.0)
+ Source Host           : localhost:3306
+ Source Schema         : diploma-management
+
+ Target Server Type    : MySQL
+ Target Server Version : 80300 (8.3.0)
+ File Encoding         : 65001
+
+ Date: 22/04/2024 16:09:25
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for academic_intake_session
+-- ----------------------------
+DROP TABLE IF EXISTS `academic_intake_session`;
+CREATE TABLE `academic_intake_session`  (
+  `ACADEMIC_INTAKE_SESSION_ID` decimal(18, 0) NOT NULL,
+  `ACADEMIC_INTAKE_SESSION_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `START_DATE` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`ACADEMIC_INTAKE_SESSION_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of academic_intake_session
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for academic_intake_session-academic_program_curriculum
+-- ----------------------------
+DROP TABLE IF EXISTS `academic_intake_session-academic_program_curriculum`;
+CREATE TABLE `academic_intake_session-academic_program_curriculum`  (
+  `ACADEMIC_INTAKE_SESSION_ID` decimal(18, 0) NOT NULL,
+  `ACADEMIC_PROGRAM_ID` decimal(18, 0) NOT NULL,
+  `CURRICULUM_ID` decimal(18, 0) NOT NULL,
+  `STATUS_NAME` bit(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`ACADEMIC_INTAKE_SESSION_ID`, `CURRICULUM_ID`, `ACADEMIC_PROGRAM_ID`) USING BTREE,
+  INDEX `ACADEMIC_PROGRAM_ID`(`ACADEMIC_PROGRAM_ID` ASC) USING BTREE,
+  INDEX `CURRICULUM_ID`(`CURRICULUM_ID` ASC) USING BTREE,
+  CONSTRAINT `academic_intake_session-academic_program_curriculum_ibfk_1` FOREIGN KEY (`ACADEMIC_INTAKE_SESSION_ID`) REFERENCES `academic_intake_session` (`ACADEMIC_INTAKE_SESSION_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `academic_intake_session-academic_program_curriculum_ibfk_2` FOREIGN KEY (`ACADEMIC_PROGRAM_ID`) REFERENCES `academic_program` (`ACADEMIC_PROGRAM_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `academic_intake_session-academic_program_curriculum_ibfk_3` FOREIGN KEY (`CURRICULUM_ID`) REFERENCES `curriculum` (`CURRICULUM_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of academic_intake_session-academic_program_curriculum
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for academic_level_type
+-- ----------------------------
+DROP TABLE IF EXISTS `academic_level_type`;
+CREATE TABLE `academic_level_type`  (
+  `ACADEMIC_LEVEL_TYPE_ID` decimal(18, 0) NOT NULL,
+  `ACADEMIC_LEVEL_TYPE_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ACADEMIC_LEVEL_TYPE_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of academic_level_type
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for academic_program
+-- ----------------------------
+DROP TABLE IF EXISTS `academic_program`;
+CREATE TABLE `academic_program`  (
+  `ACADEMIC_PROGRAM_ID` decimal(18, 0) NOT NULL,
+  `ACADEMIC_PROGRAM_CODE` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `ACADEMIC_PROGRAM_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `ACADEMIC_LEVEL_TYPE_ID` decimal(18, 0) NULL DEFAULT NULL,
+  `MODE_OF_STUDY` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DEGREE_DURATION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DESCRIPTION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DEGREE_ID` decimal(10, 0) NULL DEFAULT NULL,
+  PRIMARY KEY (`ACADEMIC_PROGRAM_ID`) USING BTREE,
+  INDEX `fk_ACADEMIC_PROGRAM_ACADEMIC_PROGRAM_1`(`ACADEMIC_LEVEL_TYPE_ID` ASC) USING BTREE,
+  INDEX `DEGREE_ID`(`DEGREE_ID` ASC) USING BTREE,
+  CONSTRAINT `academic_program_ibfk_1` FOREIGN KEY (`DEGREE_ID`) REFERENCES `degree` (`DEGREE_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk_ACADEMIC_PROGRAM_ACADEMIC_PROGRAM_1` FOREIGN KEY (`ACADEMIC_LEVEL_TYPE_ID`) REFERENCES `academic_level_type` (`ACADEMIC_LEVEL_TYPE_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of academic_program
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for account
+-- ----------------------------
+DROP TABLE IF EXISTS `account`;
+CREATE TABLE `account`  (
+  `ACCOUNT_ID` decimal(18, 0) NOT NULL,
+  `ACCOUNT_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `PASSWORD` varbinary(255) NULL DEFAULT NULL,
+  `LAST_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `FIRST_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `MIDDLE_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `PHONE_NUMBER` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `ACCOUNT_STATUS` bit(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`ACCOUNT_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of account
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for curriculum
+-- ----------------------------
+DROP TABLE IF EXISTS `curriculum`;
+CREATE TABLE `curriculum`  (
+  `CURRICULUM_ID` decimal(18, 0) NOT NULL,
+  `CURRICULUM_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DESCRIPTION` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `CURRICULUM_STATUS_NAME` bit(1) NULL DEFAULT NULL,
+  `ACADEMIC_PROGRAM_ID` decimal(18, 0) NULL DEFAULT NULL,
+  PRIMARY KEY (`CURRICULUM_ID`) USING BTREE,
+  INDEX `ACADEMIC_PROGRAM_ID`(`ACADEMIC_PROGRAM_ID` ASC) USING BTREE,
+  CONSTRAINT `curriculum_ibfk_1` FOREIGN KEY (`ACADEMIC_PROGRAM_ID`) REFERENCES `academic_program` (`ACADEMIC_PROGRAM_ID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of curriculum
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for degree
+-- ----------------------------
+DROP TABLE IF EXISTS `degree`;
+CREATE TABLE `degree`  (
+  `DEGREE_ID` decimal(18, 0) NOT NULL,
+  `DEGREE_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DEGREE_STATUS` bit(1) NULL DEFAULT NULL,
+  `DESCRIPTON` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`DEGREE_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of degree
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for diploma_management_profile
+-- ----------------------------
+DROP TABLE IF EXISTS `diploma_management_profile`;
+CREATE TABLE `diploma_management_profile`  (
+  `DIPLOMA_MANAGEMENT_PROFILE_ID` decimal(18, 0) NOT NULL,
+  `STUDENT_ID_NUMBER` decimal(18, 0) NULL DEFAULT NULL,
+  `ACADEMIC_PROGRAM_ID` decimal(18, 0) NULL DEFAULT NULL,
+  `GRADUATION_YEAR` year NULL DEFAULT NULL,
+  `MODE_OF_STUDY` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `CLASSIFIED_BY_ACADEMIC-RECORDS` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `CERTIFICATE_NUMBER` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DATE_OF_DECISION_ANNOUNCEMENT` date NULL DEFAULT NULL,
+  `COMMENT` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `DATE_UPDATED` datetime NULL DEFAULT NULL,
+  `ACCOUNT_ID` decimal(18, 0) NULL DEFAULT NULL,
+  `ACCOUNT_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`DIPLOMA_MANAGEMENT_PROFILE_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of diploma_management_profile
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for learning_status_type
+-- ----------------------------
+DROP TABLE IF EXISTS `learning_status_type`;
+CREATE TABLE `learning_status_type`  (
+  `LEARNING_STATUS_TYPE_ID` decimal(10, 0) NOT NULL,
+  `LEARNING_STATUS_TYPE_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`LEARNING_STATUS_TYPE_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of learning_status_type
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for student
+-- ----------------------------
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE `student`  (
+  `STUDENT_ID_NUMBER` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `LAST_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `FIRST_NAME` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `MIDDLE_NAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `GENDER` int NULL DEFAULT NULL,
+  `BIRTH_DATE` date NULL DEFAULT NULL,
+  `BIRTH_PLACE` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `PEOPLE_ID_NUMBER` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `PHONE_NUMBER` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `EMAIL` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `COMMENTS` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `LEARNING_STATUS_TYPE_ID` decimal(18, 0) NULL DEFAULT NULL,
+  `ACADEMIC_LEVEL_TYPE_ID` decimal(18, 0) NULL DEFAULT NULL,
+  PRIMARY KEY (`STUDENT_ID_NUMBER`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of student
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for student-academic_intake_session-academic_program
+-- ----------------------------
+DROP TABLE IF EXISTS `student-academic_intake_session-academic_program`;
+CREATE TABLE `student-academic_intake_session-academic_program`  (
+  `STUDENT_ID_NUMBER` decimal(18, 0) NOT NULL,
+  `ACADEMIC_INTAKE__SESSION_ID` decimal(18, 0) NOT NULL,
+  `ACADEMIC_PROGRAM_ID` decimal(18, 0) NOT NULL,
+  `LEARNING_STATUS_TYPE_ID` decimal(18, 0) NULL DEFAULT NULL,
+  PRIMARY KEY (`ACADEMIC_INTAKE__SESSION_ID`, `STUDENT_ID_NUMBER`, `ACADEMIC_PROGRAM_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of student-academic_intake_session-academic_program
+-- ----------------------------
+
+SET FOREIGN_KEY_CHECKS = 1;
