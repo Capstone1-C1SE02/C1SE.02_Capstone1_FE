@@ -1,5 +1,4 @@
 import Home from "@/pages/user/Home";
-import DefaultLayoutUser from "@/layouts/user";
 import { Login, Home as AdminHome } from "@/pages/admin";
 import { adminLoginLayout, adminLayout } from "@/layouts/admin";
 import SearchByText from "@/pages/user/SearchByText";
@@ -17,4 +16,9 @@ const publicUserRoutes = [
   { path: "/result", component: Result, layout: RootLayoutUser },
 ];
 
-export { publicUserRoutes };
+const publicAdminRoutes = [
+  { path: "/", component: AdminHome, layout: adminLayout },
+  { path: "/login", component: Login, layout: adminLoginLayout },
+];
+
+export { publicUserRoutes, publicAdminRoutes };
