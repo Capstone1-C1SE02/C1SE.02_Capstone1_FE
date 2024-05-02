@@ -1,6 +1,3 @@
-import Home from "@/pages/user/Home";
-import { Login, Home as AdminHome } from "@/pages/admin";
-import DefaultLayoutUser from "@/layouts/user";
 import {
   Login,
   AcademicIntakeSessionAcademicProgramCurriculum,
@@ -12,6 +9,7 @@ import {
   ListMajored,
   ListYear,
 } from "@/pages/admin";
+import Home from "@/pages/user/Home";
 import { adminLoginLayout, adminLayout } from "@/layouts/admin";
 import SearchByText from "@/pages/user/SearchByText";
 import Result from "@/pages/user/Result";
