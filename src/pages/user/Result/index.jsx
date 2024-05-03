@@ -1,11 +1,21 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import Item from "@/components/user/Result/item";
 import Row from "@/components/user/Result/row";
 
 function Result() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const data = location.state?.data;
+
+  useEffect(() => {
+    if (!data) {
+      navigate("/");
+    }
+  }, [data]);
 
   const handleClick = () => {
     navigate(-1);
@@ -24,30 +34,40 @@ function Result() {
       </div>
       <div className="flex flex-wrap gap-5 px-[70px] pt-10">
         <Row>
-          <Item label="Số hiệu Văn bằng" value="01032002" />
-          <Item label="Họ và Tên" value="Nguyễn Hữu Tuấn" />
-        </Row>
-        <Row>
-          <Item label="Số vào Sổ" value="25/10/2024" />
-          <Item label="Ngày sinh" value="01/03/2002" />
-        </Row>
-        <Row>
-          <Item label="Ngày nhận" value="25/12/2024" />
-          <Item label="Mã Sinh Viên" value="26211239001" />
-        </Row>
-        <Row>
-          <Item label="Chuyên ngành" value="Công nghệ thông tin" />
-          <Item label="Ngành Đào tạo" value="Kỹ Sư phần mềm" />
+          <Item label="Số hiệu Văn bằng" value={data?.CERTIFICATE_NUMBER} />
+          <Item label="Họ và Tên" value={data?.STUDENT_NAME} />
         </Row>
         <Row>
           <Item
-            label="Số QĐ Công nhận Tốt nghiệp"
-            value="SQĐ 0103-2002"
+            label="Số vào Sổ"
+            value={data?.NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK}
+          />
+          <Item label="Ngày sinh" value={data?.BIRTH_DATE} />
+        </Row>
+        <Row>
+          <Item label="Năm tốt nghiệp" value={data?.GRADUATION_YEAR} />
+          <Item label="Mã Sinh Viên" value={data?.STUDENT_ID_NUMBER} />
+        </Row>
+        <Row>
+          <Item
+            label="Ngành Đào tạo"
+            value={data?.ACADEMIC_PROGRAM.DEGREE.DEGREE_NAME}
+          />
+          <Item label="Loại hình đào tạo" value={data?.MODE_OF_STUDY} />
+        </Row>
+        <Row>
+          <Item
+            label="Chuyên ngành"
+            value={data?.ACADEMIC_PROGRAM.ACADEMIC_PROGRAM_NAME}
             size="large"
           />
         </Row>
         <Row>
-          <Item label="Xếp loại Tốt nghiệp" value="Xuất sắc" size="large" />
+          <Item
+            label="Xếp loại Tốt nghiệp"
+            value={data?.CLASSIFIED_BY_ACADEMIC_RECORDS}
+            size="large"
+          />
         </Row>
       </div>
     </main>
