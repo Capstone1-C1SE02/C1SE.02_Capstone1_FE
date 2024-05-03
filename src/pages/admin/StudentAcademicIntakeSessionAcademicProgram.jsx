@@ -194,7 +194,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         onClick={handleAddAction}
       />
       <ToastContainer />
-      <div className=" relative h-[85%] rounded-xl bg-table-bg">
+      <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}

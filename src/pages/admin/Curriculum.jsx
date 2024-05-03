@@ -167,7 +167,7 @@ function Curriculum() {
         onClick={handleAddAction}
       />
 
-      <div className=" relative h-[85%]  rounded-xl bg-table-bg">
+      <div className=" relative h-[84%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={` block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}

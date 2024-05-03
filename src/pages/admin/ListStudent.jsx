@@ -190,7 +190,7 @@ function ListStudent() {
       <HeaderAndInput lable={"Danh sách sinh viên"} onClick={handleAddAction} />
       <ToastContainer />
 
-      <div className="h-[85%] rounded-xl bg-table-bg">
+      <div className="h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={` block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
