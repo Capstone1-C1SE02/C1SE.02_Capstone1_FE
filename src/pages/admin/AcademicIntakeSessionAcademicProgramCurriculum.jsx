@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import {
   Curiculum,
   AcademicProgram,
@@ -23,15 +29,23 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
   const [curiculum, setCuriculum] = useState();
   const [academicProgram, setAcademicProgram] = useState();
   const [academicintakesession, setAcademicintakesession] = useState();
-
+  const [page, setPage] = useState(1);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
   const [YBAPData, setYBAPData] = useState([]);
   useEffect(() => {
     async function fetchYBAPData() {
       try {
         const response = await axiosConfig.get(
-          "/academicintakesessionacademicprogramcurriculum",
+          `/academicintakesessionacademicprogramcurriculum?page=${page}`,
         );
         setYBAPData(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error(
           "Đã xảy ra lỗi khi lấy danh sách chương trình học theo năm:",
@@ -40,7 +54,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       }
     }
     fetchYBAPData();
-  }, [render]);
+  }, [render, page]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,7 +120,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
 
   // edit
   const handleSaveInformation = async (id) => {
-    await addAcademicInTakeCessionAcademicProgramCurriculum(
+    await editAcademicInTakeCessionAcademicProgramCurriculum(
       objectPayload[id],
       id,
       dispatch,
@@ -166,6 +180,10 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       [id]: { ...pre[id], [property]: newValue },
     }));
   };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
@@ -176,7 +194,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
         onClick={handleAddAction}
       />
       <ToastContainer />
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
@@ -254,6 +272,14 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
       {/* add form */}

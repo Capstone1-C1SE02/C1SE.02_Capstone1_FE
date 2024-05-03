@@ -50,6 +50,17 @@ export const editMajor = async (major, dispatch) => {
 };
 
 export const editCurriculum = async (item, id, dispatch) => {
+  console.log(id);
+  dispatch(editActionStart());
+  try {
+    const res = await axiosConfig.put(`/curriculum/${id}`, item);
+    dispatch(editActionSuccess(res.data));
+  } catch {
+    dispatch(editActionFailed());
+  }
+};
+
+export const editDiplopManagermentProfile = async (item, id, dispatch) => {
   dispatch(editActionStart());
   try {
     const res = await axiosConfig.put(`/diplomamanagementprofile/${id}`, item);

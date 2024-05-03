@@ -13,12 +13,10 @@ instance.interceptors.request.use(
       const dataRaw = data && data?.access;
       const token = JSON.parse(dataRaw);
 
-      console.log("token storage TOKEN", token);
       config.headers = {
         authorization: token ? `Bearer ${token}` : "",
       };
 
-      console.log("ok11111 ");
       return config;
     } catch (error) {
       console.log(error);

@@ -9,8 +9,8 @@ import {
   ListMajored,
   ListYear,
 } from "@/pages/admin";
-import Home from "@/pages/user/Home";
 import { adminLoginLayout, adminLayout } from "@/layouts/admin";
+import Home from "@/pages/user/Home";
 import SearchByText from "@/pages/user/SearchByText";
 import Result from "@/pages/user/Result";
 import FormLayoutUser from "@/layouts/user/form.layout";

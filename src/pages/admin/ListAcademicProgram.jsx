@@ -1,7 +1,7 @@
 import { Button, Label } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { HeaderAndInput, DeleteForm } from "@/components/admin";
+import { HeaderAndInput, DeleteForm, FooterPage } from "@/components/admin";
 import axiosConfig from "@/axiosConfig";
 import { addAcademicProgram } from "@/redux/apiRequestAdd";
 import { editAcademicProgram } from "@/redux/apiRequestEdit";
@@ -21,14 +21,21 @@ function ListAcademicProgram() {
   const dataEdit = useSelector((state) => state.EditAction);
   const [render, setRender] = useState(0);
   const [academicleveltype, setAcademicleveltype] = useState();
-
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
   const [academicprograms, setAcademicPrograms] = useState([]);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
   useEffect(() => {
     async function fetchaAademicPrograms() {
       try {
-        const response = await axiosConfig.get("/academicprogram");
+        const response = await axiosConfig.get(`/academicprogram?page=${page}`);
         setAcademicPrograms(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error(
           "Đã xảy ra lỗi khi lấy danh sách Mã chương trình đào tạo:",
@@ -37,7 +44,7 @@ function ListAcademicProgram() {
       }
     }
     fetchaAademicPrograms();
-  }, [render]);
+  }, [render, page]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,6 +160,10 @@ function ListAcademicProgram() {
     }));
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
@@ -160,7 +171,7 @@ function ListAcademicProgram() {
         lable={"Danh sách chương trình đào tạo"}
         onClick={handleAddAction}
       />
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
@@ -240,6 +251,15 @@ function ListAcademicProgram() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
 

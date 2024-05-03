@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { HeaderAndInput, Button, Label } from "@/components/admin";
+import { HeaderAndInput, Button, Label, FooterPage } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import axiosConfig from "@/axiosConfig";
 import { addMajor } from "@/redux/apiRequestAdd";
@@ -18,18 +18,28 @@ function ListMajored() {
   const [learningStatusType, setLearningStatusType] = useState();
   const [render, setRender] = useState(0);
   const [majors, setMajors] = useState([]);
+  const [page, setPage] = useState(1);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
   useEffect(() => {
     async function fetchMajorsData() {
       try {
-        const response = await axiosConfig.get("/degree/");
+        console.log("page tesst", page);
+        const response = await axiosConfig.get(`/degree?page=${page}`);
         console.log("response", response);
         setMajors(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
       }
     }
     fetchMajorsData();
-  }, [render]);
+  }, [render, page]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,16 +88,12 @@ function ListMajored() {
 
   //add
   const handleAddANew = async () => {
-    try {
-      console.log("dataAdd.data.payload", payload);
-      await addMajor(payload, dispatch);
-      console.log("dataAdd.data", dataAdd.addAction);
-      toast.success("Thêm thành công");
-      showAddAction(!addAction);
-      setRender(render + 1);
-    } catch (error) {
-      console.log("error", error);
-    }
+    await addMajor(payload, dispatch);
+    console.log("dataAdd.data.payload", payload);
+    console.log("dataAdd.data", dataAdd.addAction);
+    toast.success("Thêm thành công");
+    showAddAction(!addAction);
+    setRender(render + 1);
   };
 
   // edit
@@ -149,18 +155,21 @@ function ListMajored() {
     }));
   };
 
-  console.log("objectPayload", objectPayload);
+  const handlePageChange = (event, value) => {
+    console.log(value);
+    setPage(value);
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
       <ToastContainer />
       <HeaderAndInput lable={"Danh sách  văn bằng"} onClick={handleAddAction} />
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className="h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={`block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
-            <thead className="flex w-full flex-col ">
+            <thead className="relative w-full">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[300px] px-4 py-2">Mã văn bằng</th>
                 <th className=" min-w-[300px] px-4 py-2">Tên văn bằng</th>
@@ -171,11 +180,11 @@ function ListMajored() {
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className="flex w-full flex-col ">
-              {majors?.map((major, index) => (
+            <tbody className="relative w-full ">
+              {majors?.map((major) => (
                 <tr
                   key={major.DEGREE_ID}
-                  className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_NAME}</td>
@@ -183,7 +192,7 @@ function ListMajored() {
                   <td className="w-[500px] px-4 py-2">{major.DESCRIPTON}</td>
                   <td
                     onClick={() => handleActionClick(major.DEGREE_ID)}
-                    className={`relative min-w-[10px] ${
+                    className={`w-[10px] ${
                       showActionMenu.studentId === major.DEGREE_ID &&
                       showActionMenu.isOpen &&
                       "bg-custom-bg-notActive-nav"
@@ -213,6 +222,14 @@ function ListMajored() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
       {/* add form */}

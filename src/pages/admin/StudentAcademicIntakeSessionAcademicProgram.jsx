@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import {
   LearningStatusType,
   AcademicProgram,
@@ -25,15 +31,24 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   const [academicProgram, setAcademicProgram] = useState();
   const [student, setStudent] = useState();
   const [academicintakesession, setAcademicintakesession] = useState();
+  const [page, setPage] = useState(1);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
 
   const [YBAPData, setYBAPData] = useState([]);
   useEffect(() => {
     async function fetchYBAPData() {
       try {
         const response = await axiosConfig.get(
-          "/studentacademicintakesessionacademicprogram",
+          `/studentacademicintakesessionacademicprogram?page=${page}`,
         );
         setYBAPData(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error(
           "Đã xảy ra lỗi khi lấy danh sách chương trình học theo năm:",
@@ -42,7 +57,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       }
     }
     fetchYBAPData();
-  }, [render]);
+  }, [render, page]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -168,6 +183,9 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     }));
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
@@ -176,7 +194,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         onClick={handleAddAction}
       />
       <ToastContainer />
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
@@ -202,7 +220,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     {student?.map(
                       (item) =>
                         item.STUDENT_ID_NUMBER === YBAP.STUDENT_ID_NUMBER &&
-                        `${item.LAST_NAME}`,
+                        `${item.LAST_NAME} ${item.MIDDLE_NAME} ${item.FIRST_NAME}`,
                     )}
                   </td>
                   <td className="w-[300px] px-4 py-2">
@@ -260,6 +278,14 @@ function StudentAcademicIntakeSessionAcademicProgram() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
       {/* add form */}

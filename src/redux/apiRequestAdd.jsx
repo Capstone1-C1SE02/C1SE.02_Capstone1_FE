@@ -16,16 +16,12 @@ export const addAcademiYear = async (year, dispatch) => {
 export const addStudent = async (student, dispatch) => {
   dispatch(addActionStart());
   try {
-    console.log("ok 1");
     const res = await axiosConfig.post("/student/", student);
-    console.log("ok 2");
-
     dispatch(addActionSuccess(res.data));
-    console.log("ok 3");
-
     console.log("add student 20 apiRequestAdd ", res.data.message);
   } catch (error) {
-    dispatch(addActionFailed());
+    console.log(error.response.data);
+    dispatch(addActionFailed(error.response.data));
   }
 };
 
@@ -55,7 +51,7 @@ export const addMajor = async (student, dispatch) => {
 export const addCurriculum = async (data, dispatch) => {
   dispatch(addActionStart());
   try {
-    const res = await axiosConfig.post("/diplomamanagementprofile/", data);
+    const res = await axiosConfig.post("/curriculum/", data);
     dispatch(addActionSuccess(res.data));
     console.log("add student 20 apiRequestAdd ", res.data.message);
   } catch {
@@ -89,6 +85,16 @@ export const addAcademicInTakeCessionAcademicProgramCurriculum = async (
       "/academicintakesessionacademicprogramcurriculum/",
       data,
     );
+    dispatch(addActionSuccess(res.data));
+  } catch {
+    dispatch(addActionFailed());
+  }
+};
+
+export const addDiplopManamentProfile = async (data, dispatch) => {
+  dispatch(addActionStart());
+  try {
+    const res = await axiosConfig.post("/diplomamanagementprofile/", data);
     dispatch(addActionSuccess(res.data));
   } catch {
     dispatch(addActionFailed());

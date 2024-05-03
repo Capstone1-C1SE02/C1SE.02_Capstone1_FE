@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import { LearningStatusType, AcademicProgram } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
@@ -16,21 +22,30 @@ function Curriculum() {
   const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
-  const [degreebooks, setDegreebooks] = useState([]);
   const [learningStatusType, setLearningStatusType] = useState();
+  const [degreebooks, setDegreebooks] = useState([]);
+  const [page, setPage] = useState(1);
   const [academicProgram, setAcademicProgram] = useState();
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
 
   useEffect(() => {
     async function fetchDegreesData() {
       try {
-        const response = await axiosConfig.get("/curriculum");
+        const response = await axiosConfig.get(`/curriculum?page=${page}`);
         setDegreebooks(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
       }
     }
     fetchDegreesData();
-  }, [render]);
+  }, [render, page]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,10 +106,8 @@ function Curriculum() {
 
   // edit
   const handleSaveInformation = async (id) => {
-    await editCurriculum(objectPayload[id], dispatch);
+    await editCurriculum(objectPayload[id], id, dispatch);
     dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("ok131", objectPayload[id]);
-    console.log("data edit", dataEdit);
     showEditAction(!editAction);
     setRender(render + 1);
   };
@@ -142,6 +155,10 @@ function Curriculum() {
     }));
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
@@ -150,22 +167,22 @@ function Curriculum() {
         onClick={handleAddAction}
       />
 
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={` block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
             <thead className=" flex w-full flex-col justify-center ">
               <tr className="flex w-full justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Mã khoá đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Tên khoá đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
-                <th className=" min-w-[350px] px-4 py-2">
+                <th className=" w-[200px] px-4 py-2">Mã khoá đào tạo</th>
+                <th className=" w-[200px] px-4 py-2">Tên khoá đào tạo</th>
+                <th className=" w-[200px] px-4 py-2">Trạng thái đào tạo</th>
+                <th className=" w-[350px] px-4 py-2">
                   Tên chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" w-[200px] px-4 py-2">Mô tả</th>
 
-                <th className=" min-w-[20px] px-4 py-2"></th>
+                <th className=" w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className=" flex w-full flex-col justify-center">
@@ -174,19 +191,19 @@ function Curriculum() {
                   key={degreebook.CURRICULUM_ID}
                   className="flex justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] px-4 py-2">
                     {degreebook.CURRICULUM_ID}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] px-4 py-2">
                     {degreebook.CURRICULUM_NAME}
                   </td>
-                  <td className="min-w-[350px] px-4 py-2">
+                  <td className="w-[350px] px-4 py-2">
                     {degreebook.CURRICULUM_STATUS_NAME ? "Đang" : "Chưa"}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] px-4 py-2">
                     {degreebook.ACADEMIC_PROGRAM_ID}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] px-4 py-2">
                     {degreebook.DESCRIPTION}
                   </td>
 
@@ -222,6 +239,15 @@ function Curriculum() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
 

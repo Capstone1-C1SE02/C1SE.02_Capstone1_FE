@@ -1,4 +1,10 @@
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import axiosConfig from "@/axiosConfig";
@@ -9,7 +15,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import { LearningStatusType, Academicleveltype } from "@/components/dropList";
 import "react-toastify/dist/ReactToastify.css";
-
 const { BsThreeDotsVertical, FaTimes } = icon;
 
 function ListStudent() {
@@ -17,26 +22,31 @@ function ListStudent() {
   const data = useSelector((state) => state.addAction.data);
   const dataDelete = useSelector((state) => state.deleteAction);
   const dataEdit = useSelector((state) => state.EditAction);
-  console.log("ADD DATA", data);
-
   const [render, setRender] = useState(0);
-
   const [learningStatusType, setLearningStatusType] = useState();
   const [academicleveltype, setAcademicleveltype] = useState();
-
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
   const [students, setStudentsData] = useState([]);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
+
   useEffect(() => {
     async function fetchStudentsData() {
       try {
-        const response = await axiosConfig.get(`/student?page=1`);
+        const response = await axiosConfig.get(`/student?page=${page}`);
         setStudentsData(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
       }
     }
     fetchStudentsData();
-  }, [render]);
+  }, [render, page]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,7 +62,6 @@ function ListStudent() {
     fetchData();
   }, []);
 
-  console.log("learningStatusType", learningStatusType, academicleveltype);
   const [showActionMenu, setShowActionMenu] = useState({
     STUDENT_ID_NUMBER: null,
     isOpen: false,
@@ -108,7 +117,6 @@ function ListStudent() {
     );
   }, [students]);
 
-  console.log("objectPayload", objectPayload);
   const handleAddAction = () => {
     showAddAction(!addAction);
   };
@@ -127,7 +135,6 @@ function ListStudent() {
   const handleActionClick = (STUDENT_ID_NUMBER) => {
     setShowActionMenu({ STUDENT_ID_NUMBER, isOpen: !showActionMenu.isOpen });
     setIdStudent(STUDENT_ID_NUMBER);
-    console.log(STUDENT_ID_NUMBER, idStudent);
   };
 
   const handledOnchangeEdit = (e, id, property) => {
@@ -138,21 +145,27 @@ function ListStudent() {
     }));
   };
 
+  const [renderAction, setRenderAction] = useState({
+    renderAdd: 0,
+    renderEdit: 0,
+    renderDelete: 0,
+  });
+
   //add
   const handleAddANew = async () => {
     await addStudent(payload, dispatch);
-    toast.success(`${data?.message}`);
-    console.log("paylooad", payload);
-    console.log("paylooad data.addAction", data);
+    console.log("dât mes", data.errCode);
+    console.log("dât mes", data);
     showAddAction(!addAction);
     setRender(render + 1);
+    setRenderAction(renderAction.renderAdd + 1);
+    console.log(renderAction);
   };
+
   // edit
   const handleSaveInformation = async (id) => {
     await editStudent(objectPayload[id], dispatch);
     dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("ok131", objectPayload[id]);
-    console.log("data edit", dataEdit);
     showEditAction(!editAction);
     setRender(render + 1);
   };
@@ -160,7 +173,7 @@ function ListStudent() {
   //delele
   const handleDelete = async () => {
     await deleleStudent(showActionMenu.STUDENT_ID_NUMBER, dispatch);
-    console.log("paylooad", dataDelete.data);
+
     dataDelete.data == 204
       ? toast.success("Xoá thành công")
       : toast.error("Xoá thất bại");
@@ -168,19 +181,23 @@ function ListStudent() {
     setRender(render + 1);
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput lable={"Danh sách sinh viên"} onClick={handleAddAction} />
       <ToastContainer />
 
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className="h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={` block h-full w-full overflow-x-auto border-x-[30px] border-t-[30px] border-white`}
+            className={` block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
             <thead className=" relative w-full">
               <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Họ </th>
+                <th className=" min-w-[350px] px-4 py-2">Họ </th>
                 <th className=" min-w-[200px] px-4 py-2">Tên</th>
                 <th className=" min-w-[200px] px-4 py-2">MSSV</th>
                 <th className=" min-w-[200px] px-4 py-2">Giới tính</th>
@@ -191,57 +208,61 @@ function ListStudent() {
                 <th className=" min-w-[200px] px-4 py-2">CCCD</th>
                 <th className=" min-w-[200px] px-4 py-2">Số điện thoại</th>
                 <th className=" min-w-[200px] px-4 py-2">Email</th>
-                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[400px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[200px] px-4 py-2">Trạng thái học tập</th>
                 <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className=" relative  w-full ">
+            <tbody className=" relative w-full ">
               {students?.map((student) => (
                 <tr
                   key={student.STUDENT_ID_NUMBER}
-                  className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                 >
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[350px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.LAST_NAME + " " + student.MIDDLE_NAME}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.FIRST_NAME}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.STUDENT_ID_NUMBER}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.GENDER ? "Nam" : "Nữ"}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.BIRTH_DATE}
                   </td>
-                  <td className="min-w-[500px] px-4 py-2">
-                    {student.BIRTH_PLACE}
+                  <td className="w-[500px] px-4 py-2">{student.BIRTH_PLACE}</td>
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
+                    {student.NATION}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.NATION}</td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.NATIONALITY}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.PEOPLE_ID_NUMBER}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.PHONE_NUMBER}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">{student.EMAIL}</td>
-                  <td className="min-w-[200px] px-4 py-2">{student.COMMENT}</td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
+                    {student.EMAIL}
+                  </td>
+                  <td className="w-[400px] overflow-hidden text-ellipsis px-4 py-2">
+                    {student.COMMENTS}
+                  </td>
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.academicleveltype.ACADEMIC_LEVEL_TYPE_NAME}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.learningstatustype.LEARNING_STATUS_TYPE_NAME}
                   </td>
                   <td
                     onClick={() => handleActionClick(student.STUDENT_ID_NUMBER)}
-                    className={`relative min-w-[10px] ${
+                    className={` w-[10px] ${
                       showActionMenu.STUDENT_ID_NUMBER ===
                         student.STUDENT_ID_NUMBER &&
                       showActionMenu.isOpen &&
@@ -276,6 +297,14 @@ function ListStudent() {
         </div>
       </div>
 
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 94)}`}
+            handlePageChange={handlePageChange}
+          />
+        </div>
+      </div>
       {/* add form */}
       {addAction && (
         <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
@@ -576,7 +605,6 @@ function ListStudent() {
               </div>
             </div>
 
-            {console.log("students", students)}
             {students?.map(
               (student, index) =>
                 showActionMenu.STUDENT_ID_NUMBER ===

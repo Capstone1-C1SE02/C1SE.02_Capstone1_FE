@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import { Student, AcademicProgram } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "@/axiosConfig";
-import { addCurriculum } from "@/redux/apiRequestAdd";
-import { deleleCurriculum } from "@/redux/apiRequestDelete";
-import { editCurriculum } from "@/redux/apiRequestEdit";
+import { addDiplopManamentProfile } from "@/redux/apiRequestAdd";
+import { deleleDiplopManagermentProfile } from "@/redux/apiRequestDelete";
+import { editDiplopManagermentProfile } from "@/redux/apiRequestEdit";
 import { ToastContainer, toast } from "react-toastify";
 import getAdminId from "@/ultils/getAdminId";
 
@@ -20,19 +26,30 @@ function DiplopmaManagementProfile() {
   const [render, setRender] = useState(0);
   const [degreebooks, setDegreebooks] = useState([]);
   const [student, setStudent] = useState();
+  const [page, setPage] = useState(1);
   const [academicProgram, setAcademicProgram] = useState();
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
 
   useEffect(() => {
     async function fetchDegreesData() {
       try {
-        const response = await axiosConfig.get("/diplomamanagementprofile");
+        const response = await axiosConfig.get(
+          `/diplomamanagementprofile?page=${page}`,
+        );
         setDegreebooks(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
       }
     }
     fetchDegreesData();
-  }, [render]);
+  }, [render, page]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -107,7 +124,7 @@ function DiplopmaManagementProfile() {
 
   //add
   const handleAddANew = async () => {
-    await addCurriculum(payload, dispatch);
+    await addDiplopManamentProfile(payload, dispatch);
     toast.success(`${data?.message}`);
     console.log("paylod", payload);
     showAddAction(!addAction);
@@ -116,7 +133,7 @@ function DiplopmaManagementProfile() {
 
   // edit
   const handleSaveInformation = async (id) => {
-    await editCurriculum(objectPayload[id], id, dispatch);
+    await editDiplopManagermentProfile(objectPayload[id], id, dispatch);
     dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
     console.log("ok131", objectPayload[id]);
     console.log("data edit", dataEdit);
@@ -127,7 +144,7 @@ function DiplopmaManagementProfile() {
   //delele
   const handleDelete = async () => {
     console.log("showActionMenu.STUDENT_ID_NUMBER", showActionMenu.studentId);
-    await deleleCurriculum(showActionMenu.studentId, dispatch);
+    await deleleDiplopManagermentProfile(showActionMenu.studentId, dispatch);
     console.log("paylooad", dataDelete.data);
     dataDelete.data == 204
       ? toast.success("Xoá thành công")
@@ -166,8 +183,9 @@ function DiplopmaManagementProfile() {
       [id]: { ...pre[id], [property]: newValue },
     }));
   };
-
-  console.log("degreebooks", degreebooks);
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   return (
     <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput
@@ -176,7 +194,7 @@ function DiplopmaManagementProfile() {
       />
       <ToastContainer />
 
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={` block h-full w-full overflow-x-auto border-x-[30px] border-t-[30px] border-white`}
@@ -190,7 +208,7 @@ function DiplopmaManagementProfile() {
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
                 <th className=" min-w-[200px] px-4 py-2">Loại đào tạo</th>
-                <th className=" min-w-[500px] px-4 py-2">Xếp loại</th>
+                <th className=" min-w-[200px] px-4 py-2">Xếp loại</th>
                 <th className=" min-w-[200px] px-4 py-2">Số hiệu bằng</th>
                 <th className=" min-w-[200px] px-4 py-2">Số vào sổ</th>
                 <th className=" min-w-[200px] px-4 py-2">Ngày tốt nghiệp</th>
@@ -225,7 +243,7 @@ function DiplopmaManagementProfile() {
                   <td className="min-w-[200px] px-4 py-2">
                     {student.MODE_OF_STUDY}
                   </td>
-                  <td className="min-w-[500px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {student.CLASSIFIED_BY_ACADEMIC_RECORDS}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
@@ -283,6 +301,15 @@ function DiplopmaManagementProfile() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 12)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
 

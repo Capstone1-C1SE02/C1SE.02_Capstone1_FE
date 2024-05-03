@@ -1,4 +1,10 @@
-import { Button, Label, HeaderAndInput, DeleteForm } from "@/components/admin";
+import {
+  Button,
+  Label,
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+} from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
 import axiosConfig from "@/axiosConfig";
@@ -16,21 +22,29 @@ const ListYear = () => {
   const dataAdd = useSelector((state) => state.addAction);
   const dataEdit = useSelector((state) => state.editAction);
   const [render, setRender] = useState(0);
-
-  console.log("dataAdd 1 ", dataAdd.data.errCode);
-  console.log("dataAdd 2", dataAdd.data);
   const [years, setYears] = useState([]);
+  const [page, setPage] = useState(1);
+  const [panigationData, setPanigationData] = useState({
+    count: "",
+    page: "",
+  });
   useEffect(() => {
     async function fetchYearsData() {
       try {
-        const response = await axiosConfig.get("/academicintakesession");
+        const response = await axiosConfig.get(
+          `/academicintakesession?page=${page}`,
+        );
         setYears(response.data.results.data);
+        setPanigationData({
+          count: response.data.count,
+          page: response.data.total_pages,
+        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
       }
     }
     fetchYearsData();
-  }, [render]);
+  }, [render, page]);
 
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
@@ -60,12 +74,9 @@ const ListYear = () => {
     );
   }, [years]);
 
-  console.log("123123", years, objectPayload);
   //add
   const handleAddNew = async () => {
-    console.log("payload", payload);
     await addAcademiYear(payload, dispatch);
-
     if (dataAdd.data === -1) {
       return toast.error("Thêm thất bại");
     } else if (dataAdd?.data?.errCode === 0) {
@@ -129,12 +140,15 @@ const ListYear = () => {
     }));
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <HeaderAndInput lable={"Năm học"} onClick={handleAddAction} />
       <ToastContainer />
 
-      <div className=" relative h-full rounded-xl bg-table-bg">
+      <div className=" relative h-[85%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
             className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
@@ -192,6 +206,15 @@ const ListYear = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="fixed bottom-2 w-full">
+        <div className="flex justify-center">
+          <FooterPage
+            count={+`${parseInt(panigationData.count / 30)}`}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
 

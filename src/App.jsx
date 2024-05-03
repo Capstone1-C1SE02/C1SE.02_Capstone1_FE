@@ -11,7 +11,7 @@ function App() {
   console.log("checkIsLoggedIn", checkIsLoggedIn);
 
   // const router = checkIsLoggedIn == true ? publicAdminRoutes : publicUserRoutes;
-  const router = publicUserRoutes;
+  const router = publicAdminRoutes;
 
   console.log("router", router);
   return (
