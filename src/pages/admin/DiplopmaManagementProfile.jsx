@@ -6,26 +6,36 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  InputForm2,
+  SelectForm,
 } from "@/components/admin";
-import { Student, AcademicProgram } from "@/components/dropList";
+import {
+  Student,
+  AcademicProgram,
+  Academicleveltype,
+} from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
 import axiosConfig from "@/axiosConfig";
 import { addDiplopManamentProfile } from "@/redux/apiRequestAdd";
 import { deleleDiplopManagermentProfile } from "@/redux/apiRequestDelete";
 import { editDiplopManagermentProfile } from "@/redux/apiRequestEdit";
-import { ToastContainer, toast } from "react-toastify";
 import getAdminId from "@/ultils/getAdminId";
+import Swal from "sweetalert2";
 
 function DiplopmaManagementProfile() {
   const adminId = getAdminId();
-  const data = useSelector((state) => state.addAction.data);
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [degreebooks, setDegreebooks] = useState([]);
   const [student, setStudent] = useState();
+  const [academicleveltype, setAcademicleveltype] = useState();
+  const statuses = [
+    { id: 0, status: "ĐÃ HOÀN THÀNH" },
+    { id: 1, status: "ĐANG" },
+  ];
+
+  console.log(statuses);
   const [page, setPage] = useState(1);
   const [academicProgram, setAcademicProgram] = useState();
   const [panigationData, setPanigationData] = useState({
@@ -45,7 +55,7 @@ function DiplopmaManagementProfile() {
           page: response.data.total_pages,
         });
       } catch (error) {
-        console.error("Đã xảy ra lỗi khi lấy danh sách năm học:", error);
+        console.error("Đã xảy ra lỗi khi lấy danh sách văn bằng:", error);
       }
     }
     fetchDegreesData();
@@ -55,8 +65,10 @@ function DiplopmaManagementProfile() {
       try {
         const student = await Student();
         const academicProgram = await AcademicProgram();
+        const academicleveltype = await Academicleveltype();
         setStudent(student.data.results.data);
         setAcademicProgram(academicProgram.data.results.data);
+        setAcademicleveltype(academicleveltype.data);
       } catch (error) {
         console.log(error);
       }
@@ -68,6 +80,8 @@ function DiplopmaManagementProfile() {
     studentId: null,
     isOpen: false,
   });
+
+  console.log(showActionMenu.studentId);
   const [idStudent, setIdStudent] = useState("");
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
@@ -81,7 +95,6 @@ function DiplopmaManagementProfile() {
     MODE_OF_STUDY: "",
     ACADEMIC_PROGRAM_ID: "",
     CLASSIFIED_BY_ACADEMIC_RECORDS: "",
-
     NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "",
     CERTIFICATE_NUMBER: "",
     DATE_OF_DECISION_ANNOUNCEMENT: "",
@@ -90,6 +103,26 @@ function DiplopmaManagementProfile() {
     COMMENT: "",
     user: adminId,
   });
+
+  const setPayloadAction = () => {
+    setPayload({
+      LAST_NAME: "",
+      FIRST_NAME: "",
+      MIDDLE_NAME: "",
+      STUDENT_ID_NUMBER: "",
+      GRADUATION_YEAR: "",
+      MODE_OF_STUDY: "",
+      ACADEMIC_PROGRAM_ID: "",
+      CLASSIFIED_BY_ACADEMIC_RECORDS: "",
+      NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "",
+      CERTIFICATE_NUMBER: "",
+      DATE_OF_DECISION_ANNOUNCEMENT: "",
+      DATE_UPDATED: "",
+      APPORVEDY: "",
+      COMMENT: "",
+      user: adminId,
+    });
+  };
 
   const [objectPayload, setObjectPayload] = useState();
 
@@ -121,36 +154,100 @@ function DiplopmaManagementProfile() {
       }, {}),
     );
   }, [degreebooks]);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
+  };
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
 
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm văn bằng thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire("Thông báo", "Thêm văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa văn bằng thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire("Thông báo", "Sửa văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá văn bằng thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire("Thông báo", "Xoá văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
   //add
   const handleAddANew = async () => {
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
     await addDiplopManamentProfile(payload, dispatch);
-    toast.success(`${data?.message}`);
-    console.log("paylod", payload);
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
     setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
   };
 
   // edit
   const handleSaveInformation = async (id) => {
+    const valid = validate(objectPayload[id]);
+    if (valid > 0) {
+      return;
+    }
     await editDiplopManagermentProfile(objectPayload[id], id, dispatch);
-    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("ok131", objectPayload[id]);
-    console.log("data edit", dataEdit);
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delele
   const handleDelete = async () => {
-    console.log("showActionMenu.STUDENT_ID_NUMBER", showActionMenu.studentId);
     await deleleDiplopManagermentProfile(showActionMenu.studentId, dispatch);
-    console.log("paylooad", dataDelete.data);
-    dataDelete.data == 204
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
   const handleAddAction = () => {
     showAddAction(!addAction);
@@ -163,6 +260,11 @@ function DiplopmaManagementProfile() {
 
   const handleDeleteAction = () => {
     showDeleteAction(!deleteAction);
+  };
+
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
   };
 
   const handleCloseAll = () => {
@@ -186,14 +288,18 @@ function DiplopmaManagementProfile() {
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    console.log("id: " + id);
+    handleEditAction();
+  };
   return (
     <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput
         lable={"Quản lý hồ sơ văn bằng"}
         onClick={handleAddAction}
       />
-      <ToastContainer />
-
       <div className=" relative h-[84%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
@@ -223,6 +329,9 @@ function DiplopmaManagementProfile() {
                 <tr
                   key={index}
                   className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  onClick={() =>
+                    showViewEdit(student.DIPLOMA_MANAGEMENT_PROFILE_ID)
+                  }
                 >
                   <td className="min-w-[200px] px-4 py-2">
                     {student.LAST_NAME +
@@ -315,7 +424,7 @@ function DiplopmaManagementProfile() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0  z-20 m-auto h-[800px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -327,237 +436,138 @@ function DiplopmaManagementProfile() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Họ:</label>
-                  <input
-                    id="LAST_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Tên lót:</label>
-                  <input
-                    type="text"
-                    id="MIDDLE_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Tên:</label>
-                  <input
-                    type="text"
-                    id="FIRST_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Họ:"}
+                  setValue={setPayload}
+                  keyObject={"LAST_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <InputForm2
+                  text={"Tên lót:"}
+                  setValue={setPayload}
+                  keyObject={"MIDDLE_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <InputForm2
+                  text={"Tên:"}
+                  setValue={setPayload}
+                  keyObject={"FIRST_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Mã sinh viên:
-                  </label>
-                  <input
-                    type="text"
-                    id="STUDENT_ID_NUMBER"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Năm tốt nghiệp:
-                  </label>
-                  <input
-                    type="text"
-                    id="GRADUATION_YEAR"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Loại đào tạo:
-                  </label>
-                  <input
-                    type="text"
-                    id="MODE_OF_STUDY"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mã sinh viên:"}
+                  setValue={setPayload}
+                  keyObject={"STUDENT_ID_NUMBER"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />{" "}
+                <InputForm2
+                  text={"Năm tốt nghiệp:"}
+                  setValue={setPayload}
+                  keyObject={"GRADUATION_YEAR"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <SelectForm
+                  text={"Loại đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"MODE_OF_STUDY"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={academicleveltype}
+                  dataValue={"ACADEMIC_LEVEL_TYPE_ID"}
+                  dataName={"ACADEMIC_LEVEL_TYPE_NAME"}
+                  w333
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Chương trình đào tạo:
-                  </label>
-                  <select
-                    id="ACADEMIC_PROGRAM_ID"
-                    className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {academicProgram?.map((item) => (
-                      <option
-                        value={item.ACADEMIC_PROGRAM_ID}
-                        key={item.ACADEMIC_PROGRAM_ID}
-                      >
-                        {item.ACADEMIC_PROGRAM_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Xếp loại:</label>
-                  <input
-                    type="text"
-                    id="CLASSIFIED_BY_ACADEMIC_RECORDS"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  ></input>
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <SelectForm
+                  text={" Chương trình đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_PROGRAM_ID"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={academicProgram}
+                  dataValue={"ACADEMIC_PROGRAM_ID"}
+                  dataName={"ACADEMIC_PROGRAM_NAME"}
+                  w12
+                  invalidFields={invalidFields}
+                />
+                <InputForm2
+                  text={"Xếp loại:"}
+                  setValue={setPayload}
+                  keyObject={"CLASSIFIED_BY_ACADEMIC_RECORDS"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Số hiệu bằng:
-                  </label>
-                  <input
-                    type="text"
-                    id="CERTIFICATE_NUMBER"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Số vào sổ:</label>
-                  <input
-                    type="text"
-                    id="NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Ngày tốt nghiệp:
-                  </label>
-                  <input
-                    type="date"
-                    id="DATE_OF_DECISION_ANNOUNCEMENT"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Số hiệu bằng:"}
+                  setValue={setPayload}
+                  keyObject={"CERTIFICATE_NUMBER"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                />
+                <InputForm2
+                  text={"Số vào sổ:"}
+                  setValue={setPayload}
+                  keyObject={"NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                />
+                <InputForm2
+                  text={" Ngày tốt nghiệp:"}
+                  setValue={setPayload}
+                  keyObject={"DATE_OF_DECISION_ANNOUNCEMENT"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                  typeInput={"date"}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Ngày sửa đổi:
-                  </label>
-                  <input
-                    type="date"
-                    id="DATE_UPDATED"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Trạng thái:</label>
-                  <input
-                    type="text"
-                    id="APPORVEDY"
-                    className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={" Ngày sửa đổi:"}
+                  setValue={setPayload}
+                  keyObject={"DATE_UPDATED"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                  typeInput={"date"}
+                />
+                <SelectForm
+                  text={"Trạng thái:"}
+                  setValue={setPayload}
+                  keyObject={"APPORVEDY"}
+                  setInvalidFields={setInvalidFields}
+                  w12
+                  invalidFields={invalidFields}
+                  dataNoAPI={statuses}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Ghi chú:</label>
-                  <input
-                    type="text"
-                    id="COMMENT"
-                    className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mô tả:"}
+                  setValue={setPayload}
+                  keyObject={"COMMENT"}
+                  setInvalidFields={setInvalidFields}
+                  w1
+                  invalidFields={invalidFields}
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -581,7 +591,7 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -598,7 +608,7 @@ function DiplopmaManagementProfile() {
                     key={item.DIPLOMA_MANAGEMENT_PROFILE_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">Họ:</label>
                         <input
@@ -659,7 +669,7 @@ function DiplopmaManagementProfile() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mã sinh viên:
@@ -724,7 +734,7 @@ function DiplopmaManagementProfile() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Chương trình đào tạo:
@@ -778,7 +788,7 @@ function DiplopmaManagementProfile() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Số hiệu bằng:
@@ -843,7 +853,7 @@ function DiplopmaManagementProfile() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Ngày sửa đổi:
@@ -887,7 +897,7 @@ function DiplopmaManagementProfile() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Ghi chú:
@@ -931,6 +941,14 @@ function DiplopmaManagementProfile() {
                             item.DIPLOMA_MANAGEMENT_PROFILE_ID,
                           )
                         }
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

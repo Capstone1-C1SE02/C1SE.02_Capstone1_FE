@@ -3,9 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const deleteSlice = createSlice({
   name: "deleteAction",
   initialState: {
-    data: null,
+    dataDelete: null,
     isFetching: false,
-    error: false,
+    errorDelete: false,
     mode: false,
   },
   reducers: {
@@ -15,14 +15,14 @@ const deleteSlice = createSlice({
     },
     deleteActionSuccess: (state, action) => {
       state.isFetching = false;
-      state.data = action.payload;
+      state.dataDelete = action.payload;
       // state.mode = true;
-      state.error = false;
+      state.errorDelete = false;
     },
     deleteActionFailed: (state, action) => {
       state.isFetching = false;
-      state.error = true;
-      // state.data = action.payload;
+      state.errorDelete = true;
+      // state.dataDelete = action.payload;
     },
   },
 });

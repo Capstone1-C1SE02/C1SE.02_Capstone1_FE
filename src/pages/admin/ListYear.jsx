@@ -4,6 +4,7 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  InputForm2,
 } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
@@ -12,15 +13,12 @@ import { addAcademiYear } from "@/redux/apiRequestAdd";
 import { deleteAcademicYear } from "@/redux/apiRequestDelete";
 import { editAcademicYear } from "@/redux/apiRequestEdit";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2";
 import "react-toastify/dist/ReactToastify.css";
 const { BsThreeDotsVertical, FaTimes } = icon;
 
 const ListYear = () => {
   const dispatch = useDispatch();
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataAdd = useSelector((state) => state.addAction);
-  const dataEdit = useSelector((state) => state.editAction);
   const [render, setRender] = useState(0);
   const [years, setYears] = useState([]);
   const [page, setPage] = useState(1);
@@ -55,17 +53,21 @@ const ListYear = () => {
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
   const [payload, setPayload] = useState({
-    ACADEMIC_INTAKE_SESSION_ID: "",
     ACADEMIC_INTAKE_SESSION_NAME: "",
     START_DATE: "",
   });
 
+  const setPayloadAction = () => {
+    setPayload({
+      ACADEMIC_INTAKE_SESSION_NAME: "",
+      START_DATE: "",
+    });
+  };
   const [objectPayload, setObjectPayload] = useState();
   useEffect(() => {
     setObjectPayload(
       years.reduce((acc, year) => {
         acc[year.ACADEMIC_INTAKE_SESSION_ID] = {
-          ACADEMIC_INTAKE_SESSION_ID: year.ACADEMIC_INTAKE_SESSION_ID,
           ACADEMIC_INTAKE_SESSION_NAME: year.ACADEMIC_INTAKE_SESSION_NAME,
           START_DATE: year.START_DATE,
         };
@@ -74,40 +76,99 @@ const ListYear = () => {
     );
   }, [years]);
 
-  //add
-  const handleAddNew = async () => {
-    await addAcademiYear(payload, dispatch);
-    if (dataAdd.data === -1) {
-      return toast.error("Thêm thất bại");
-    } else if (dataAdd?.data?.errCode === 0) {
-      return toast.success("Thêm thành công");
-    }
-    showAddAction(!addAction);
-    setRender(render + 1);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item) => {
+      if (item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
   };
 
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [countAdd, setCountAdd] = useState(0);
+  const [countDelete, setCountDelete] = useState(0);
+  const [countEdit, setCountEdit] = useState(0);
+
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm năm học thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire("Thông báo", "Thêm năm học thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa năm học thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire("Thông báo", "Sửa năm học thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá năm học thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire("Thông báo", "Xoá năm học thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [countDelete]);
+  //add
+  const handleAddNew = async () => {
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
+    await addAcademiYear(payload, dispatch);
+    showAddAction(!addAction);
+    setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
+    setCountAdd(countAdd + 1);
+  };
   //delele
   const handleDelete = async () => {
     await deleteAcademicYear(showActionMenu.studentId, dispatch);
-    console.log(
-      " showActionMenu.ACADEMIC_INTAKE_SESSION_I",
-      showActionMenu.studentId,
-    );
-    dataDelete?.deleteAction?.mode
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCountDelete(countDelete + 1);
+    showEditAction(false);
   };
 
   // edit
   const handleSaveInformation = async (id) => {
-    await editAcademicYear(objectPayload[id], dispatch);
-    dataEdit?.editAction?.mode
-      ? toast.success("Sửa thành công")
-      : toast.error("Sửa thất bại");
+    const valid = validate(objectPayload[id]);
+    if (valid > 0) {
+      return;
+    }
+    await editAcademicYear(objectPayload[id], id, dispatch);
+
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCountEdit(countEdit + 1);
   };
 
   const handleAddAction = () => {
@@ -143,15 +204,18 @@ const ListYear = () => {
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <HeaderAndInput lable={"Năm học"} onClick={handleAddAction} />
-      <ToastContainer />
-
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={`relative block h-40 min-h-[100%] w-full border-l-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
@@ -165,6 +229,7 @@ const ListYear = () => {
                 <tr
                   key={year.ACADEMIC_INTAKE_SESSION_ID}
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  onClick={() => showViewEdit(year.ACADEMIC_INTAKE_SESSION_ID)}
                 >
                   <td className="w-[400px] px-4 py-2">
                     {year.ACADEMIC_INTAKE_SESSION_NAME}
@@ -212,7 +277,7 @@ const ListYear = () => {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 30)}`}
+            count={+`${panigationData.page}`}
             handlePageChange={handlePageChange}
           />
         </div>
@@ -220,7 +285,7 @@ const ListYear = () => {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[300px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[320px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -230,39 +295,24 @@ const ListYear = () => {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên kỳ tuyển sinh:
-                  </label>
-                  <input
-                    id="ACADEMIC_INTAKE_SESSION_NAME"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Ngày bắt đầu:
-                  </label>
-                  <input
-                    type="date"
-                    id="START_DATE"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Tên kì tuyển sinh"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_INTAKE_SESSION_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w22
+                />
+                <InputForm2
+                  typeInput={"date"}
+                  text={"Thời gian bắt đầu"}
+                  setValue={setPayload}
+                  keyObject={"START_DATE"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w22
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -281,7 +331,7 @@ const ListYear = () => {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[300px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[320px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Năm học</h1>
@@ -298,7 +348,7 @@ const ListYear = () => {
                     key={year.ACADEMIC_INTAKE_SESSION_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Tên kỳ tuyển sinh:
@@ -318,7 +368,22 @@ const ListYear = () => {
                               "ACADEMIC_INTAKE_SESSION_NAME",
                             )
                           }
+                          onFocus={() => setInvalidFields("")}
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) =>
+                              item.name === "ACADEMIC_INTAKE_SESSION_NAME",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) =>
+                                    i.name === "ACADEMIC_INTAKE_SESSION_NAME",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -339,7 +404,20 @@ const ListYear = () => {
                               "START_DATE",
                             )
                           }
+                          onFocus={() => setInvalidFields("")}
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "START_DATE",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "START_DATE",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                     </div>
 
@@ -361,6 +439,14 @@ const ListYear = () => {
                         onClick={(e) =>
                           handleSaveInformation(year.ACADEMIC_INTAKE_SESSION_ID)
                         }
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteAction(!deleteAction)}
                       />
                     </div>
                   </div>

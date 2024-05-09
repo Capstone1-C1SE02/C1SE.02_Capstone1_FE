@@ -3,9 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const addSlice = createSlice({
   name: "addAction",
   initialState: {
-    data: null,
+    dataAdd: null,
     isFetching: false,
-    error: false,
+    errorAdd: false,
   },
   reducers: {
     addActionStart: (state) => {
@@ -13,13 +13,13 @@ const addSlice = createSlice({
     },
     addActionSuccess: (state, action) => {
       state.isFetching = false;
-      state.data = action.payload;
-      state.error = false;
+      state.dataAdd = action.payload;
+      state.errorAdd = false;
     },
     addActionFailed: (state, action) => {
       state.isFetching = false;
-      state.error = true;
-      state.data = action.payload;
+      state.errorAdd = true;
+      state.dataAdd = action.payload;
     },
   },
 });

@@ -31,9 +31,10 @@ export const addAcademicProgram = async (AcademicProgram, dispatch) => {
     console.log("AcademicProgram", AcademicProgram);
     const res = await axiosConfig.post("/academicprogram/", AcademicProgram);
     dispatch(addActionSuccess(res.data));
-    console.log("add student 31 apiRequestAdd ", res.data.message);
-  } catch {
-    dispatch(addActionFailed());
+    console.log("add student 31 apiRequestAdd ", res.data);
+  } catch (error) {
+    console.log("error from adding", error.response.data);
+    dispatch(addActionFailed(error.response.data));
   }
 };
 

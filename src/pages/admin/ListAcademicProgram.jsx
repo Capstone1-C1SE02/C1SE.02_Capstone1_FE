@@ -1,26 +1,30 @@
 import { Button, Label } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { HeaderAndInput, DeleteForm, FooterPage } from "@/components/admin";
+import {
+  HeaderAndInput,
+  DeleteForm,
+  FooterPage,
+  InputForm2,
+  SelectForm,
+} from "@/components/admin";
 import axiosConfig from "@/axiosConfig";
 import { addAcademicProgram } from "@/redux/apiRequestAdd";
 import { editAcademicProgram } from "@/redux/apiRequestEdit";
 import { deleteAcademicProgram } from "@/redux/apiRequestDelete";
-
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
-import { Academicleveltype } from "@/components/dropList";
+import { Academicleveltype, Degree } from "@/components/dropList";
+import Swal from "sweetalert2";
 
 const { BsThreeDotsVertical, FaTimes } = icon;
 import "react-toastify/dist/ReactToastify.css";
 
 function ListAcademicProgram() {
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.addAction.data);
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataEdit = useSelector((state) => state.EditAction);
   const [render, setRender] = useState(0);
   const [academicleveltype, setAcademicleveltype] = useState();
+  const [degree, setDegree] = useState();
   const [page, setPage] = useState(1);
   const [academicprograms, setAcademicPrograms] = useState([]);
   const [panigationData, setPanigationData] = useState({
@@ -45,25 +49,26 @@ function ListAcademicProgram() {
     }
     fetchaAademicPrograms();
   }, [render, page]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const academiclevel = await Academicleveltype();
+        const degree = await Degree();
         setAcademicleveltype(academiclevel.data);
+        setDegree(degree.data.results.data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
   }, []);
-  console.log("academicprogramsasdasd", academicprograms);
-  console.log("setAcademicleveltype", academicleveltype);
+
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
   });
 
-  const [idStudent, setIdStudent] = useState("");
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
@@ -77,7 +82,18 @@ function ListAcademicProgram() {
     DESCRIPTION: "",
     DEGREE_ID: "",
   });
-
+  const setPayloadAction = () => {
+    setPayload({
+      ACADEMIC_PROGRAM_ID: "",
+      ACADEMIC_PROGRAM_CODE: "",
+      ACADEMIC_PROGRAM_NAME: "",
+      ACADEMIC_LEVEL_TYPE_ID: "",
+      MODE_OF_STUDY: "",
+      DEGREE_DURATION: "",
+      DESCRIPTION: "",
+      DEGREE_ID: "",
+    });
+  };
   const [objectPayload, setObjectPayload] = useState();
   useEffect(() => {
     setObjectPayload(
@@ -97,40 +113,121 @@ function ListAcademicProgram() {
     );
   }, [academicprograms]);
 
-  //add
-  const handleAddANew = async () => {
-    await addAcademicProgram(payload, dispatch);
-    toast.success(`${data?.message}`);
-    console.log("paylooad", payload);
-    console.log("paylooad data.addAction", data);
-    showAddAction(!addAction);
-    setRender(render + 1);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (index !== 0 && item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
   };
 
-  // edit
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
+
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm chương trình đào tạo thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire(
+          "Thông báo",
+          "Thêm chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa chương trình đào tạo thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire(
+          "Thông báo",
+          "Sửa chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá chương trình đào tạo thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire(
+          "Thông báo",
+          "Xoá chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
+  //add
+  const handleAddANew = async () => {
+    const valid = validate(payload);
+    console.log("valid", valid);
+    console.log("invalidFields", invalidFields);
+    if (valid > 0) {
+      return;
+    }
+    await addAcademicProgram(payload, dispatch);
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
+    showAddAction(!addAction);
+    setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
+  };
+
+  //edit
   const handleSaveInformation = async (id) => {
-    console.log("ok131", objectPayload[id]);
+    const valid = validate(objectPayload[id]);
+    console.log("valid", valid);
+    console.log("invalidFields", invalidFields);
+
+    if (valid > 0) {
+      return;
+    }
     await editAcademicProgram(objectPayload[id], dispatch);
-    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("data edit", dataEdit);
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delele
   const handleDelete = async () => {
-    console.log("showActionMenu.ACADEMIC_PROGRAM_ID", showActionMenu.studentId);
     await deleteAcademicProgram(showActionMenu.studentId, dispatch);
-    console.log("paylooad", dataDelete.data);
-    dataDelete.data == 204
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
   const handleAddAction = () => {
     showAddAction(!addAction);
-    console.log(addAction);
   };
 
   const handleEditAction = () => {
@@ -141,15 +238,20 @@ function ListAcademicProgram() {
     showDeleteAction(!deleteAction);
   };
 
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
+    setInvalidFields("");
   };
 
   const handleActionClick = (studentId) => {
     setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
-    setIdStudent(studentId);
   };
 
   const handledOnchangeEdit = (e, id, property) => {
@@ -164,6 +266,10 @@ function ListAcademicProgram() {
     setPage(value);
   };
 
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
@@ -174,11 +280,11 @@ function ListAcademicProgram() {
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={`block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">
+                <th className=" min-w-[250px] px-4 py-2">
                   Mã chương trình đào tạo
                 </th>
                 <th className=" min-w-[400px] px-4 py-2">
@@ -195,24 +301,27 @@ function ListAcademicProgram() {
               {academicprograms?.map((academicprogram) => (
                 <tr
                   key={academicprogram.ACADEMIC_PROGRAM_ID}
-                  className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  className="flex max-h-[38px] items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  onClick={() =>
+                    showViewEdit(academicprogram.ACADEMIC_PROGRAM_ID)
+                  }
                 >
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[250px] px-4 py-2">
                     {academicprogram.ACADEMIC_PROGRAM_CODE}
                   </td>
-                  <td className="w-[400px] px-4 py-2">
+                  <td className="min-w-[400px] px-4 py-2">
                     {academicprogram.ACADEMIC_PROGRAM_NAME}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.ACADEMIC_LEVEL_TYPE_ID}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.MODE_OF_STUDY}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.DEGREE_DURATION}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.DESCRIPTION}
                   </td>
                   <td
@@ -257,7 +366,7 @@ function ListAcademicProgram() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 94)}`}
+            count={+panigationData.page}
             handlePageChange={handlePageChange}
           />
         </div>
@@ -265,7 +374,7 @@ function ListAcademicProgram() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[530px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[650px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -277,23 +386,15 @@ function ListAcademicProgram() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Mã chương trình đào tạo
-                  </label>
-                  <input
-                    id="ACADEMIC_PROGRAM_CODE"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mã chương trình đào tạo"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_PROGRAM_CODE"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
                     Bậc đào tạo tạo
@@ -310,16 +411,20 @@ function ListAcademicProgram() {
                     }
                   >
                     <option hidden></option>
-                    {academicleveltype &&
-                      academicleveltype?.map((item) => (
-                        <option
-                          value={item.ACADEMIC_LEVEL_TYPE_ID}
-                          key={item.ACADEMIC_LEVEL_TYPE_ID}
-                        >
-                          {item.ACADEMIC_LEVEL_TYPE_NAME}
-                        </option>
-                      ))}
+                    <option value={0}>Chính quy</option>
+                    <option value={1}>Cao đẳng</option>
                   </select>
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "MODE_OF_STUDY",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "MODE_OF_STUDY")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
@@ -340,73 +445,59 @@ function ListAcademicProgram() {
                     <option value={0}>Chính quy</option>
                     <option value={1}>Cao đẳng</option>
                   </select>
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "MODE_OF_STUDY",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "MODE_OF_STUDY")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên chương trình đào tạo
-                  </label>
-                  <input
-                    id="ACADEMIC_PROGRAM_NAME"
-                    className="block h-[40px] w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={" Tên chương trình đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_PROGRAM_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  w1
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Thời gian đào tạo
-                  </label>
-                  <input
-                    id="DEGREE_DURATION"
-                    className="block h-[40px] w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mã bằng cấp</label>
-                  <input
-                    id="DEGREE_ID"
-                    className="block h-[40px] w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={" Thời gian đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"DEGREE_DURATION"}
+                  setInvalidFields={setInvalidFields}
+                  w22
+                  invalidFields={invalidFields}
+                />
+                <SelectForm
+                  text={" Tên bằng cấp:"}
+                  setValue={setPayload}
+                  keyObject={"DEGREE_ID"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={degree}
+                  dataValue={"DEGREE_ID"}
+                  dataName={"DEGREE_NAME"}
+                  w22
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mô tả</label>
-                  <input
-                    id="DESCRIPTION"
-                    className="block h-[40px] w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mô tả:"}
+                  setValue={setPayload}
+                  keyObject={"DESCRIPTION"}
+                  setInvalidFields={setInvalidFields}
+                  w1
+                  invalidFields={invalidFields}
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -430,7 +521,7 @@ function ListAcademicProgram() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[530px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[650px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -449,7 +540,7 @@ function ListAcademicProgram() {
                     key={academicprogram.ACADEMIC_PROGRAM_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mã chương trình đào tạo:
@@ -463,6 +554,7 @@ function ListAcademicProgram() {
                           id="ACADEMIC_PROGRAM_CODE
                           "
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -471,6 +563,18 @@ function ListAcademicProgram() {
                             )
                           }
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "ACADEMIC_PROGRAM_CODE",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "ACADEMIC_PROGRAM_CODE",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -485,6 +589,7 @@ function ListAcademicProgram() {
                           id="ACADEMIC_LEVEL_TYPE_ID
                           "
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -504,6 +609,18 @@ function ListAcademicProgram() {
                               </option>
                             ))}
                         </select>
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "ACADEMIC_LEVEL_TYPE_ID",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "ACADEMIC_LEVEL_TYPE_ID",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -518,6 +635,7 @@ function ListAcademicProgram() {
                           id="MODE_OF_STUDY
                           "
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -530,9 +648,21 @@ function ListAcademicProgram() {
                           <option value={0}>Chính quy</option>
                           <option value={1}>Cao đẳng</option>
                         </select>
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "MODE_OF_STUDY",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "MODE_OF_STUDY",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Tên chương trình đào tạo:
@@ -546,6 +676,7 @@ function ListAcademicProgram() {
                           id="ACADEMIC_PROGRAM_NAME
                           "
                           className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -554,9 +685,21 @@ function ListAcademicProgram() {
                             )
                           }
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "ACADEMIC_PROGRAM_NAME",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "ACADEMIC_PROGRAM_NAME",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Thời gian đào tạo:
@@ -570,6 +713,7 @@ function ListAcademicProgram() {
                           id="DEGREE_DURATION
                           "
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -578,12 +722,24 @@ function ListAcademicProgram() {
                             )
                           }
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DEGREE_DURATION",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DEGREE_DURATION",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mã bằng cấp:
+                          Tên bằng cấp:
                         </label>
-                        <input
+                        <select
                           defaultValue={
                             objectPayload[academicprogram.ACADEMIC_PROGRAM_ID]
                               .DEGREE_ID
@@ -592,6 +748,7 @@ function ListAcademicProgram() {
                           id="DEGREE_ID
                           "
                           className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -599,10 +756,32 @@ function ListAcademicProgram() {
                               "DEGREE_ID",
                             )
                           }
-                        />
+                        >
+                          <option hidden></option>
+                          {degree.map((item) => (
+                            <option
+                              key={item.DEGREE_ID}
+                              value={+item.DEGREE_ID}
+                            >
+                              {item.DEGREE_NAME}
+                            </option>
+                          ))}
+                        </select>
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DEGREE_ID",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DEGREE_ID",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mô tả:
@@ -616,6 +795,7 @@ function ListAcademicProgram() {
                           id="DESCRIPTION
                           "
                           className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          onFocus={() => setInvalidFields("")}
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
@@ -624,6 +804,18 @@ function ListAcademicProgram() {
                             )
                           }
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DESCRIPTION",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DESCRIPTION",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>{" "}
                     </div>
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
@@ -646,6 +838,14 @@ function ListAcademicProgram() {
                             academicprogram.ACADEMIC_PROGRAM_ID,
                           )
                         }
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

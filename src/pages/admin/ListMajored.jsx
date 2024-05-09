@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
-import { HeaderAndInput, Button, Label, FooterPage } from "@/components/admin";
+import {
+  HeaderAndInput,
+  Button,
+  Label,
+  FooterPage,
+  InputForm2,
+  SelectForm,
+} from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import axiosConfig from "@/axiosConfig";
 import { addMajor } from "@/redux/apiRequestAdd";
@@ -8,13 +15,10 @@ import { editMajor } from "@/redux/apiRequestEdit";
 import { deleleMajor } from "@/redux/apiRequestDelete";
 import { useDispatch, useSelector } from "react-redux";
 import { LearningStatusType } from "@/components/dropList";
-import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 function ListMajored() {
   const dispatch = useDispatch();
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataAdd = useSelector((state) => state.addAction);
-  const dataEdit = useSelector((state) => state.editAction);
   const [learningStatusType, setLearningStatusType] = useState();
   const [render, setRender] = useState(0);
   const [majors, setMajors] = useState([]);
@@ -58,7 +62,6 @@ function ListMajored() {
     isOpen: false,
   });
 
-  const [idStudent, setIdStudent] = useState("");
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
@@ -69,6 +72,16 @@ function ListMajored() {
     DEGREE_STATUS: "",
     DESCRIPTON: "",
   });
+
+  const setPayloadAction = () => {
+    setPayload({
+      DEGREE_ID: "",
+      DEGREE_CODE: "",
+      DEGREE_NAME: "",
+      DEGREE_STATUS: "",
+      DESCRIPTON: "",
+    });
+  };
 
   const [objectPayload, setObjectPayload] = useState([]);
   useEffect(() => {
@@ -86,42 +99,102 @@ function ListMajored() {
     );
   }, [majors]);
 
-  //add
-  const handleAddANew = async () => {
-    await addMajor(payload, dispatch);
-    console.log("dataAdd.data.payload", payload);
-    console.log("dataAdd.data", dataAdd.addAction);
-    toast.success("Thêm thành công");
-    showAddAction(!addAction);
-    setRender(render + 1);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (index !== 0 && item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
   };
 
-  // edit
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm văn bằng thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire("Thông báo", "Thêm văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa văn bằng thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire("Thông báo", "Sửa văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá văn bằng thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire("Thông báo", "Xoá văn bằng thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
+  //add
+  const handleAddANew = async () => {
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
+    await addMajor(payload, dispatch);
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
+    showAddAction(!addAction);
+    setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
+  };
+
+  //edit
   const handleSaveInformation = async (id) => {
+    const valid = validate(objectPayload[id]);
+    console.log("valid edit--------", valid);
+    if (valid > 0) {
+      return;
+    }
     await editMajor(objectPayload[id], dispatch);
-    dataDelete ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("ok131", objectPayload[id]);
-    console.log("data edit", dataEdit);
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delete
   const handleDeleteMajor = async () => {
-    try {
-      await deleleMajor(showActionMenu.studentId, dispatch);
-      toast.success("Xoá thành công");
-    } catch (error) {
-      toast.error("Xoá thất bại");
-      console.log(error.response);
-    }
+    await deleleMajor(showActionMenu.studentId, dispatch);
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
-  // dataDelete.deleteAction.mode
-  //   ? toast.success("Xoá thành công")
-  //   : toast.error("Xoá thất bại");
-  // showDeleteAction(!deleteAction);
 
   const handleAddAction = () => {
     showAddAction(!addAction);
@@ -136,15 +209,20 @@ function ListMajored() {
     showDeleteAction(!deleteAction);
   };
 
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
+    setInvalidFields("");
   };
 
   const handleActionClick = (studentId) => {
     setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
-    setIdStudent(studentId);
   };
 
   const handledOnchangeEdit = (e, id, property) => {
@@ -156,14 +234,17 @@ function ListMajored() {
   };
 
   const handlePageChange = (event, value) => {
-    console.log(value);
     setPage(value);
+  };
+
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
   };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
-      <ToastContainer />
-      <HeaderAndInput lable={"Danh sách  văn bằng"} onClick={handleAddAction} />
+      <HeaderAndInput lable={"Danh sách văn bằng"} onClick={handleAddAction} />
       <div className="h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
@@ -185,6 +266,7 @@ function ListMajored() {
                 <tr
                   key={major.DEGREE_ID}
                   className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  onClick={() => showViewEdit(major.DEGREE_ID)}
                 >
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_NAME}</td>
@@ -227,14 +309,14 @@ function ListMajored() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 94)}`}
+            count={`${panigationData.page}`}
             handlePageChange={handlePageChange}
           />
         </div>
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[600px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[450px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Văn bằng</h1>
@@ -244,78 +326,45 @@ function ListMajored() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mã văn bằng</label>
-                  <input
-                    id="DEGREE_CODE"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên văn bằng
-                  </label>
-                  <input
-                    id="DEGREE_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Trạng thái văn bằng
-                  </label>
-                  <select
-                    id="DEGREE_STATUS"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {learningStatusType?.map((item) => (
-                      <option key={item.LEARNING_STATUS_TYPE_ID}>
-                        {item.LEARNING_STATUS_TYPE_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mã văn bằng"}
+                  setValue={setPayload}
+                  keyObject={"DEGREE_CODE"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <InputForm2
+                  text={"Tên văn bằng:"}
+                  setValue={setPayload}
+                  keyObject={"DEGREE_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  w333
+                  invalidFields={invalidFields}
+                />
+                <SelectForm
+                  text={"Trạng thái văn bằng:"}
+                  setValue={setPayload}
+                  keyObject={"DEGREE_STATUS"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={learningStatusType}
+                  dataValue={"LEARNING_STATUS_TYPE_ID"}
+                  dataName={"LEARNING_STATUS_TYPE_NAME"}
+                  w333
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mô tả</label>
-                  <textarea
-                    id="DESCRIPTON"
-                    rows="10"
-                    cols="50"
-                    className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  typeInput="tex"
+                  text={"Mô tả:"}
+                  setValue={setPayload}
+                  keyObject={"DESCRIPTON"}
+                  setInvalidFields={setInvalidFields}
+                  w1
+                  invalidFields={invalidFields}
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -338,7 +387,7 @@ function ListMajored() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[600px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[450px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Văn bằng</h1>
@@ -354,7 +403,7 @@ function ListMajored() {
                     key={major.DEGREE_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mã văn bằng:
@@ -373,7 +422,20 @@ function ListMajored() {
                               "DEGREE_CODE",
                             )
                           }
+                          onFocus={() => setInvalidFields("")}
                         />
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DEGREE_CODE",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DEGREE_CODE",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -393,7 +455,20 @@ function ListMajored() {
                               "DEGREE_NAME",
                             )
                           }
-                        />
+                          onFocus={() => setInvalidFields("")}
+                        />{" "}
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DEGREE_NAME",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DEGREE_NAME",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -413,6 +488,7 @@ function ListMajored() {
                               "DEGREE_STATUS",
                             )
                           }
+                          onFocus={() => setInvalidFields("")}
                         >
                           <option hidden></option>
                           {learningStatusType?.map((item) => (
@@ -420,18 +496,28 @@ function ListMajored() {
                               {item.LEARNING_STATUS_TYPE_NAME}
                             </option>
                           ))}
-                        </select>
+                        </select>{" "}
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DEGREE_STATUS",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DEGREE_STATUS",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       {" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mô tả:
                         </label>
-                        <textarea
-                          rows="10"
-                          cols="50"
+                        <input
                           defaultValue={
                             objectPayload[major.DEGREE_ID].DESCRIPTON
                           }
@@ -445,7 +531,20 @@ function ListMajored() {
                               "DESCRIPTON",
                             )
                           }
-                        />
+                          onFocus={() => setInvalidFields("")}
+                        />{" "}
+                        {invalidFields.length > 0 &&
+                          invalidFields.some(
+                            (item) => item.name === "DESCRIPTON",
+                          ) && (
+                            <small className="italic text-red-500">
+                              {
+                                invalidFields.find(
+                                  (i) => i.name === "DESCRIPTON",
+                                )?.message
+                              }
+                            </small>
+                          )}
                       </div>
                     </div>
 
@@ -465,6 +564,14 @@ function ListMajored() {
                         justify
                         text16
                         onClick={(e) => handleSaveInformation(major.DEGREE_ID)}
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

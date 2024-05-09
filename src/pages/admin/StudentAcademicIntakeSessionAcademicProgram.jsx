@@ -6,6 +6,8 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  SelectForm,
+  TransferList,
 } from "@/components/admin";
 import {
   LearningStatusType,
@@ -19,7 +21,7 @@ import axiosConfig from "@/axiosConfig";
 import { addStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestAdd";
 import { deleleStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestDelete";
 import { editStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequestEdit";
-import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 function StudentAcademicIntakeSessionAcademicProgram() {
   const data = useSelector((state) => state.addAction.data);
@@ -36,7 +38,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     count: "",
     page: "",
   });
-
+  console.log("student", student);
   const [YBAPData, setYBAPData] = useState([]);
   useEffect(() => {
     async function fetchYBAPData() {
@@ -59,6 +61,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     fetchYBAPData();
   }, [render, page]);
 
+  console.log("YBAPData", YBAPData);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -86,12 +89,20 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
+  const [studentTransferList, setStudentTransferList] = useState([]);
   const [payload, setPayload] = useState({
-    STUDENT_ID_NUMBER: "",
     ACADEMIC_INTAKE_SESSION_ID: "",
     ACADEMIC_PROGRAM_ID: "",
     LEARNING_STATUS_TYPE_ID: "",
   });
+
+  const setPayloadAction = () => {
+    setPayload({
+      ACADEMIC_INTAKE_SESSION_ID: "",
+      ACADEMIC_PROGRAM_ID: "",
+      LEARNING_STATUS_TYPE_ID: "",
+    });
+  };
 
   const [objectPayload, setObjectPayload] = useState();
   useEffect(() => {
@@ -110,45 +121,132 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     );
   }, [YBAPData]);
 
-  console.log("objectPayload", objectPayload);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (index !== 0 && item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
+  };
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm chương trình đào tạo thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire(
+          "Thông báo",
+          "Thêm chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa chương trình đào tạo thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire(
+          "Thông báo",
+          "Sửa chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá chương trình đào tạo thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire(
+          "Thông báo",
+          "Xoá chương trình đào tạo thành công",
+          "success",
+        );
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
+
   //add
   const handleAddANew = async () => {
-    await addStudentAcademicIntakeSessionAcademicProgram(payload, dispatch);
-    toast.success(`${data?.message}`);
-    console.log("paylod", payload);
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
+    for (let i = 0; i < studentTransferList.length; i++) {
+      const updatePayload = {
+        ...payload,
+        STUDENT_ID_NUMBER: studentTransferList[i]["STUDENT_ID_NUMBER"],
+      };
+      await addStudentAcademicIntakeSessionAcademicProgram(
+        updatePayload,
+        dispatch,
+      );
+    }
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
+    setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
     setRender(render + 1);
   };
 
   // edit
   const handleSaveInformation = async (id) => {
+    const valid = validate(objectPayload[id]);
+    console.log("valid", valid);
+    console.log("invalidFields", invalidFields);
+
+    if (valid > 0) {
+      return;
+    }
     await editStudentAcademicIntakeSessionAcademicProgram(
       objectPayload[id],
       id,
       dispatch,
     );
-
-    console.log("id123", id);
-    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
-    console.log("ok131", objectPayload[id]);
-    console.log("data edit", dataEdit);
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delete
   const handleDelete = async () => {
-    console.log("showActionMenu.STUDENT_ID_NUMBER", showActionMenu.studentId);
     await deleleStudentAcademicIntakeSessionAcademicProgram(
       showActionMenu.studentId,
       dispatch,
     );
-    console.log("paylooad", dataDelete.data);
-    dataDelete.data == 204
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
 
   const handleAddAction = () => {
@@ -162,6 +260,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
 
   const handleDeleteAction = () => {
     showDeleteAction(!deleteAction);
+  };
+
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
   };
 
   const handleCloseAll = () => {
@@ -186,6 +289,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
@@ -193,11 +301,10 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         lable={"Hồ sơ học tập của sinh viên trong chương trình đào tạo"}
         onClick={handleAddAction}
       />
-      <ToastContainer />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
-            className={`relative block h-40 min-h-[100%] w-full border-x-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
+            className={`relative block h-40 min-h-[100%] w-full border-l-[30px] border-t-[30px] border-white ${window.innerWidth >= 1600 ? "overflow-x-hidden " : "overflow-x-scroll"} `}
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
@@ -215,6 +322,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                 <tr
                   key={YBAP.id}
                   className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  onClick={() => showViewEdit(YBAP.id)}
                 >
                   <td className="w-[300px] px-4 py-2">
                     {student?.map(
@@ -283,14 +391,14 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 94)}`}
+            count={panigationData.page}
             handlePageChange={handlePageChange}
           />
         </div>
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[390px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[870px] w-[1150px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -302,111 +410,50 @@ function StudentAcademicIntakeSessionAcademicProgram() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên sinh viên:
-                  </label>
-                  <select
-                    id="STUDENT_ID_NUMBER"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {student?.map((item) => (
-                      <option
-                        key={item.STUDENT_ID_NUMBER}
-                        value={item.STUDENT_ID_NUMBER}
-                      >
-                        {`${item.LAST_NAME} ${item.MIDDLE_NAME} ${item.FIRST_NAME}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên kỳ tuyển sinh:
-                  </label>
-                  <select
-                    id="ACADEMIC_INTAKE_SESSION_ID"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {academicintakesession?.map((item) => (
-                      <option
-                        key={item.ACADEMIC_INTAKE_SESSION_ID}
-                        value={item.ACADEMIC_INTAKE_SESSION_ID}
-                      >
-                        {item.ACADEMIC_INTAKE_SESSION_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Trạng thái:</label>
-                  <select
-                    id="LEARNING_STATUS_TYPE_ID"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {learningStatusType?.map((item) => (
-                      <option
-                        key={item.LEARNING_STATUS_TYPE_ID}
-                        value={item.LEARNING_STATUS_TYPE_ID}
-                      >
-                        {item.LEARNING_STATUS_TYPE_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <SelectForm
+                  text={"Tên kỳ tuyển sinh:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_INTAKE_SESSION_ID"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={academicintakesession}
+                  dataValue={"ACADEMIC_INTAKE_SESSION_ID"}
+                  dataName={"ACADEMIC_INTAKE_SESSION_NAME"}
+                  w12
+                  invalid
+                  invalidFields={invalidFields}
+                />
+                <SelectForm
+                  text={"Trạng thái:"}
+                  setValue={setPayload}
+                  keyObject={"LEARNING_STATUS_TYPE_ID"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={learningStatusType}
+                  dataValue={"LEARNING_STATUS_TYPE_ID"}
+                  dataName={"LEARNING_STATUS_TYPE_NAME"}
+                  w12
+                  invalidFields={invalidFields}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên chương trình đào tạo
-                  </label>
-                  <select
-                    id="ACADEMIC_PROGRAM_ID"
-                    className="block h-[40px] w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {academicProgram?.map((item) => (
-                      <option
-                        key={item.ACADEMIC_PROGRAM_ID}
-                        value={item.ACADEMIC_PROGRAM_ID}
-                      >
-                        {item.ACADEMIC_PROGRAM_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
+              <div className="flex h-[100px] justify-center gap-[30px]">
+                <SelectForm
+                  text={"Tên chương trình đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_PROGRAM_ID"}
+                  setInvalidFields={setInvalidFields}
+                  dataAPI={academicProgram}
+                  dataValue={"ACADEMIC_PROGRAM_ID"}
+                  dataName={"ACADEMIC_PROGRAM_NAME"}
+                  w1
+                  invalidFields={invalidFields}
+                />
+              </div>
+              <div>
+                <TransferList
+                  onRightListChange={(rightList) =>
+                    setStudentTransferList(rightList)
+                  }
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -429,7 +476,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[390px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -447,7 +494,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     key={academicprogram.id}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Tên sinh viên:
@@ -541,8 +588,8 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                         </select>
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
-                      <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
+                      <div className="flex h-[100px] gap-[30px]">
                         <div className="flex flex-col gap-[5px]">
                           <label className="text-[16px] font-normal">
                             Tên chương trình đào tạo:
@@ -594,6 +641,14 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                         onClick={(e) =>
                           handleSaveInformation(academicprogram.id)
                         }
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

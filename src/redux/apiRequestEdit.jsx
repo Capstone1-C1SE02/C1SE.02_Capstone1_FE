@@ -5,20 +5,18 @@ import {
 } from "./editSlice";
 import axiosConfig from "@/axiosConfig";
 
-export const editAcademicYear = async (year, dispatch) => {
+export const editAcademicYear = async (year, id, dispatch) => {
   dispatch(editActionStart());
   try {
-    const res = await axiosConfig.put(
-      `/academicintakesession/${year.ACADEMIC_INTAKE_SESSION_ID}`,
-      year,
-    );
+    const res = await axiosConfig.put(`/academicintakesession/${id}`, year);
     console.log(
       "year.ACADEMIC_INTAKE_SESSION_ID",
       year.ACADEMIC_INTAKE_SESSION_ID,
     );
     dispatch(editActionSuccess(res.data));
-  } catch {
-    dispatch(editActionFailed());
+  } catch (error) {
+    console.log("error", error.response.status);
+    dispatch(editActionFailed(error.response.status));
   }
 };
 

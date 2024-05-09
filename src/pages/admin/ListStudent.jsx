@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { LearningStatusType, Academicleveltype } from "@/components/dropList";
 import "react-toastify/dist/ReactToastify.css";
 const { BsThreeDotsVertical, FaTimes } = icon;
+import Swal from "sweetalert2";
 
 function ListStudent() {
   const dispatch = useDispatch();
@@ -63,7 +64,7 @@ function ListStudent() {
   }, []);
 
   const [showActionMenu, setShowActionMenu] = useState({
-    STUDENT_ID_NUMBER: null,
+    studentId: null,
     isOpen: false,
   });
 
@@ -88,6 +89,26 @@ function ListStudent() {
     LEARNING_STATUS_TYPE_ID: "",
     ACADEMIC_LEVEL_TYPE_ID: "",
   });
+
+  const setPayloadAction = () => {
+    setPayload({
+      STUDENT_ID_NUMBER: "",
+      LAST_NAME: "",
+      FIRST_NAME: "",
+      MIDDLE_NAME: "",
+      GENDER: "",
+      BIRTH_DATE: "",
+      BIRTH_PLACE: "",
+      NATION: "",
+      NATIONALITY: "",
+      PEOPLE_ID_NUMBER: "",
+      PHONE_NUMBER: "",
+      EMAIL: "",
+      COMMENTS: "",
+      LEARNING_STATUS_TYPE_ID: "",
+      ACADEMIC_LEVEL_TYPE_ID: "",
+    });
+  };
 
   const [objectPayload, setObjectPayload] = useState([]);
   useEffect(() => {
@@ -126,14 +147,19 @@ function ListStudent() {
   const handleDeleteAction = () => {
     showDeleteAction(!deleteAction);
   };
+
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
+  };
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
   };
 
-  const handleActionClick = (STUDENT_ID_NUMBER) => {
-    setShowActionMenu({ STUDENT_ID_NUMBER, isOpen: !showActionMenu.isOpen });
+  const handleActionClick = (studentId) => {
+    setShowActionMenu({ studentId, isOpen: !showActionMenu.isOpen });
     setIdStudent(STUDENT_ID_NUMBER);
   };
 
@@ -151,38 +177,111 @@ function ListStudent() {
     renderDelete: 0,
   });
 
-  //add
-  const handleAddANew = async () => {
-    await addStudent(payload, dispatch);
-    console.log("dât mes", data.errCode);
-    console.log("dât mes", data);
-    showAddAction(!addAction);
-    setRender(render + 1);
-    setRenderAction(renderAction.renderAdd + 1);
-    console.log(renderAction);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (index !== 0 && item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
   };
 
-  // edit
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm sinh viên thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire("Thông báo", "Thêm sinh viên thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa sinh viên thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire("Thông báo", "Sửa sinh viên thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá sinh viên thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire("Thông báo", "Xoá sinh viên thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
+
+  //add
+  const handleAddANew = async () => {
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
+    await addStudent(payload, dispatch);
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
+    showAddAction(!addAction);
+    setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
+  };
+
+  //edit
   const handleSaveInformation = async (id) => {
+    const valid = validate(objectPayload[id]);
+    console.log("valid edit--------", valid);
+    if (valid > 0) {
+      return;
+    }
     await editStudent(objectPayload[id], dispatch);
-    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delele
   const handleDelete = async () => {
-    await deleleStudent(showActionMenu.STUDENT_ID_NUMBER, dispatch);
-
-    dataDelete.data == 204
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
+    await deleleStudent(showActionMenu.studentId, dispatch);
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
 
   const handlePageChange = (event, value) => {
     setPage(value);
+  };
+
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
   };
 
   return (
@@ -219,6 +318,7 @@ function ListStudent() {
                 <tr
                   key={student.STUDENT_ID_NUMBER}
                   className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  onClick={() => showViewEdit(student.STUDENT_ID_NUMBER)}
                 >
                   <td className="w-[350px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.LAST_NAME + " " + student.MIDDLE_NAME}
@@ -300,14 +400,14 @@ function ListStudent() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 94)}`}
+            count={+panigationData.page}
             handlePageChange={handlePageChange}
           />
         </div>
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -317,7 +417,7 @@ function ListStudent() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Họ:</label>
                   <input
@@ -331,6 +431,15 @@ function ListStudent() {
                       }))
                     }
                   />
+                  {invalidFields.length > 0 &&
+                    invalidFields.some((item) => item.name === "LAST_NAME") && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "LAST_NAME")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Tên lót:</label>
@@ -344,7 +453,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Tên:</label>
@@ -358,10 +478,21 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">MSSV:</label>
                   <input
@@ -374,7 +505,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Ngày sinh:</label>
@@ -388,7 +530,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Nơi sinh:</label>
@@ -402,13 +555,23 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Giới tính:</label>
-
                   <select
                     type="checkbox"
                     id="GENDER"
@@ -423,7 +586,18 @@ function ListStudent() {
                     <option hidden></option>
                     <option value={true}>Nam</option>
                     <option value={false}>Nữ</option>
-                  </select>
+                  </select>{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Quốc tịch:</label>
@@ -437,7 +611,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Dân tộc:</label>
@@ -451,10 +636,21 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">CCCD:</label>
                   <input
@@ -467,7 +663,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
@@ -483,7 +690,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Email:</label>
@@ -497,10 +715,21 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 {" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
@@ -527,7 +756,18 @@ function ListStudent() {
                           {item.LEARNING_STATUS_TYPE_NAME}
                         </option>
                       ))}
-                  </select>
+                  </select>{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">
@@ -554,10 +794,21 @@ function ListStudent() {
                           {item.ACADEMIC_LEVEL_TYPE_NAME}
                         </option>
                       ))}
-                  </select>
+                  </select>{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
+              <div className="flex h-[100px] gap-[30px]">
                 {" "}
                 <div className="flex flex-col gap-[5px]">
                   <label className="text-[16px] font-normal">Mô tả:</label>
@@ -571,7 +822,18 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
-                  />
+                  />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "DEGREE_CODE",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
             </div>
@@ -596,7 +858,7 @@ function ListStudent() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -607,13 +869,12 @@ function ListStudent() {
 
             {students?.map(
               (student, index) =>
-                showActionMenu.STUDENT_ID_NUMBER ===
-                  student.STUDENT_ID_NUMBER && (
+                showActionMenu.studentId === student.STUDENT_ID_NUMBER && (
                   <div
                     key={student.STUDENT_ID_NUMBER}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">Họ:</label>
                         <input
@@ -671,7 +932,7 @@ function ListStudent() {
                         />
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           MSSV :
@@ -734,7 +995,7 @@ function ListStudent() {
                         />
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Giới tính:
@@ -800,7 +1061,7 @@ function ListStudent() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           CCCD :
@@ -864,7 +1125,7 @@ function ListStudent() {
                         />
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Trạng thái học tập:
@@ -930,7 +1191,7 @@ function ListStudent() {
                         </select>
                       </div>
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mô tả:
@@ -971,6 +1232,14 @@ function ListStudent() {
                         onClick={(e) =>
                           handleSaveInformation(student.STUDENT_ID_NUMBER)
                         }
+                      />{" "}
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

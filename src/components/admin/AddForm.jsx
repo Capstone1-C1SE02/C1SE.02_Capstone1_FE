@@ -15,7 +15,7 @@ const AddForm = ({ handleAddAction, handleAddNew, setPayload }) => {
         </div>
 
         <div className="border-y-[1px] border-border-body-form py-[20px]">
-          <div className="mb-[10px] flex gap-[30px]">
+          <div className="flex h-[100px] gap-[30px]">
             <div className="flex flex-col gap-[5px]">
               <label className="text-[16px] font-normal">Năm học:</label>
               <input

@@ -11,8 +11,8 @@ export const deleteAcademicYear = async (year, dispatch) => {
     const res = await axiosConfig.delete(`/academicintakesession/${year}`);
     dispatch(deleteActionSuccess(res.data));
     console.log("13 res.data", res.data);
-  } catch {
-    dispatch(deleteActionFailed());
+  } catch (error) {
+    dispatch(deleteActionFailed(error));
   }
 };
 

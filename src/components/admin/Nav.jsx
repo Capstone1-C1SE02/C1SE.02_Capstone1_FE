@@ -24,17 +24,6 @@ function Nav({ onClick }) {
         <div>
           <ul>
             <li
-              onClick={(e) => handleSetIsactive(1)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
-            >
-              <NavLink
-                to={"/list-student"}
-                className={" block w-full px-[20px] py-[5px]"}
-              >
-                Danh sách sinh viên{" "}
-              </NavLink>
-            </li>
-            <li
               onClick={(e) => handleSetIsactive(5)}
               className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
@@ -42,7 +31,18 @@ function Nav({ onClick }) {
                 to={"/list-majored"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Danh sách văn bằng{" "}
+                Quản lý Ngành Tạo
+              </NavLink>
+            </li>
+            <li
+              onClick={(e) => handleSetIsactive(3)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/list-academic-program"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Quản lý Chương trình Đào tạo
               </NavLink>
             </li>
             <li
@@ -57,17 +57,6 @@ function Nav({ onClick }) {
               </NavLink>
             </li>
             <li
-              onClick={(e) => handleSetIsactive(3)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
-            >
-              <NavLink
-                to={"/list-academic-program"}
-                className={" block w-full px-[20px] py-[5px]"}
-              >
-                Danh sách chương trình đào tạo{" "}
-              </NavLink>
-            </li>
-            <li
               onClick={(e) => handleSetIsactive(2)}
               className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
@@ -75,9 +64,29 @@ function Nav({ onClick }) {
                 to={"/list-year"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Danh sách kỳ tuyển sinh{" "}
+                Năm Tuyển Sinh
               </NavLink>
             </li>
+            <li
+              // onClick={(e) => handleSetIsactive(0)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink to={"/"} className={" block w-full px-[20px] py-[5px]"}>
+                Chương trình đào tạo theo năm
+              </NavLink>
+            </li>
+            <li
+              onClick={(e) => handleSetIsactive(1)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+            >
+              <NavLink
+                to={"/list-student"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
+                Quản lý Hồ sơ Sinh viên
+              </NavLink>
+            </li>
+
             <li
               onClick={(e) => handleSetIsactive(4)}
               className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
@@ -87,14 +96,6 @@ function Nav({ onClick }) {
                 className={" block w-full px-[20px] py-[5px]"}
               >
                 Hồ sơ học tập của sinh viên
-              </NavLink>
-            </li>
-            <li
-              // onClick={(e) => handleSetIsactive(0)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
-            >
-              <NavLink to={"/"} className={" block w-full px-[20px] py-[5px]"}>
-                Chương trình đào & tạo kỳ tuyển sinh
               </NavLink>
             </li>
 

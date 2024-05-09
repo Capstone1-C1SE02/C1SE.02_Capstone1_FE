@@ -6,6 +6,8 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  InputForm2,
+  SelectForm,
 } from "@/components/admin";
 import { LearningStatusType, AcademicProgram } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
@@ -15,17 +17,19 @@ import { addCurriculum } from "@/redux/apiRequestAdd";
 import { deleleCurriculum } from "@/redux/apiRequestDelete";
 import { editCurriculum } from "@/redux/apiRequestEdit";
 import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 function Curriculum() {
-  const data = useSelector((state) => state.addAction.data);
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [learningStatusType, setLearningStatusType] = useState();
   const [degreebooks, setDegreebooks] = useState([]);
   const [page, setPage] = useState(1);
   const [academicProgram, setAcademicProgram] = useState();
+  const statuses = [
+    { id: 0, value: true, status: "ĐÃ HOÀN THÀNH" },
+    { id: 1, value: false, status: "ĐANG" },
+  ];
   const [panigationData, setPanigationData] = useState({
     count: "",
     page: "",
@@ -60,7 +64,6 @@ function Curriculum() {
     fetchData();
   }, []);
 
-  console.log("degreebooks", degreebooks);
   const [showActionMenu, setShowActionMenu] = useState({
     studentId: null,
     isOpen: false,
@@ -76,6 +79,15 @@ function Curriculum() {
     CURRICULUM_STATUS_NAME: "",
     ACADEMIC_PROGRAM_ID: "",
   });
+  const setPayloadAction = () => {
+    setPayload({
+      CURRICULUM_ID: "",
+      CURRICULUM_NAME: "",
+      DESCRIPTION: "",
+      CURRICULUM_STATUS_NAME: "",
+      ACADEMIC_PROGRAM_ID: "",
+    });
+  };
 
   const [objectPayload, setObjectPayload] = useState();
 
@@ -93,35 +105,101 @@ function Curriculum() {
       }, {}),
     );
   }, [degreebooks]);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const validate = (payload) => {
+    let invalids = 0;
+    let fields = Object.entries(payload);
+    fields.forEach((item, index) => {
+      if (index !== 0 && item[1] === "") {
+        setInvalidFields((prev) => [
+          ...prev,
+          {
+            name: item[0],
+            message: "Bạn không được bỏ trống trường này.",
+          },
+        ]);
+        invalids++;
+      }
+    });
+    return invalids;
+  };
 
-  console.log("objectPayload objectPayload", objectPayload);
+  const { errorAdd } = useSelector((state) => state.addAction);
+  const { errorEdit } = useSelector((state) => state.editAction);
+  const { errorDelete } = useSelector((state) => state.deleteAction);
+  const [showAlert, setShowAlert] = useState(false);
+  const [count, setCount] = useState({
+    countAdd: 0,
+    countDelete: 0,
+    countEdit: 0,
+  });
+  useEffect(() => {
+    console.log("add action", errorAdd);
+    if (showAlert) {
+      if (errorAdd) {
+        Swal.fire("Thông báo", "Thêm khoá đào tạo thất bại", "error");
+      } else if (!errorAdd) {
+        Swal.fire("Thông báo", "Thêm khoá đào tạo thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countAdd]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorEdit) {
+        Swal.fire("Thông báo", "Sửa khoá đào tạo thất bại", "error");
+      } else if (!errorEdit) {
+        Swal.fire("Thông báo", "Sửa khoá đào tạo thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countEdit]);
+  useEffect(() => {
+    if (showAlert) {
+      if (errorDelete) {
+        Swal.fire("Thông báo", "Xoá khoá đào tạo thất bại", "error");
+      } else if (!errorDelete) {
+        Swal.fire("Thông báo", "Xoá khoá đào tạo thành công", "success");
+      }
+      setShowAlert(false);
+    }
+  }, [count.countDelete]);
   //add
   const handleAddANew = async () => {
+    const valid = validate(payload);
+    if (valid > 0) {
+      return;
+    }
     await addCurriculum(payload, dispatch);
-    toast.success(`${data?.message}`);
-    console.log("paylod", payload);
+    setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
     setRender(render + 1);
+    setPayloadAction();
+    setShowAlert(true);
   };
 
   // edit
   const handleSaveInformation = async (id) => {
+    const valid = validate(objectPayload[id]);
+    console.log("valid edit--------", valid);
+    if (valid > 0) {
+      return;
+    }
     await editCurriculum(objectPayload[id], id, dispatch);
-    dataEdit ? toast.success("Sửa thành công") : toast.error("Sửa thất bại");
+    setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
+    setShowAlert(true);
   };
 
   //delele
   const handleDelete = async () => {
-    console.log("showActionMenu.STUDENT_ID_NUMBER", showActionMenu.studentId);
     await deleleCurriculum(showActionMenu.studentId, dispatch);
-    console.log("paylooad", dataDelete.data);
-    dataDelete.data == 204
-      ? toast.success("Xoá thành công")
-      : toast.error("Xoá thất bại");
     showDeleteAction(!deleteAction);
     setRender(render + 1);
+    setShowAlert(true);
+    setCount((pre) => ({ ...pre, countDelete: pre.countDelete + 1 }));
+    showEditAction(false);
   };
   const handleAddAction = () => {
     showAddAction(!addAction);
@@ -134,6 +212,11 @@ function Curriculum() {
 
   const handleDeleteAction = () => {
     showDeleteAction(!deleteAction);
+  };
+
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
   };
 
   const handleCloseAll = () => {
@@ -159,6 +242,11 @@ function Curriculum() {
     setPage(value);
   };
 
+  const showViewEdit = (id) => {
+    setShowActionMenu({ studentId: id });
+    handleEditAction();
+  };
+
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
@@ -172,38 +260,39 @@ function Curriculum() {
           <table
             className={` block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
-            <thead className=" flex w-full flex-col justify-center ">
-              <tr className="flex w-full justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" w-[200px] px-4 py-2">Mã khoá đào tạo</th>
-                <th className=" w-[200px] px-4 py-2">Tên khoá đào tạo</th>
-                <th className=" w-[200px] px-4 py-2">Trạng thái đào tạo</th>
-                <th className=" w-[350px] px-4 py-2">
+            <thead className="flex w-full flex-col ">
+              <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
+                <th className=" min-w-[200px] px-4 py-2">Mã khoá đào tạo</th>
+                <th className=" min-w-[200px] px-4 py-2">Tên khoá đào tạo</th>
+                <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
+                <th className=" min-w-[350px] px-4 py-2">
                   Tên chương trình đào tạo
                 </th>
-                <th className=" w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
 
-                <th className=" w-[20px] px-4 py-2"></th>
+                <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className=" flex w-full flex-col justify-center">
-              {degreebooks?.map((degreebook, index) => (
+            <tbody className=" flex w-full flex-col justify-between">
+              {degreebooks?.map((degreebook) => (
                 <tr
                   key={degreebook.CURRICULUM_ID}
-                  className="flex justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex max-h-[38px]  items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  onClick={() => showViewEdit(degreebook.CURRICULUM_ID)}
                 >
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {degreebook.CURRICULUM_ID}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {degreebook.CURRICULUM_NAME}
                   </td>
-                  <td className="w-[350px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {degreebook.CURRICULUM_STATUS_NAME ? "Đang" : "Chưa"}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[350px] px-4 py-2">
                     {degreebook.ACADEMIC_PROGRAM_ID}
                   </td>
-                  <td className="w-[200px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {degreebook.DESCRIPTION}
                   </td>
 
@@ -253,11 +342,11 @@ function Curriculum() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[380px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách sách khoá đào tạo
+                Danh sách khoá đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -265,101 +354,54 @@ function Curriculum() {
             </div>
 
             <div className="border-y-[1px] border-border-body-form py-[20px]">
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Mã khoá đào tạo:
-                  </label>
-                  <input
-                    type="text"
-                    id="CURRICULUM_ID"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên khoá đào tạo:
-                  </label>
-                  <input
-                    type="text"
-                    id="CURRICULUM_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Trạng thái đào tạo
-                  </label>
-                  <select
-                    type="text"
-                    id="CURRICULUM_STATUS_NAME"
-                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    <option value={true}>Đang</option>
-                    <option value={false}>Chưa</option>
-                  </select>
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mã khoá đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"CURRICULUM_ID"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <InputForm2
+                  text={"Tên khoá đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"CURRICULUM_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                />
+                <SelectForm
+                  text={"Trạng thái đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"CURRICULUM_STATUS_NAME"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                  dataNoAPI={statuses}
+                />
               </div>
-              <div className="mb-[10px] flex gap-[30px]">
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Tên chương trình đào tạo:
-                  </label>
-                  <select
-                    type="text"
-                    id="ACADEMIC_PROGRAM_ID"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    {academicProgram?.map((item) => (
-                      <option
-                        value={item.ACADEMIC_PROGRAM_ID}
-                        key={item.ACADEMIC_PROGRAM_ID}
-                      >
-                        {item.ACADEMIC_PROGRAM_NAME}
-                      </option>
-                    ))}
-                  </select>
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">Mô tả:</label>
-                  <input
-                    type="text"
-                    id="DESCRIPTION"
-                    className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  />
-                </div>{" "}
+              <div className="flex h-[100px] gap-[30px]">
+                <SelectForm
+                  text={"Tên chương trình đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_PROGRAM_ID"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w22
+                  dataAPI={academicProgram}
+                  dataValue={"ACADEMIC_PROGRAM_ID"}
+                  dataName={"ACADEMIC_PROGRAM_NAME"}
+                />
+
+                <InputForm2
+                  text={"Mô tả:"}
+                  setValue={setPayload}
+                  keyObject={"DESCRIPTION"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w22
+                />
               </div>
             </div>
             <div className="mt-[20px] flex justify-end gap-[20px]">
@@ -383,7 +425,7 @@ function Curriculum() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[527px] w-[870px] bg-[white]">
+        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Danh sách bằng</h1>
@@ -398,7 +440,7 @@ function Curriculum() {
                     key={student.CURRICULUM_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Mã khoá đào tạo:
@@ -466,7 +508,7 @@ function Curriculum() {
                         </select>
                       </div>{" "}
                     </div>
-                    <div className="mb-[10px] flex gap-[30px]">
+                    <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Tên chương trình đào tạo:
@@ -538,6 +580,14 @@ function Curriculum() {
                         onClick={(e) =>
                           handleSaveInformation(student.CURRICULUM_ID)
                         }
+                      />
+                      <Button
+                        text={"Xoá"}
+                        bgColor={"bg-bg-button-add"}
+                        textColor={"text-[#16A34A] "}
+                        justify
+                        text16
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

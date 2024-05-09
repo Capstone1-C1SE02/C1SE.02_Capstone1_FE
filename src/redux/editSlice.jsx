@@ -3,9 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const editSlice = createSlice({
   name: "editAction",
   initialState: {
-    data: null,
+    dataEdit: null,
     isFetching: false,
-    error: false,
+    errorEdit: false,
     mode: false,
   },
   reducers: {
@@ -14,13 +14,14 @@ const editSlice = createSlice({
     },
     editActionSuccess: (state, action) => {
       state.isFetching = false;
-      state.data = action.payload;
+      state.dataEdit = action.payload;
       state.mode = true;
-      state.error = false;
+      state.errorEdit = false;
     },
-    editActionFailed: (state) => {
+    editActionFailed: (state, action) => {
       state.isFetching = false;
-      state.error = true;
+      state.errorEdit = true;
+      state.dataEdit = action.payload;
     },
   },
 });
