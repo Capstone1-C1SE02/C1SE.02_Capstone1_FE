@@ -17,6 +17,7 @@ import FormLayoutUser from "@/layouts/user/form.layout";
 import RootLayoutUser from "@/layouts/user/root.layout";
 
 const publicUserRoutes = [
+  { path: "/login", component: Login, layout: adminLoginLayout },
   { path: "/", component: Home, layout: FormLayoutUser },
   {
     path: "/search-by-text",
@@ -24,12 +25,44 @@ const publicUserRoutes = [
     layout: FormLayoutUser,
   },
   { path: "/result", component: Result, layout: RootLayoutUser },
+  {
+    path: "/academic-sesstion-program",
+    component: AcademicIntakeSessionAcademicProgramCurriculum,
+    layout: adminLayout,
+  },
+  { path: "/list-student", component: ListStudent, layout: adminLayout },
+  { path: "/list-year", component: ListYear, layout: adminLayout },
+  {
+    path: "/list-academic-program",
+    component: ListAcademicProgram,
+    layout: adminLayout,
+  },
+  {
+    path: "/list-academic-program-year",
+    component: StudentAcademicIntakeSessionAcademicProgram,
+    layout: adminLayout,
+  },
+  {
+    path: "/list-majored",
+    component: ListMajored,
+    layout: adminLayout,
+  },
+  {
+    path: "/degree-book",
+    component: DiplopmaManagementProfile,
+    layout: adminLayout,
+  },
+  {
+    path: "/degree-list",
+    component: DegreeList,
+    layout: adminLayout,
+  },
 ];
 
 const publicAdminRoutes = [
   { path: "/login", component: Login, layout: adminLoginLayout },
   {
-    path: "/",
+    path: "/list-academic-program",
     component: AcademicIntakeSessionAcademicProgramCurriculum,
     layout: adminLayout,
   },

@@ -41,12 +41,10 @@ export default function TransferListForProYear({ onRightListChange }) {
   const [checked, setChecked] = React.useState([]);
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
-  console.log("rightChecked", rightChecked);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
-    console.log("sprit checked", checked);
 
     if (currentIndex === -1) {
       newChecked.push(value);
@@ -116,9 +114,6 @@ export default function TransferListForProYear({ onRightListChange }) {
         role="list"
       >
         {items?.map((value, index) => {
-          {
-            // console.log("itemsitemsitemsitemsitems", value.STUDENT_ID_NUMBER);
-          }
           const labelId = `transfer-list-all-item-${value}-label`;
 
           return (
@@ -157,7 +152,7 @@ export default function TransferListForProYear({ onRightListChange }) {
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Grid className="w-[500px]" item>
-        {customList("Danh sách sinh viên", left)}
+        {customList("Danh sách chương trình đào tạo", left)}
       </Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
@@ -183,7 +178,7 @@ export default function TransferListForProYear({ onRightListChange }) {
           </Button>
         </Grid>
       </Grid>
-      <Grid item>{customList("Sinh viên đã chọn", right)}</Grid>
+      <Grid item>{customList("Chương trình đào tạo đã chọn", right)}</Grid>
     </Grid>
   );
 }

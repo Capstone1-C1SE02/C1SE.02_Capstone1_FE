@@ -5,6 +5,7 @@ import {
   DeleteForm,
   FooterPage,
   InputForm2,
+  ImportFile,
 } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
@@ -52,6 +53,7 @@ const ListYear = () => {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
+  const [importFile, setImportFile] = useState(false);
   const [payload, setPayload] = useState({
     ACADEMIC_INTAKE_SESSION_NAME: "",
     START_DATE: "",
@@ -171,6 +173,9 @@ const ListYear = () => {
     setCountEdit(countEdit + 1);
   };
 
+  //import
+  const handleImport = async () => {};
+
   const handleAddAction = () => {
     showAddAction(!addAction);
   };
@@ -183,10 +188,15 @@ const ListYear = () => {
     showDeleteAction(!deleteAction);
   };
 
+  const handleImportFile = () => {
+    setImportFile(!importFile);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
+    setImportFile(false);
   };
 
   const handleActionClick = (id) => {
@@ -209,9 +219,14 @@ const ListYear = () => {
     setShowActionMenu({ studentId: id });
     handleEditAction();
   };
+
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
-      <HeaderAndInput lable={"Năm học"} onClick={handleAddAction} />
+      <HeaderAndInput
+        lable={"Năm học"}
+        onClick={handleAddAction}
+        onClickImportFile={handleImportFile}
+      />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
@@ -464,7 +479,15 @@ const ListYear = () => {
         />
       )}
 
-      {(addAction || editAction || deleteAction) && (
+      {importFile && (
+        <ImportFile
+          text={"Năm tuyển sinh"}
+          handleImportAction={handleImportFile}
+          handleImport={handleImport}
+        />
+      )}
+
+      {(addAction || editAction || deleteAction || importFile) && (
         <div>
           <Label onClick={handleCloseAll} />
         </div>

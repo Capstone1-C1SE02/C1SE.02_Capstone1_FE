@@ -71,7 +71,10 @@ function Nav({ onClick }) {
               // onClick={(e) => handleSetIsactive(0)}
               className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
             >
-              <NavLink to={"/"} className={" block w-full px-[20px] py-[5px]"}>
+              <NavLink
+                to={"/list-academic-program"}
+                className={" block w-full px-[20px] py-[5px]"}
+              >
                 Chương trình đào tạo theo năm
               </NavLink>
             </li>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { InputForm, Button } from "@/components/admin";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "@/redux/apiRequests";
 import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
@@ -83,6 +83,7 @@ const Login = () => {
     </div>
   ) : (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-secondary">
+      <Link to={"/"}>Tra cứu thông tin</Link>
       <ToastContainer />
       <div className="h-[396px] w-[638px] rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
         <div className="h-[66px] w-[576px]">

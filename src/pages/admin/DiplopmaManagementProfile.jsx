@@ -24,7 +24,9 @@ import getAdminId from "@/ultils/getAdminId";
 import Swal from "sweetalert2";
 
 function DiplopmaManagementProfile() {
-  const adminId = getAdminId();
+  const [adminId, setadminId] = useState();
+
+  console.log("admin id admin", adminId);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [degreebooks, setDegreebooks] = useState([]);
@@ -54,6 +56,8 @@ function DiplopmaManagementProfile() {
           count: response.data.count,
           page: response.data.total_pages,
         });
+        const idAdmin = await getAdminId();
+        setadminId(idAdmin);
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách văn bằng:", error);
       }
@@ -86,23 +90,27 @@ function DiplopmaManagementProfile() {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
-  const [payload, setPayload] = useState({
-    LAST_NAME: "",
-    FIRST_NAME: "",
-    MIDDLE_NAME: "",
-    STUDENT_ID_NUMBER: "",
-    GRADUATION_YEAR: "",
-    MODE_OF_STUDY: "",
-    ACADEMIC_PROGRAM_ID: "",
-    CLASSIFIED_BY_ACADEMIC_RECORDS: "",
-    NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "",
-    CERTIFICATE_NUMBER: "",
-    DATE_OF_DECISION_ANNOUNCEMENT: "",
-    DATE_UPDATED: "",
-    APPORVEDY: "",
-    COMMENT: "",
-    user: adminId,
-  });
+  const [payload, setPayload] = useState();
+
+  useEffect(() => {
+    setPayload({
+      LAST_NAME: "",
+      FIRST_NAME: "",
+      MIDDLE_NAME: "",
+      STUDENT_ID_NUMBER: "",
+      GRADUATION_YEAR: "",
+      MODE_OF_STUDY: "",
+      ACADEMIC_PROGRAM_ID: "",
+      CLASSIFIED_BY_ACADEMIC_RECORDS: "",
+      NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "",
+      CERTIFICATE_NUMBER: "",
+      DATE_OF_DECISION_ANNOUNCEMENT: "",
+      DATE_UPDATED: "",
+      APPORVEDY: "",
+      COMMENT: "",
+      user: adminId,
+    });
+  }, [adminId]);
 
   const setPayloadAction = () => {
     setPayload({
@@ -215,6 +223,7 @@ function DiplopmaManagementProfile() {
   }, [count.countDelete]);
   //add
   const handleAddANew = async () => {
+    console.log("add payload", payload);
     const valid = validate(payload);
     if (valid > 0) {
       return;

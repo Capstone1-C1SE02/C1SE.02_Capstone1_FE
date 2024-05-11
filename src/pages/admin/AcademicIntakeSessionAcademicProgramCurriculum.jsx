@@ -127,7 +127,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
     let invalids = 0;
     let fields = Object.entries(payload);
     fields.forEach((item, index) => {
-      if (index !== 0 && item[1] === "") {
+      if (item[1] === "") {
         setInvalidFields((prev) => [
           ...prev,
           {
@@ -414,7 +414,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                   invalidFields={invalidFields}
                 />
                 <SelectForm
-                  text={" Tên khoá đào tạo:"}
+                  text={"Tên khoá đào tạo:"}
                   setValue={setPayload}
                   keyObject={"CURRICULUM_ID"}
                   setInvalidFields={setInvalidFields}
