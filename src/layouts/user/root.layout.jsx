@@ -1,13 +1,11 @@
 import Header from "@/components/user/Header";
-import { Link } from "react-router-dom";
 
 function RootLayoutUser({ children }) {
   return (
-    <div className="flex min-h-[100vh] justify-center bg-[--primaryBackgroundColor] p-[30px]">
-      <div className="flex w-[1170px] flex-col gap-[30px]">
-        <Link to="/login">Đăng nhập với Admin</Link>
+    <div className="flex min-h-[100vh] justify-center bg-[--primaryBackgroundColor] p-8">
+      <div className="flex w-full flex-col gap-8 md:w-[768px] lg:w-[1024px] xl:w-[1280px]">
         <Header />
-        <main className="flex min-h-min flex-col gap-[20px] rounded-[20px] bg-white p-[30px]">
+        <main className="flex min-h-min flex-col gap-5 rounded-3xl bg-white p-8">
           {children}
         </main>
       </div>

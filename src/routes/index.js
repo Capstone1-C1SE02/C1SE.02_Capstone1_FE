@@ -17,7 +17,6 @@ import FormLayoutUser from "@/layouts/user/form.layout";
 import RootLayoutUser from "@/layouts/user/root.layout";
 
 const publicUserRoutes = [
-  { path: "/login", component: Login, layout: adminLoginLayout },
   { path: "/", component: Home, layout: FormLayoutUser },
   {
     path: "/search-by-text",
@@ -25,6 +24,9 @@ const publicUserRoutes = [
     layout: FormLayoutUser,
   },
   { path: "/result", component: Result, layout: RootLayoutUser },
+
+  // Admin
+  { path: "/login", component: Login, layout: adminLoginLayout },
   {
     path: "/academic-sesstion-program",
     component: AcademicIntakeSessionAcademicProgramCurriculum,

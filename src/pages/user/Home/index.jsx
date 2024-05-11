@@ -53,8 +53,11 @@ function Home() {
         className="flex flex-col items-end gap-[20px]"
         onSubmit={handleSubmit}
       >
-        <div className="flex w-full items-center gap-[30px]">
-          <label htmlFor="ChonAnh" className="w-[200px] text-right font-[500]">
+        <div className="flex w-full flex-col gap-2 md:flex-row md:items-center md:gap-8">
+          <label
+            htmlFor="ChonAnh"
+            className="font-[500] md:text-right lg:w-[150px] xl:w-[200px]"
+          >
             Chọn ảnh
           </label>
           <input
@@ -72,7 +75,7 @@ function Home() {
             {anh}
           </label>
         </div>
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 md:flex-row md:gap-0">
           <ErrorMessage message={message} />
           <Button
             className="ml-auto cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 text-[18px] hover:bg-primary-0.9"

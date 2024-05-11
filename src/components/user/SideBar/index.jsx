@@ -11,7 +11,7 @@ function SideBar() {
   };
 
   return (
-    <div className="flex h-[100%] w-[325px] flex-shrink-0 flex-col gap-[15px] py-[10px]">
+    <div className="flex flex-shrink-0 flex-col gap-2 md:gap-4 md:py-2 lg:w-[250px] xl:w-[325px]">
       <NavLink to={"/"} className={getClassName}>
         Tìm kiếm bằng hình ảnh
       </NavLink>
