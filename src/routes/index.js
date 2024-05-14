@@ -62,7 +62,7 @@ const publicUserRoutes = [
 const publicAdminRoutes = [
   { path: "/login", component: Login, layout: adminLoginLayout },
   {
-    path: "/list-academic-program",
+    path: "/academic-sesstion-program",
     component: AcademicIntakeSessionAcademicProgramCurriculum,
     layout: adminLayout,
   },

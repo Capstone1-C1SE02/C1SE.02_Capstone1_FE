@@ -5,6 +5,9 @@ import { login } from "@/redux/apiRequests";
 import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
 import { ToastContainer, toast } from "react-toastify";
+import icon from "@/ultils/icon";
+
+const { CiLogin } = icon;
 
 const Login = () => {
   const token = useSelector((state) => state.auth);
@@ -83,15 +86,18 @@ const Login = () => {
     </div>
   ) : (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-secondary">
-      <Link to={"/"}>Tra cứu thông tin</Link>
-      <ToastContainer />
       <div className="h-[396px] w-[638px] rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
-        <div className="h-[66px] w-[576px]">
+        <div className="relative flex h-[66px] w-[576px] items-center">
           <img
             className="m-auto block h-[50px] w-[170px] text-center"
             src="https://reviewedu.net/wp-content/uploads/2021/09/dai-hoc-duy-tan.png"
             alt="logo"
           />
+          <div className="absolute right-0 ">
+            <Link className="block h-5 w-[40px] font-bold" to={"/"}>
+              <CiLogin size={30} className="font-black" />
+            </Link>
+          </div>
         </div>
         <div className="flex flex-col items-center justify-center border-t-[1px]">
           <h1 className="my-[20px] text-center text-[30px] font-semibold text-[#C7383EE5]">

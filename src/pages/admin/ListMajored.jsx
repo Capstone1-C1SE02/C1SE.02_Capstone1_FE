@@ -250,7 +250,7 @@ function ListMajored() {
           <table
             className={`block h-full w-full overflow-x-auto border-l-[30px] border-t-[30px] border-white`}
           >
-            <thead className="relative w-full">
+            <thead className="relative flex w-full flex-col justify-between">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[300px] px-4 py-2">Mã văn bằng</th>
                 <th className=" min-w-[300px] px-4 py-2">Tên văn bằng</th>
@@ -261,11 +261,11 @@ function ListMajored() {
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className="relative w-full ">
+            <tbody className="relative flex w-full flex-col justify-between ">
               {majors?.map((major) => (
                 <tr
                   key={major.DEGREE_ID}
-                  className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex max-h-[38px] items-center  justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(major.DEGREE_ID)}
                 >
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
