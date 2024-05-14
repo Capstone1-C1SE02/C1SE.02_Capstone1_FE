@@ -402,7 +402,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách chương trình đào tạo theo năm
+                Hồ sơ học tập của sinh viên trong chương trình đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -480,7 +480,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách chương trình đào tạo theo năm
+                Hồ sơ học tập của sinh viên trong chương trình đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
