@@ -306,8 +306,9 @@ function DiplopmaManagementProfile() {
   return (
     <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
       <HeaderAndInput
-        lable={"Quản lý hồ sơ văn bằng"}
+        lable={"Quản lý bằng cấp"}
         onClick={handleAddAction}
+        placeholder="Nhập tên bằng cấp để tìm kiếm"
       />
       <div className=" relative h-[84%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -319,7 +320,7 @@ function DiplopmaManagementProfile() {
                 <th className=" min-w-[200px] px-4 py-2">Tên </th>
                 <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
                 <th className=" min-w-[200px] px-4 py-2">
-                  Chương trình đào tạo
+                  chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
                 <th className=" min-w-[200px] px-4 py-2">Loại đào tạo</th>
@@ -433,12 +434,10 @@ function DiplopmaManagementProfile() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0  z-20 m-auto h-[800px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0  z-20 m-auto h-[800px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">
-                Quản lý hồ sơ văn bằng
-              </h1>
+              <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
               </div>
@@ -502,7 +501,7 @@ function DiplopmaManagementProfile() {
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <SelectForm
-                  text={" Chương trình đào tạo:"}
+                  text={" chuyên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_ID"}
                   setInvalidFields={setInvalidFields}
@@ -600,10 +599,10 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Sinh viên</h1>
+              <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
               </div>
@@ -746,7 +745,7 @@ function DiplopmaManagementProfile() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Chương trình đào tạo:
+                          chuyên ngành đào tạo:
                         </label>
                         <select
                           defaultValue={
@@ -933,16 +932,16 @@ function DiplopmaManagementProfile() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -953,8 +952,8 @@ function DiplopmaManagementProfile() {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}

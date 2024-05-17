@@ -42,7 +42,7 @@ function ListAcademicProgram() {
         });
       } catch (error) {
         console.error(
-          "Đã xảy ra lỗi khi lấy danh sách Mã chương trình đào tạo:",
+          "Đã xảy ra lỗi khi lấy danh sách Mã chuyên ngành đào tạo:",
           error,
         );
       }
@@ -146,11 +146,11 @@ function ListAcademicProgram() {
     console.log("add action", errorAdd);
     if (showAlert) {
       if (errorAdd) {
-        Swal.fire("Thông báo", "Thêm chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Thêm chuyên ngành đào tạo thất bại", "error");
       } else if (!errorAdd) {
         Swal.fire(
           "Thông báo",
-          "Thêm chương trình đào tạo thành công",
+          "Thêm chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -160,11 +160,11 @@ function ListAcademicProgram() {
   useEffect(() => {
     if (showAlert) {
       if (errorEdit) {
-        Swal.fire("Thông báo", "Sửa chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Sửa chuyên ngành đào tạo thất bại", "error");
       } else if (!errorEdit) {
         Swal.fire(
           "Thông báo",
-          "Sửa chương trình đào tạo thành công",
+          "Sửa chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -174,11 +174,11 @@ function ListAcademicProgram() {
   useEffect(() => {
     if (showAlert) {
       if (errorDelete) {
-        Swal.fire("Thông báo", "Xoá chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Xoá chuyên ngành đào tạo thất bại", "error");
       } else if (!errorDelete) {
         Swal.fire(
           "Thông báo",
-          "Xoá chương trình đào tạo thành công",
+          "Xoá chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -274,7 +274,8 @@ function ListAcademicProgram() {
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
       <HeaderAndInput
-        lable={"Danh sách chương trình đào tạo"}
+        lable={"Danh sách chuyên ngành đào tạo"}
+        placeholder="Nhập tên chuyên ngành đào tạo để tìm kiếm"
         onClick={handleAddAction}
       />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
@@ -285,11 +286,12 @@ function ListAcademicProgram() {
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[250px] px-4 py-2">
-                  Mã chương trình đào tạo
+                  Mã chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[400px] px-4 py-2">
-                  Tên chương trình đào tạo
+                  Tên chuyên ngành đào tạo
                 </th>
+                <th className=" min-w-[400px] px-4 py-2">Tên ngành tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo </th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Thời gian đào tạo</th>
@@ -311,6 +313,14 @@ function ListAcademicProgram() {
                   </td>
                   <td className="min-w-[400px] px-4 py-2">
                     {academicprogram.ACADEMIC_PROGRAM_NAME}
+                  </td>
+                  <td className="min-w-[400px] px-4 py-2">
+                    {degree.length > 0 &&
+                      degree.map(
+                        (degree) =>
+                          degree.DEGREE_ID === academicprogram.DEGREE_ID &&
+                          degree.DEGREE_NAME,
+                      )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.ACADEMIC_LEVEL_TYPE_ID}
@@ -374,11 +384,11 @@ function ListAcademicProgram() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[650px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Chương trình đào tạo
+                Chuyên ngành đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -388,7 +398,7 @@ function ListAcademicProgram() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={"Mã chương trình đào tạo"}
+                  text={"Mã chuyên ngành đào tạo"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_CODE"}
                   setInvalidFields={setInvalidFields}
@@ -460,7 +470,7 @@ function ListAcademicProgram() {
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={" Tên chương trình đào tạo:"}
+                  text={" Tên chuyên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_NAME"}
                   setInvalidFields={setInvalidFields}
@@ -478,7 +488,7 @@ function ListAcademicProgram() {
                   invalidFields={invalidFields}
                 />
                 <SelectForm
-                  text={" Tên bằng cấp:"}
+                  text={" Tên ngành tạo:"}
                   setValue={setPayload}
                   keyObject={"DEGREE_ID"}
                   setInvalidFields={setInvalidFields}
@@ -521,11 +531,11 @@ function ListAcademicProgram() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[650px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Chương trình đào tạo
+                Chuyên ngành đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
@@ -543,7 +553,7 @@ function ListAcademicProgram() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mã chương trình đào tạo:
+                          Mã chuyên ngành đào tạo:
                         </label>
                         <input
                           defaultValue={
@@ -665,7 +675,7 @@ function ListAcademicProgram() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên chương trình đào tạo:
+                          Tên chuyên ngành đào tạo:
                         </label>
                         <input
                           defaultValue={
@@ -737,7 +747,7 @@ function ListAcademicProgram() {
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên bằng cấp:
+                          Tên ngành tạo:
                         </label>
                         <select
                           defaultValue={
@@ -821,16 +831,16 @@ function ListAcademicProgram() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -841,8 +851,8 @@ function ListAcademicProgram() {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}

@@ -10,6 +10,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import { AcademicProgram } from "../dropList";
+import { Curiculum } from "../dropList";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -28,8 +29,8 @@ export default function TransferListForProYear({ onRightListChange }) {
   const [right, setRight] = React.useState([]);
   React.useEffect(() => {
     const fetchData = async () => {
-      const academicprogram = await AcademicProgram();
-      setLeft(academicprogram.data.results.data);
+      const curiculum = await Curiculum();
+      setLeft(curiculum.data.results.data);
     };
     fetchData();
   }, []);
@@ -78,9 +79,9 @@ export default function TransferListForProYear({ onRightListChange }) {
   };
 
   const customList = (title, items) => (
-    <Card>
+    <Card sx={{ border: "1px solid gray" }}>
       <CardHeader
-        sx={{ px: 2, py: 1 }}
+        sx={{ borderBottom: "1px solid gray" }}
         avatar={
           <Checkbox
             onClick={handleToggleAll(items)}
@@ -135,12 +136,12 @@ export default function TransferListForProYear({ onRightListChange }) {
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={`${value.ACADEMIC_PROGRAM_CODE}`}
+                primary={`${value.CURRICULUM_ID}`}
                 className="w-[120px]"
               />
               <ListItemText
                 id={labelId}
-                primary={`${value.ACADEMIC_PROGRAM_NAME} `}
+                primary={`${value.CURRICULUM_NAME} `}
               />
             </ListItemButton>
           );
@@ -151,13 +152,17 @@ export default function TransferListForProYear({ onRightListChange }) {
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
-      <Grid className="w-[500px]" item>
-        {customList("Danh sách chương trình đào tạo", left)}
-      </Grid>
+      <Grid item>{customList("Danh sách chương trình đào tạo", left)}</Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
           <Button
-            sx={{ my: 0.5 }}
+            sx={{
+              my: 0.5,
+              width: 100,
+              height: 50,
+              borderWidth: "1px",
+              borderColor: "gray",
+            }}
             variant="outlined"
             size="small"
             onClick={handleCheckedRight}
@@ -167,7 +172,13 @@ export default function TransferListForProYear({ onRightListChange }) {
             &gt;
           </Button>
           <Button
-            sx={{ my: 0.5 }}
+            sx={{
+              my: 0.5,
+              width: 100,
+              height: 50,
+              borderWidth: "1px",
+              borderColor: "gray",
+            }}
             variant="outlined"
             size="small"
             onClick={handleCheckedLeft}

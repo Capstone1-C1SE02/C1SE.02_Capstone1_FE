@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @font-face {
   font-family: "Lexend";
   src: url("/fonts/Lexend-ExtraBold.woff2") format("woff2");
@@ -153,5 +151,19 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Lexend", sans-serif;
+  }
+}
+
+.animation {
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

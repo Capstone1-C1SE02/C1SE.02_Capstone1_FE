@@ -4,6 +4,7 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  ImportFile,
 } from "@/components/admin";
 import React, { useEffect, useState } from "react";
 import icon from "@/ultils/icon";
@@ -32,6 +33,7 @@ function ListStudent() {
     count: "",
     page: "",
   });
+  const handleImport = async () => {};
 
   useEffect(() => {
     async function fetchStudentsData() {
@@ -72,6 +74,8 @@ function ListStudent() {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
+  const [importFile, setImportFile] = useState(false);
+
   const [payload, setPayload] = useState({
     STUDENT_ID_NUMBER: "",
     LAST_NAME: "",
@@ -152,10 +156,16 @@ function ListStudent() {
     showDeleteAction(!deleteAction);
     showEditAction(!editAction);
   };
+
+  const handleImportFile = () => {
+    setImportFile(!importFile);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
+    setImportFile(false);
   };
 
   const handleActionClick = (studentId) => {
@@ -286,7 +296,12 @@ function ListStudent() {
 
   return (
     <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
-      <HeaderAndInput lable={"Danh sách sinh viên"} onClick={handleAddAction} />
+      <HeaderAndInput
+        lable={"Danh sách sinh viên"}
+        onClick={handleAddAction}
+        onClickImportFile={handleImportFile}
+        placeholder="Nhập mã số sinh viên để tìm kiếm"
+      />
       <ToastContainer />
 
       <div className="h-[84%] rounded-xl bg-table-bg">
@@ -407,7 +422,7 @@ function ListStudent() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -858,7 +873,7 @@ function ListStudent() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -1217,16 +1232,16 @@ function ListStudent() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -1235,8 +1250,8 @@ function ListStudent() {
                       />{" "}
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}
@@ -1257,7 +1272,15 @@ function ListStudent() {
         />
       )}
 
-      {(addAction || editAction || deleteAction) && (
+      {importFile && (
+        <ImportFile
+          text={"Năm tuyển sinh"}
+          handleImportAction={handleImportFile}
+          handleImport={handleImport}
+        />
+      )}
+
+      {(addAction || editAction || deleteAction || importFile) && (
         <div>
           <Label onClick={handleCloseAll} />
         </div>

@@ -92,15 +92,13 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
   const [studentTransferList, setStudentTransferList] = useState([]);
   const [payload, setPayload] = useState({
     ACADEMIC_INTAKE_SESSION_ID: "",
-
-    CURRICULUM_ID: "",
+    ACADEMIC_PROGRAM_ID: "",
     STATUS_NAME: "",
   });
   const setPayloadAction = () => {
     setPayload({
       ACADEMIC_INTAKE_SESSION_ID: "",
-
-      CURRICULUM_ID: "",
+      ACADEMIC_PROGRAM_ID: "",
       STATUS_NAME: "",
     });
   };
@@ -195,7 +193,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
     for (let i = 0; i < studentTransferList.length; i++) {
       const updatePayload = {
         ...payload,
-        ACADEMIC_PROGRAM_ID: studentTransferList[i]["ACADEMIC_PROGRAM_ID"],
+        CURRICULUM_ID: studentTransferList[i]["CURRICULUM_ID"],
       };
 
       await addAcademicInTakeCessionAcademicProgramCurriculum(
@@ -288,8 +286,8 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
   };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
-      {" "}
       <HeaderAndInput
+        placeholder={"Nhập tên chương trình đào tạo để tìm kiếm"}
         lable={
           "Thông tin về chương trình đào tạo và khóa học cung cấp trong kỳ tuyển sinh"
         }
@@ -388,7 +386,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[870px] w-[1290px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[780px] w-[1290px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -414,13 +412,13 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                   invalidFields={invalidFields}
                 />
                 <SelectForm
-                  text={"Tên khoá đào tạo:"}
+                  text={"Chuyên ngành đào tạo:"}
                   setValue={setPayload}
-                  keyObject={"CURRICULUM_ID"}
+                  keyObject={"ACADEMIC_PROGRAM_ID"}
                   setInvalidFields={setInvalidFields}
-                  dataAPI={curiculum}
-                  dataValue={"CURRICULUM_ID"}
-                  dataName={"CURRICULUM_NAME"}
+                  dataAPI={academicProgram}
+                  dataValue={"ACADEMIC_PROGRAM_ID"}
+                  dataName={"ACADEMIC_PROGRAM_NAME"}
                   w22
                   invalidFields={invalidFields}
                 />
@@ -462,7 +460,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -609,16 +607,16 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -627,8 +625,8 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}

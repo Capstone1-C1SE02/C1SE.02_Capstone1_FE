@@ -137,9 +137,13 @@ function Curriculum() {
     console.log("add action", errorAdd);
     if (showAlert) {
       if (errorAdd) {
-        Swal.fire("Thông báo", "Thêm khoá đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Thêm chương trình đào tạo thất bại", "error");
       } else if (!errorAdd) {
-        Swal.fire("Thông báo", "Thêm khoá đào tạo thành công", "success");
+        Swal.fire(
+          "Thông báo",
+          "Thêm chương trình đào tạo thành công",
+          "success",
+        );
       }
       setShowAlert(false);
     }
@@ -147,9 +151,13 @@ function Curriculum() {
   useEffect(() => {
     if (showAlert) {
       if (errorEdit) {
-        Swal.fire("Thông báo", "Sửa khoá đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Sửa chương trình đào tạo thất bại", "error");
       } else if (!errorEdit) {
-        Swal.fire("Thông báo", "Sửa khoá đào tạo thành công", "success");
+        Swal.fire(
+          "Thông báo",
+          "Sửa chương trình đào tạo thành công",
+          "success",
+        );
       }
       setShowAlert(false);
     }
@@ -157,9 +165,13 @@ function Curriculum() {
   useEffect(() => {
     if (showAlert) {
       if (errorDelete) {
-        Swal.fire("Thông báo", "Xoá khoá đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Xoá chương trình đào tạo thất bại", "error");
       } else if (!errorDelete) {
-        Swal.fire("Thông báo", "Xoá khoá đào tạo thành công", "success");
+        Swal.fire(
+          "Thông báo",
+          "Xoá chương trình đào tạo thành công",
+          "success",
+        );
       }
       setShowAlert(false);
     }
@@ -251,8 +263,9 @@ function Curriculum() {
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       <ToastContainer />
       <HeaderAndInput
-        lable={"Danh sách khoá đào tạo"}
+        lable={"Danh sách chương trình đào tạo"}
         onClick={handleAddAction}
+        placeholder="Nhập tên chương trình đào tạo để tìm tiếm"
       />
 
       <div className=" relative h-[84%]  rounded-xl bg-table-bg">
@@ -262,11 +275,15 @@ function Curriculum() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">Mã khoá đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Tên khoá đào tạo</th>
+                <th className=" min-w-[200px] px-4 py-2">
+                  Mã chương trình đào tạo
+                </th>
+                <th className=" min-w-[200px] px-4 py-2">
+                  Tên chương trình đào tạo
+                </th>
                 <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
                 <th className=" min-w-[350px] px-4 py-2">
-                  Tên chương trình đào tạo
+                  Tên chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
 
@@ -342,11 +359,11 @@ function Curriculum() {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Danh sách khoá đào tạo
+                Danh sách chương trình đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -356,7 +373,7 @@ function Curriculum() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={"Mã khoá đào tạo:"}
+                  text={"Mã chương trình đào tạo:"}
                   setValue={setPayload}
                   keyObject={"CURRICULUM_ID"}
                   setInvalidFields={setInvalidFields}
@@ -364,7 +381,7 @@ function Curriculum() {
                   w333
                 />
                 <InputForm2
-                  text={"Tên khoá đào tạo:"}
+                  text={"Tên chương trình đào tạo:"}
                   setValue={setPayload}
                   keyObject={"CURRICULUM_NAME"}
                   setInvalidFields={setInvalidFields}
@@ -383,7 +400,7 @@ function Curriculum() {
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <SelectForm
-                  text={"Tên chương trình đào tạo:"}
+                  text={"Tên chuyên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_ID"}
                   setInvalidFields={setInvalidFields}
@@ -425,10 +442,12 @@ function Curriculum() {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Danh sách bằng</h1>
+              <h1 className="text-[30px] font-semibold">
+                Danh sách chương trình đào tạo
+              </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
               </div>
@@ -443,7 +462,7 @@ function Curriculum() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mã khoá đào tạo:
+                          Mã chương trình đào tạo:
                         </label>
                         <input
                           defaultValue={
@@ -463,7 +482,7 @@ function Curriculum() {
                       </div>{" "}
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên khoá đào tạo:
+                          Tên chương trình đào tạo:
                         </label>
                         <input
                           type="text"
@@ -511,7 +530,7 @@ function Curriculum() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên chương trình đào tạo:
+                          Tên chuyên ngành đào tạo:
                         </label>
                         <select
                           type="text"
@@ -565,16 +584,16 @@ function Curriculum() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -583,8 +602,8 @@ function Curriculum() {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}

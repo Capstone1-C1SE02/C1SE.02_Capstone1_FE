@@ -225,7 +225,7 @@ const ListYear = () => {
       <HeaderAndInput
         lable={"Năm học"}
         onClick={handleAddAction}
-        onClickImportFile={handleImportFile}
+        placeholder="Nhập tên năm học để tìm kiếm"
       />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -300,10 +300,10 @@ const ListYear = () => {
 
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[15%] z-20 m-auto h-[320px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[15%] z-20 m-auto h-[300px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Sinh viên</h1>
+              <h1 className="text-[30px] font-semibold">Năm học</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
               </div>
@@ -346,7 +346,7 @@ const ListYear = () => {
 
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[320px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[320px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Năm học</h1>
@@ -439,16 +439,16 @@ const ListYear = () => {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -457,8 +457,8 @@ const ListYear = () => {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteAction(!deleteAction)}

@@ -91,9 +91,9 @@ export default function TransferList({ onRightListChange }) {
   };
 
   const customList = (title, items) => (
-    <Card>
+    <Card sx={{ border: "1px solid gray" }}>
       <CardHeader
-        sx={{ px: 2, py: 1 }}
+        sx={{ borderBottom: "1px solid gray" }}
         avatar={
           <Checkbox
             onClick={handleToggleAll(items)}
@@ -173,7 +173,13 @@ export default function TransferList({ onRightListChange }) {
       <Grid item>
         <Grid container direction="column" alignItems="center">
           <Button
-            sx={{ my: 0.5 }}
+            sx={{
+              my: 0.5,
+              width: 100,
+              height: 50,
+              borderWidth: "1px",
+              borderColor: "gray",
+            }}
             variant="outlined"
             size="small"
             onClick={handleCheckedRight}
@@ -183,7 +189,13 @@ export default function TransferList({ onRightListChange }) {
             &gt;
           </Button>
           <Button
-            sx={{ my: 0.5 }}
+            sx={{
+              my: 0.5,
+              width: 100,
+              height: 50,
+              borderWidth: "1px",
+              borderColor: "gray",
+            }}
             variant="outlined"
             size="small"
             onClick={handleCheckedLeft}

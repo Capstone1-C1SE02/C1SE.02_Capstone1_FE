@@ -14,6 +14,7 @@ import {
   AcademicProgram,
   Student,
   Academicintakesession,
+  Curiculum,
 } from "@/components/dropList";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +34,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   const [academicProgram, setAcademicProgram] = useState();
   const [student, setStudent] = useState();
   const [academicintakesession, setAcademicintakesession] = useState();
+  const [curiculum, setcuriculum] = useState();
   const [page, setPage] = useState(1);
   const [panigationData, setPanigationData] = useState({
     count: "",
@@ -69,10 +71,12 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         const academicProgram = await AcademicProgram();
         const student = await Student();
         const academicintakesession = await Academicintakesession();
+        const curiculum = await Curiculum();
         setLearningStatusType(learningStatus.data);
         setAcademicProgram(academicProgram.data.results.data);
         setAcademicintakesession(academicintakesession.data.results.data);
         setStudent(student.data.results.data);
+        setcuriculum(curiculum.data.results.data);
       } catch (error) {
         console.log(error);
       }
@@ -152,11 +156,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     console.log("add action", errorAdd);
     if (showAlert) {
       if (errorAdd) {
-        Swal.fire("Thông báo", "Thêm chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Thêm Chuyên ngành đào tạo thất bại", "error");
       } else if (!errorAdd) {
         Swal.fire(
           "Thông báo",
-          "Thêm chương trình đào tạo thành công",
+          "Thêm Chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -166,11 +170,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   useEffect(() => {
     if (showAlert) {
       if (errorEdit) {
-        Swal.fire("Thông báo", "Sửa chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Sửa Chuyên ngành đào tạo thất bại", "error");
       } else if (!errorEdit) {
         Swal.fire(
           "Thông báo",
-          "Sửa chương trình đào tạo thành công",
+          "Sửa Chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -180,11 +184,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
   useEffect(() => {
     if (showAlert) {
       if (errorDelete) {
-        Swal.fire("Thông báo", "Xoá chương trình đào tạo thất bại", "error");
+        Swal.fire("Thông báo", "Xoá Chuyên ngành đào tạo thất bại", "error");
       } else if (!errorDelete) {
         Swal.fire(
           "Thông báo",
-          "Xoá chương trình đào tạo thành công",
+          "Xoá Chuyên ngành đào tạo thành công",
           "success",
         );
       }
@@ -298,8 +302,9 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
       {" "}
       <HeaderAndInput
-        lable={"Hồ sơ học tập của sinh viên trong chương trình đào tạo"}
+        lable={"Hồ sơ học tập của sinh theo chuyên ngành đào tạo"}
         onClick={handleAddAction}
+        placeholder="Nhập tên Hồ sơ học tập của sinh theo chuyên ngành đào tạo để tìm kiếm"
       />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -312,7 +317,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                 <th className=" min-w-[300px] px-4 py-2">Tên kỳ tuyển sinh</th>
                 <th className=" min-w-[300px] px-4 py-2">Trạng thái</th>
                 <th className=" min-w-[300px] px-4 py-2">
-                  Tên chương trình đào tạo
+                  Tên Chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
@@ -398,11 +403,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[870px] w-[1150px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[880px] w-[1150px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Hồ sơ học tập của sinh viên trong chương trình đào tạo
+                Hồ sơ học tập của sinh theo chuyên ngành đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
@@ -437,7 +442,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
               </div>
               <div className="flex h-[100px] justify-center gap-[30px]">
                 <SelectForm
-                  text={"Tên chương trình đào tạo:"}
+                  text={"Tên chuyên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_ID"}
                   setInvalidFields={setInvalidFields}
@@ -476,11 +481,11 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
-                Hồ sơ học tập của sinh viên trong chương trình đào tạo
+                Hồ sơ học tập của sinh theo chuyên ngành đào tạo
               </h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
@@ -592,7 +597,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                       <div className="flex h-[100px] gap-[30px]">
                         <div className="flex flex-col gap-[5px]">
                           <label className="text-[16px] font-normal">
-                            Tên chương trình đào tạo:
+                            Tên chuyên ngành đào tạo:
                           </label>
                           <select
                             defaultValue={
@@ -626,16 +631,16 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) =>
@@ -644,8 +649,8 @@ function StudentAcademicIntakeSessionAcademicProgram() {
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}

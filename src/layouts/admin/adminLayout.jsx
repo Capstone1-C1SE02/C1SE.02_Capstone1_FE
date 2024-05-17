@@ -23,12 +23,9 @@ function adminLayout({ children }) {
         >
           <div className="relative h-[100vh] ">
             <div>
-              <Header onClickShowNav={handleOnClick} />{" "}
+              <Header onClickShowNav={handleOnClick} />
             </div>
             <div className=" h-[92.5%] px-6 pb-2">{children}</div>
-            {/* <div className="mb-[20px] flex h-[50px] justify-center ">
-              <FooterPage />
-            </div> */}
           </div>
         </div>
       </div>

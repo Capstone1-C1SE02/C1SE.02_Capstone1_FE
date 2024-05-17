@@ -4,10 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { login } from "@/redux/apiRequests";
 import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
-import { ToastContainer, toast } from "react-toastify";
-import icon from "@/ultils/icon";
 
-const { CiLogin } = icon;
+import { LogIn } from "lucide-react";
 
 const Login = () => {
   const token = useSelector((state) => state.auth);
@@ -29,9 +27,6 @@ const Login = () => {
       setIsLoading(true);
       await login(payload, dispatch, navigate);
       setIsLoading(false);
-      {
-        token && toast.warning("Login failed");
-      }
     } else {
       console.log("no ok");
     }
@@ -75,7 +70,6 @@ const Login = () => {
 
   return isLoading ? (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary">
-      <ToastContainer />
       <HashLoader
         color={"#000"}
         loading={true}
@@ -95,7 +89,7 @@ const Login = () => {
           />
           <div className="absolute right-0 ">
             <Link className="block h-5 w-[40px] font-bold" to={"/"}>
-              <CiLogin size={30} className="font-black" />
+              <LogIn />
             </Link>
           </div>
         </div>

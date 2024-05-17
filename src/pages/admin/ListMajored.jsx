@@ -7,6 +7,7 @@ import {
   FooterPage,
   InputForm2,
   SelectForm,
+  ImportFile,
 } from "@/components/admin";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import axiosConfig from "@/axiosConfig";
@@ -65,6 +66,8 @@ function ListMajored() {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
+  const [importFile, setImportFile] = useState(false);
+
   const [payload, setPayload] = useState({
     DEGREE_ID: "",
     DEGREE_CODE: "",
@@ -131,9 +134,9 @@ function ListMajored() {
     console.log("add action", errorAdd);
     if (showAlert) {
       if (errorAdd) {
-        Swal.fire("Thông báo", "Thêm văn bằng thất bại", "error");
+        Swal.fire("Thông báo", "Thêm ngành đào tạo thất bại", "error");
       } else if (!errorAdd) {
-        Swal.fire("Thông báo", "Thêm văn bằng thành công", "success");
+        Swal.fire("Thông báo", "Thêm ngành đào tạo thành công", "success");
       }
       setShowAlert(false);
     }
@@ -141,9 +144,9 @@ function ListMajored() {
   useEffect(() => {
     if (showAlert) {
       if (errorEdit) {
-        Swal.fire("Thông báo", "Sửa văn bằng thất bại", "error");
+        Swal.fire("Thông báo", "Sửa ngành đào tạo thất bại", "error");
       } else if (!errorEdit) {
-        Swal.fire("Thông báo", "Sửa văn bằng thành công", "success");
+        Swal.fire("Thông báo", "Sửa ngành đào tạo thành công", "success");
       }
       setShowAlert(false);
     }
@@ -151,9 +154,9 @@ function ListMajored() {
   useEffect(() => {
     if (showAlert) {
       if (errorDelete) {
-        Swal.fire("Thông báo", "Xoá văn bằng thất bại", "error");
+        Swal.fire("Thông báo", "Xoá ngành đào tạo thất bại", "error");
       } else if (!errorDelete) {
-        Swal.fire("Thông báo", "Xoá văn bằng thành công", "success");
+        Swal.fire("Thông báo", "Xoá ngành đào tạo thành công", "success");
       }
       setShowAlert(false);
     }
@@ -214,11 +217,16 @@ function ListMajored() {
     showEditAction(!editAction);
   };
 
+  const handleImportFile = () => {
+    setImportFile(!importFile);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
     setInvalidFields("");
+    setImportFile(false);
   };
 
   const handleActionClick = (studentId) => {
@@ -241,10 +249,17 @@ function ListMajored() {
     setShowActionMenu({ studentId: id });
     handleEditAction();
   };
+
+  const handleImport = async () => {};
+
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
-      {" "}
-      <HeaderAndInput lable={"Danh sách văn bằng"} onClick={handleAddAction} />
+      <HeaderAndInput
+        lable={"Danh sách ngành đào tạo"}
+        onClick={handleAddAction}
+        onClickImportFile={handleImportFile}
+        placeholder="Nhập tên ngành đào tạo để tìm kiếm"
+      />
       <div className="h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
           <table
@@ -252,10 +267,10 @@ function ListMajored() {
           >
             <thead className="relative flex w-full flex-col justify-between">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[300px] px-4 py-2">Mã văn bằng</th>
-                <th className=" min-w-[300px] px-4 py-2">Tên văn bằng</th>
+                <th className=" min-w-[300px] px-4 py-2">Mã ngành đào tạo</th>
+                <th className=" min-w-[300px] px-4 py-2">Tên ngành đào tạo</th>
                 <th className=" min-w-[300px] px-4 py-2">
-                  Trạng thái văn bằng
+                  Trạng thái ngành đào tạo
                 </th>
                 <th className=" min-w-[500px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
@@ -316,10 +331,10 @@ function ListMajored() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[450px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Văn bằng</h1>
+              <h1 className="text-[30px] font-semibold">ngành đào tạo</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
               </div>
@@ -328,7 +343,7 @@ function ListMajored() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={"Mã văn bằng"}
+                  text={"Mã ngành đào tạo"}
                   setValue={setPayload}
                   keyObject={"DEGREE_CODE"}
                   setInvalidFields={setInvalidFields}
@@ -336,7 +351,7 @@ function ListMajored() {
                   w333
                 />
                 <InputForm2
-                  text={"Tên văn bằng:"}
+                  text={"Tên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"DEGREE_NAME"}
                   setInvalidFields={setInvalidFields}
@@ -344,7 +359,7 @@ function ListMajored() {
                   invalidFields={invalidFields}
                 />
                 <SelectForm
-                  text={"Trạng thái văn bằng:"}
+                  text={"Trạng thái ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"DEGREE_STATUS"}
                   setInvalidFields={setInvalidFields}
@@ -387,10 +402,10 @@ function ListMajored() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="fixed left-0 right-0 top-[20px] z-20 m-auto h-[450px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">Văn bằng</h1>
+              <h1 className="text-[30px] font-semibold">ngành đào tạo</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
               </div>
@@ -406,7 +421,7 @@ function ListMajored() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mã văn bằng:
+                          Mã ngành đào tạo:
                         </label>
                         <input
                           defaultValue={
@@ -439,7 +454,7 @@ function ListMajored() {
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên văn bằng:
+                          Tên ngành đào tạo:
                         </label>
                         <input
                           defaultValue={
@@ -472,7 +487,7 @@ function ListMajored() {
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Trạng thái văn bằng:
+                          Trạng thái ngành đào tạo:
                         </label>
                         <select
                           defaultValue={
@@ -551,24 +566,24 @@ function ListMajored() {
                     <div className="mt-[30px] flex justify-end gap-[20px] border-t-[1px] pt-[20px]">
                       <Button
                         text={"Huỷ"}
-                        bgColor={"bg-custom-bg-active-nav"}
-                        textColor={"text-custom-text-active-nav"}
+                        // bgColor={"bg-custom-bg-active-nav"}
+                        // textColor={"text-custom-text-active-nav"}
                         justify
                         text16
                         onClick={handleEditAction}
                       />
                       <Button
                         text={"Lưu"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => handleSaveInformation(major.DEGREE_ID)}
                       />
                       <Button
                         text={"Xoá"}
-                        bgColor={"bg-bg-button-add"}
-                        textColor={"text-[#16A34A] "}
+                        // bgColor={"bg-bg-button-add"}
+                        // textColor={"text-[#16A34A] "}
                         justify
                         text16
                         onClick={(e) => showDeleteEdit()}
@@ -622,7 +637,14 @@ function ListMajored() {
           </div>
         </div>
       )}
-      {(addAction || editAction || deleteAction) && (
+      {importFile && (
+        <ImportFile
+          text={"ngành đào tạo"}
+          handleImportAction={handleImportFile}
+          handleImport={handleImport}
+        />
+      )}
+      {(addAction || editAction || deleteAction || importFile) && (
         <div>
           <Label onClick={handleCloseAll} />
         </div>
