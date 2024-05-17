@@ -18,7 +18,7 @@ function FormField({ label, id, value, setValue, type = "text", image }) {
             className="flex-grow rounded-md border border-[#AEB8C2] p-2 text-[16px] leading-none focus:outline-none focus:ring-2 focus:ring-[#607180] focus:ring-opacity-50 lg:w-[100px] lg:p-3"
           />
           <img
-            className="flex h-[46px] rounded-md border border-[#5B6B79] object-cover lg:w-[150px] lg:flex-shrink-0 xl:ml-[10px] xl:mr-[10px] xl:cursor-pointer xl:rounded-[10px] xl:border-[#AEB8C2] xl:object-contain xl:object-center xl:shadow-md"
+            className="flex h-[46px] flex-shrink-0 basis-[150px] rounded-md border border-[#5B6B79] object-cover lg:w-[150px] lg:flex-shrink-0 xl:ml-[10px] xl:mr-[10px] xl:cursor-pointer xl:rounded-[10px] xl:border-[#AEB8C2] xl:object-center xl:shadow-md"
             src={image}
             alt="Captcha"
           />

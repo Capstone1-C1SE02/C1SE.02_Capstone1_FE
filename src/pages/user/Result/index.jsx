@@ -1,5 +1,5 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Item from "@/components/user/Result/item";
@@ -10,39 +10,37 @@ function Result() {
   const location = useLocation();
 
   // Get data from the previous page
-  // const data = location.state?.data;
+  const data = location.state?.data;
 
-  const [data, setData] = useState({});
+  // const [data, setData] = useState({});
 
-  /** 
-   * Code below is used to redirect to the home page if there is no data
+  // Code below is used to redirect to the home page if there is no data
   useEffect(() => {
     if (!data) {
       navigate("/");
     }
   }, [data]);
-  */
 
   // Test UI
-  useEffect(() => {
-    const newData = {
-      CERTIFICATE_NUMBER: "123456",
-      STUDENT_NAME: "Nguyễn Văn A",
-      NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "123456",
-      BIRTH_DATE: "01/01/2000",
-      GRADUATION_YEAR: "2020",
-      STUDENT_ID_NUMBER: "123456",
-      ACADEMIC_PROGRAM: {
-        DEGREE: {
-          DEGREE_NAME: "Cử nhân",
-        },
-        ACADEMIC_PROGRAM_NAME: "Kỹ thuật phần mềm",
-      },
-      MODE_OF_STUDY: "Chính quy",
-      CLASSIFIED_BY_ACADEMIC_RECORDS: "Giỏi",
-    };
-    setData(newData);
-  }, []);
+  // useEffect(() => {
+  //   const newData = {
+  //     CERTIFICATE_NUMBER: "123456",
+  //     STUDENT_NAME: "Nguyễn Văn A",
+  //     NUMBER_ENTERED_INTO_THE_DEGREE_TRACKING_BOOK: "123456",
+  //     BIRTH_DATE: "01/01/2000",
+  //     GRADUATION_YEAR: "2020",
+  //     STUDENT_ID_NUMBER: "123456",
+  //     ACADEMIC_PROGRAM: {
+  //       DEGREE: {
+  //         DEGREE_NAME: "Cử nhân",
+  //       },
+  //       ACADEMIC_PROGRAM_NAME: "Kỹ thuật phần mềm",
+  //     },
+  //     MODE_OF_STUDY: "Chính quy",
+  //     CLASSIFIED_BY_ACADEMIC_RECORDS: "Giỏi",
+  //   };
+  //   setData(newData);
+  // }, []);
 
   const handleClick = () => {
     navigate(-1);
@@ -62,7 +60,7 @@ function Result() {
       <div className="flex flex-wrap gap-4 pt-10 lg:gap-5 lg:px-[70px]">
         <Row>
           <Item label="Số hiệu Văn bằng" value={data?.CERTIFICATE_NUMBER} />
-          <Item label="Họ và Tên" value={data?.STUDENT_NAME} />
+          <Item label="Họ và Tên" value={data?.STUDENT?.STUDENT_NAME} />
         </Row>
         <Row>
           <Item
