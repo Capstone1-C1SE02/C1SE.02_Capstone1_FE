@@ -21,7 +21,7 @@ function Header({ onClickShowNav, onClickLabel }) {
     console.log("logout");
   };
   return (
-    <div className="flex h-[70px] w-full items-center justify-between bg-secondary px-6">
+    <div className="bg-backLayout flex h-[70px] w-full items-center justify-between px-6">
       <div className="text-iconHeader" onClick={onClickShowNav}>
         <FaBars onClick={onClickShowNav} />
       </div>

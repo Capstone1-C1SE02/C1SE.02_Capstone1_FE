@@ -11,15 +11,15 @@ function adminLayout({ children }) {
   };
 
   return (
-    <div className="flex h-screen min-w-max overflow-hidden">
+    <div className="flex h-screen w-auto overflow-hidden">
       <div className="flex w-full">
         <div
-          className={`transition-all duration-300 ease-in-out ${showNav ? "w-[350px]" : "w-0"} h-full border-r-[1px] bg-secondary `}
+          className={`transition-all duration-300 ease-in-out ${showNav ? "w-[16.6667%]" : "w-0"} h-full border-r-[1px] bg-backLayout `}
         >
           <Nav onClick={handleOnClick} />
         </div>
         <div
-          className={`relative ${showNav ? "w-[82vw]" : "w-[100vw]"} right-0 bg-secondary`}
+          className={`relative right-0 w-full overflow-hidden bg-backLayout`}
         >
           <div className="relative h-[100vh] ">
             <div>

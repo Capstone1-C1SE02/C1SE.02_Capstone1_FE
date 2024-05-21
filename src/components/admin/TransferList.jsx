@@ -29,7 +29,7 @@ export default function TransferList({ onRightListChange }) {
   React.useEffect(() => {
     const fetchData = async () => {
       const student = await Student();
-      setLeft(student.data.results.data);
+      setLeft(student.data.data);
     };
 
     fetchData();
@@ -117,7 +117,8 @@ export default function TransferList({ onRightListChange }) {
       <List
         className="m-0 p-0 "
         sx={{
-          width: 460,
+          minWidth: 460,
+          width: "100%",
           height: 400,
           bgcolor: "background.paper",
           overflow: "auto",
@@ -137,7 +138,7 @@ export default function TransferList({ onRightListChange }) {
               key={index}
               role="listitem"
               onClick={handleToggle(value)}
-              className="flex w-[400px] gap-5"
+              className="flex w-[400px] gap-5 bg-red-900"
             >
               <ListItemIcon>
                 <Checkbox

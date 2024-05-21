@@ -18,6 +18,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { LearningStatusType } from "@/components/dropList";
 import Swal from "sweetalert2";
 
+const statuses = [
+  { id: 0, value: true, status: "Đang tiến hành" },
+  { id: 1, value: false, status: "Đã huỷ" },
+];
 function ListMajored() {
   const dispatch = useDispatch();
   const [learningStatusType, setLearningStatusType] = useState();
@@ -253,7 +257,7 @@ function ListMajored() {
   const handleImport = async () => {};
 
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <HeaderAndInput
         lable={"Danh sách ngành đào tạo"}
         onClick={handleAddAction}
@@ -285,7 +289,11 @@ function ListMajored() {
                 >
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_NAME}</td>
-                  <td className="w-[300px] px-4 py-2">{major.DEGREE_STATUS}</td>
+                  <td className="w-[300px] px-4 py-2">
+                    {statuses.map(
+                      (item) => item.id == major.DEGREE_STATUS && item.status,
+                    )}
+                  </td>
                   <td className="w-[500px] px-4 py-2">{major.DESCRIPTON}</td>
                   <td
                     onClick={() => handleActionClick(major.DEGREE_ID)}
@@ -331,10 +339,10 @@ function ListMajored() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">ngành đào tạo</h1>
+              <h1 className="text-[30px] font-semibold">Ngành đào tạo</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleAddAction} />
               </div>
@@ -363,9 +371,7 @@ function ListMajored() {
                   setValue={setPayload}
                   keyObject={"DEGREE_STATUS"}
                   setInvalidFields={setInvalidFields}
-                  dataAPI={learningStatusType}
-                  dataValue={"LEARNING_STATUS_TYPE_ID"}
-                  dataName={"LEARNING_STATUS_TYPE_NAME"}
+                  dataNoAPI={statuses}
                   w333
                   invalidFields={invalidFields}
                 />
@@ -402,10 +408,10 @@ function ListMajored() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[420px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
-              <h1 className="text-[30px] font-semibold">ngành đào tạo</h1>
+              <h1 className="text-[30px] font-semibold">Ngành đào tạo</h1>
               <div className="m-[4px] h-[16px] w-[16px] cursor-pointer text-[24px]">
                 <FaTimes onClick={handleEditAction} />
               </div>
@@ -506,9 +512,9 @@ function ListMajored() {
                           onFocus={() => setInvalidFields("")}
                         >
                           <option hidden></option>
-                          {learningStatusType?.map((item) => (
-                            <option key={item.LEARNING_STATUS_TYPE_ID}>
-                              {item.LEARNING_STATUS_TYPE_NAME}
+                          {statuses?.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.status}
                             </option>
                           ))}
                         </select>{" "}

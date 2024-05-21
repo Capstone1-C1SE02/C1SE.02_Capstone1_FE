@@ -25,9 +25,6 @@ import { editStudentAcademicIntakeSessionAcademicProgram } from "@/redux/apiRequ
 import Swal from "sweetalert2";
 
 function StudentAcademicIntakeSessionAcademicProgram() {
-  const data = useSelector((state) => state.addAction.data);
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [learningStatusType, setLearningStatusType] = useState();
@@ -40,7 +37,6 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     count: "",
     page: "",
   });
-  console.log("student", student);
   const [YBAPData, setYBAPData] = useState([]);
   useEffect(() => {
     async function fetchYBAPData() {
@@ -63,7 +59,6 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     fetchYBAPData();
   }, [render, page]);
 
-  console.log("YBAPData", YBAPData);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,9 +68,9 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         const academicintakesession = await Academicintakesession();
         const curiculum = await Curiculum();
         setLearningStatusType(learningStatus.data);
-        setAcademicProgram(academicProgram.data.results.data);
+        setAcademicProgram(academicProgram.data.data);
+        setStudent(student.data.data);
         setAcademicintakesession(academicintakesession.data.results.data);
-        setStudent(student.data.results.data);
         setcuriculum(curiculum.data.results.data);
       } catch (error) {
         console.log(error);
@@ -299,7 +294,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
     handleEditAction();
   };
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       {" "}
       <HeaderAndInput
         lable={"Hồ sơ học tập của sinh theo chuyên ngành đào tạo"}
@@ -403,7 +398,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[880px] w-[1150px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 z-20 m-auto h-[880px] w-[1150px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -481,7 +476,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0  top-[25%]  z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">

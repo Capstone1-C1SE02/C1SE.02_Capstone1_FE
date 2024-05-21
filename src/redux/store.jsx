@@ -3,6 +3,7 @@ import authReducer from "./authSlice";
 import addReducer from "./addSlice"; // Assuming you still need these reducers
 import deleteReducer from "./deleteSlice";
 import editReducer from "./editSlice";
+import searchSlice from "./searchSlice";
 import {
   createMigrate,
   persistStore,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   addAction: addReducer,
   deleteAction: deleteReducer,
   editAction: editReducer,
+  searchAction: searchSlice,
 });
 
 const persistedReducer = persistReducer(

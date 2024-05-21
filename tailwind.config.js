@@ -24,6 +24,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        backLayout: "#F2F2F2",
         "text-delete-form": "rgba(199, 56, 62, 0.90)",
         "bg-delete-form": "rgba(199, 56, 62, 0.30)",
         "table-bg": "#FFF",

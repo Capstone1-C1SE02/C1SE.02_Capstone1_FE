@@ -23,9 +23,6 @@ import { editAcademicInTakeCessionAcademicProgramCurriculum } from "@/redux/apiR
 import Swal from "sweetalert2";
 
 function AcademicIntakeSessionAcademicProgramCurriculum() {
-  const data = useSelector((state) => state.addAction.data);
-  const dataDelete = useSelector((state) => state.deleteAction);
-  const dataEdit = useSelector((state) => state.EditAction);
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [curiculum, setCuriculum] = useState();
@@ -71,8 +68,9 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
         const academicintakesession = await Academicintakesession();
 
         setCuriculum(curriculum.data.results.data);
-        setAcademicProgram(academicProgram.data.results.data);
+        setAcademicProgram(academicProgram.data.data);
         setAcademicintakesession(academicintakesession.data.results.data);
+        console.log(academicintakesession);
       } catch (error) {
         console.log(error);
       }
@@ -179,29 +177,23 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
     }
   }, [count.countDelete]);
   //add
-  console.log("validate(payload)", invalidFields);
-
   const handleAddANew = async () => {
     const valid = validate(payload);
-    console.log("valid(valid)", valid);
-    console.log("validate(payload)", invalidFields);
-    console.log("objectPayload", objectPayload);
     if (valid > 0) {
       return;
     }
-    console.log(2);
     for (let i = 0; i < studentTransferList.length; i++) {
       const updatePayload = {
         ...payload,
         CURRICULUM_ID: studentTransferList[i]["CURRICULUM_ID"],
       };
+      console.log(updatePayload);
 
       await addAcademicInTakeCessionAcademicProgramCurriculum(
         updatePayload,
         dispatch,
       );
     }
-    console.log(3);
 
     setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
@@ -285,9 +277,9 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
     handleEditAction();
   };
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <HeaderAndInput
-        placeholder={"Nhập tên chương trình đào tạo để tìm kiếm"}
+        placeholder={"Nhập tên chuyên ngành đào tạo để tìm kiếm"}
         lable={
           "Thông tin về chương trình đào tạo và khóa học cung cấp trong kỳ tuyển sinh"
         }
@@ -301,9 +293,11 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[300px] px-4 py-2">Tên kỳ tuyển sinh</th>
-                <th className=" min-w-[300px] px-4 py-2">Tên khoá đào tạo</th>
                 <th className=" min-w-[300px] px-4 py-2">
-                  Tên chương trình đào tạo
+                  Chương trình đào tạo
+                </th>
+                <th className=" min-w-[300px] px-4 py-2">
+                  Tên chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[300px] px-4 py-2">Trạng thái</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
@@ -386,7 +380,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[780px] w-[1290px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[18%] z-20 m-auto h-[780px] w-[1290px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -460,7 +454,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[18%] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -513,30 +507,31 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                       </div>
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Tên khoá đào tạo:
+                          Tên chuyên ngành đào tạo:
                         </label>
                         <select
                           defaultValue={
-                            objectPayload[academicprogram.id].CURRICULUM_ID
+                            objectPayload[academicprogram.id]
+                              .ACADEMIC_PROGRAM_ID
                           }
                           type="text"
-                          id="CURRICULUM_ID"
+                          id="ACADEMIC_PROGRAM_ID"
                           className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
                               academicprogram.id,
-                              "CURRICULUM_ID",
+                              "ACADEMIC_PROGRAM_ID",
                             )
                           }
                         >
                           <option hidden></option>
-                          {curiculum?.map((item) => (
+                          {academicProgram?.map((item) => (
                             <option
-                              key={item.CURRICULUM_ID}
-                              value={item.CURRICULUM_ID}
+                              key={item.ACADEMIC_PROGRAM_ID}
+                              value={item.ACADEMIC_PROGRAM_ID}
                             >
-                              {item.CURRICULUM_NAME}
+                              {item.ACADEMIC_PROGRAM_NAME}
                             </option>
                           ))}
                         </select>
@@ -573,31 +568,30 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                       <div className="flex h-[100px] gap-[30px]">
                         <div className="flex flex-col gap-[5px]">
                           <label className="text-[16px] font-normal">
-                            Tên chương trình đào tạo:
+                            Chương trình đào tạo:
                           </label>
                           <select
                             defaultValue={
-                              objectPayload[academicprogram.id]
-                                .ACADEMIC_PROGRAM_ID
+                              objectPayload[academicprogram.id].CURRICULUM_ID
                             }
                             type="text"
-                            id="ACADEMIC_PROGRAM_ID"
+                            id="CURRICULUM_ID"
                             className="block w-[810px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                             onChange={(e) =>
                               handledOnchangeEdit(
                                 e,
                                 academicprogram.id,
-                                "ACADEMIC_PROGRAM_ID",
+                                "CURRICULUM_ID",
                               )
                             }
                           >
                             <option hidden></option>
-                            {academicProgram?.map((item) => (
+                            {curiculum?.map((item) => (
                               <option
-                                key={item.ACADEMIC_PROGRAM_ID}
-                                value={item.ACADEMIC_PROGRAM_ID}
+                                key={item.CURRICULUM_ID}
+                                value={item.CURRICULUM_ID}
                               >
-                                {item.ACADEMIC_PROGRAM_NAME}
+                                {item.CURRICULUM_NAME}
                               </option>
                             ))}
                           </select>

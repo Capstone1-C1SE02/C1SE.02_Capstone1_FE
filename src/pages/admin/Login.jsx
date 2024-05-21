@@ -69,7 +69,7 @@ const Login = () => {
   };
 
   return isLoading ? (
-    <div className="flex min-h-screen w-full items-center justify-center bg-secondary">
+    <div className="bg-backLayout flex min-h-screen w-full items-center justify-center">
       <HashLoader
         color={"#000"}
         loading={true}
@@ -79,7 +79,7 @@ const Login = () => {
       />
     </div>
   ) : (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-secondary">
+    <div className="bg-backLayout flex min-h-screen w-full flex-col items-center justify-center">
       <div className="h-[396px] w-[638px] rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
         <div className="relative flex h-[66px] w-[576px] items-center">
           <img
