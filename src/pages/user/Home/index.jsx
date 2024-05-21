@@ -7,6 +7,7 @@ import { searchByPicture } from "@/api/user";
 function Home() {
   const [chonAnh, setChonAnh] = useState("/images/noPicture.svg");
   const [anh, setAnh] = useState("Chưa có tệp nào được chọn");
+  const [file, setFile] = useState(null);
 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Home() {
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setMessage("");
+      setFile(e.target.files[0]);
       setAnh(e.target.files[0].name);
       setChonAnh(URL.createObjectURL(e.target.files[0]));
     }
@@ -26,20 +28,19 @@ function Home() {
     return "w-full h-full object-cover rounded-[10px]";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (chonAnh === "/images/noPicture.svg") {
         setMessage("Vui lòng chọn ảnh trước khi tra cứu");
         return;
       }
-      const response = searchByPicture({ picture: chonAnh });
-      console.log("Home -> response", response);
+      const response = await searchByPicture({ image: file });
 
-      navigate("/result");
+      navigate("/result", { state: { data: response.data.data } });
     } catch (error) {
       console.log("Home -> error", error);
-      setMessage("Có lỗi xảy ra, vui lòng thử lại sau!");
+      setMessage("Ảnh không hợp lệ. Vui lòng gửi lại ảnh!");
     }
   };
 

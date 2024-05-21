@@ -9,9 +9,9 @@ import { searchByTextField, getCaptcha } from "@/api/user";
 function SearchByText() {
   const navigate = useNavigate();
 
-  const [soHieuVanBang, setSoHieuVanBang] = useState("123");
-  const [soVaoSo, setSoVaoSo] = useState("321");
-  const [hoTen, setHoTen] = useState("Lê Văn Tiến");
+  const [soHieuVanBang, setSoHieuVanBang] = useState("471708");
+  const [soVaoSo, setSoVaoSo] = useState("KMQ61");
+  const [hoTen, setHoTen] = useState("Nguyễn Văn Quốc");
   const [keyMaXacNhan, setKeyMaXacNhan] = useState("");
   const [maXacNhan, setMaXacNhan] = useState("");
   const [anhMaXacNhan, setAnhMaXacNhan] = useState("/images/captchaImage.png");
