@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function Nav({ onClick }) {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const active = "bg-custom-bg-notActive-nav text-custom-text-notActive-nav";
+  const active = "bg-custom-bg-active-nav text-custom-text-notActive-nav";
 
   const handleSetIsactive = (index) => {
     setActiveIndex(index);
@@ -25,7 +25,8 @@ function Nav({ onClick }) {
           <ul>
             <li
               onClick={(e) => handleSetIsactive(5)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              // className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc]  ${activeIndex === 5 ? active : ""}`}
             >
               <NavLink
                 to={"/list-majored"}
@@ -36,7 +37,7 @@ function Nav({ onClick }) {
             </li>
             <li
               onClick={(e) => handleSetIsactive(3)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 3 ? active : ""}`}
             >
               <NavLink
                 to={"/list-academic-program"}
@@ -47,7 +48,7 @@ function Nav({ onClick }) {
             </li>
             <li
               onClick={(e) => handleSetIsactive(7)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 7 ? active : ""}`}
             >
               <NavLink
                 to={"/degree-list"}
@@ -58,7 +59,7 @@ function Nav({ onClick }) {
             </li>
             <li
               onClick={(e) => handleSetIsactive(2)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 2 ? active : ""}`}
             >
               <NavLink
                 to={"/list-year"}
@@ -68,8 +69,8 @@ function Nav({ onClick }) {
               </NavLink>
             </li>
             <li
-              // onClick={(e) => handleSetIsactive(0)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              onClick={(e) => handleSetIsactive(1)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 1 ? active : ""}`}
             >
               <NavLink
                 to={"/academic-sesstion-program"}
@@ -79,8 +80,8 @@ function Nav({ onClick }) {
               </NavLink>
             </li>
             <li
-              onClick={(e) => handleSetIsactive(1)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              onClick={(e) => handleSetIsactive(0)}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 0 ? active : ""}`}
             >
               <NavLink
                 to={"/list-student"}
@@ -92,7 +93,7 @@ function Nav({ onClick }) {
 
             <li
               onClick={(e) => handleSetIsactive(4)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 4 ? active : ""}`}
             >
               <NavLink
                 to={"/list-academic-program-year"}
@@ -104,7 +105,7 @@ function Nav({ onClick }) {
 
             <li
               onClick={(e) => handleSetIsactive(6)}
-              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-custom-bg-active-nav hover:text-custom-text-active-nav ${activeIndex === 0 ? active : ""}`}
+              className={`relative list-none rounded-[10px] text-[14px] font-medium hover:bg-[#669bbc] ${activeIndex === 6 ? active : ""}`}
             >
               <NavLink
                 to={"/degree-book"}

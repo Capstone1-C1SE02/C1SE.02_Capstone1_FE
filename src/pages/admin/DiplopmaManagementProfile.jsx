@@ -30,7 +30,7 @@ function DiplopmaManagementProfile() {
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [degreebooks, setDegreebooks] = useState([]);
-  const [student, setStudent] = useState();
+  const [students, setStudent] = useState();
   const [academicleveltype, setAcademicleveltype] = useState();
   const statuses = [
     { id: 0, status: "ĐÃ HOÀN THÀNH" },
@@ -51,6 +51,7 @@ function DiplopmaManagementProfile() {
         const response = await axiosConfig.get(
           `/diplomamanagementprofile?page=${page}`,
         );
+        console.log("response", response);
         setDegreebooks(response.data.results.data);
         setPanigationData({
           count: response.data.count,
@@ -64,14 +65,15 @@ function DiplopmaManagementProfile() {
     }
     fetchDegreesData();
   }, [render, page]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const student = await Student();
         const academicProgram = await AcademicProgram();
+        const student = await Student();
+        setAcademicProgram(academicProgram.data.data);
+        setStudent(student.data.data);
         const academicleveltype = await Academicleveltype();
-        setStudent(student.data.results.data);
-        setAcademicProgram(academicProgram.data.results.data);
         setAcademicleveltype(academicleveltype.data);
       } catch (error) {
         console.log(error);
@@ -85,7 +87,6 @@ function DiplopmaManagementProfile() {
     isOpen: false,
   });
 
-  console.log(showActionMenu.studentId);
   const [idStudent, setIdStudent] = useState("");
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
@@ -303,8 +304,10 @@ function DiplopmaManagementProfile() {
     console.log("id: " + id);
     handleEditAction();
   };
+
+  const searchStudent = () => {};
   return (
-    <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-secondary">
+    <div className=" flex h-full w-full flex-col gap-[10px] overflow-x-auto bg-backLayout">
       <HeaderAndInput
         lable={"Quản lý bằng cấp"}
         onClick={handleAddAction}
@@ -344,11 +347,11 @@ function DiplopmaManagementProfile() {
                   }
                 >
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.LAST_NAME +
-                      " " +
-                      student.MIDDLE_NAME +
-                      " " +
-                      student.FIRST_NAME}
+                    {students?.map(
+                      (i) =>
+                        i.STUDENT_ID_NUMBER == student.STUDENT_ID_NUMBER &&
+                        i.LAST_NAME + " " + i.MIDDLE_NAME + " " + i.FIRST_NAME,
+                    )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {student.STUDENT_ID_NUMBER}
@@ -426,7 +429,7 @@ function DiplopmaManagementProfile() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 12)}`}
+            count={panigationData.page}
             handlePageChange={handlePageChange}
           />
         </div>
@@ -442,8 +445,19 @@ function DiplopmaManagementProfile() {
                 <FaTimes onClick={handleAddAction} />
               </div>
             </div>
-
             <div className="border-y-[1px] border-border-body-form py-[20px]">
+              <div className="flex h-[100px] gap-[30px]">
+                <InputForm2
+                  text={"Mã sinh viên:"}
+                  setValue={setPayload}
+                  keyObject={"STUDENT_ID_NUMBER"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w1
+                  btn
+                  searchStudent={searchStudent}
+                />
+              </div>
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
                   text={"Họ:"}
@@ -472,20 +486,12 @@ function DiplopmaManagementProfile() {
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={"Mã sinh viên:"}
-                  setValue={setPayload}
-                  keyObject={"STUDENT_ID_NUMBER"}
-                  setInvalidFields={setInvalidFields}
-                  invalidFields={invalidFields}
-                  w333
-                />{" "}
-                <InputForm2
                   text={"Năm tốt nghiệp:"}
                   setValue={setPayload}
                   keyObject={"GRADUATION_YEAR"}
                   setInvalidFields={setInvalidFields}
                   invalidFields={invalidFields}
-                  w333
+                  w22
                 />
                 <SelectForm
                   text={"Loại đào tạo:"}
@@ -495,13 +501,13 @@ function DiplopmaManagementProfile() {
                   dataAPI={academicleveltype}
                   dataValue={"ACADEMIC_LEVEL_TYPE_ID"}
                   dataName={"ACADEMIC_LEVEL_TYPE_NAME"}
-                  w333
+                  w22
                   invalidFields={invalidFields}
                 />
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <SelectForm
-                  text={" chuyên ngành đào tạo:"}
+                  text={"Chuyên ngành đào tạo:"}
                   setValue={setPayload}
                   keyObject={"ACADEMIC_PROGRAM_ID"}
                   setInvalidFields={setInvalidFields}
@@ -599,7 +605,7 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0  z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>

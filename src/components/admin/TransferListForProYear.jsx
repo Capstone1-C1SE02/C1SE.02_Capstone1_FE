@@ -105,7 +105,8 @@ export default function TransferListForProYear({ onRightListChange }) {
       <List
         className="m-0 p-0 "
         sx={{
-          width: 460,
+          minWidth: 460,
+          width: "100%",
           height: 400,
           bgcolor: "background.paper",
           overflow: "auto",

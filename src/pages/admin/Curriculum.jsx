@@ -56,7 +56,7 @@ function Curriculum() {
         const learningStatus = await LearningStatusType();
         const academicProgram = await AcademicProgram();
         setLearningStatusType(learningStatus.data);
-        setAcademicProgram(academicProgram.data.results.data);
+        setAcademicProgram(academicProgram.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -260,7 +260,7 @@ function Curriculum() {
   };
 
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <ToastContainer />
       <HeaderAndInput
         lable={"Danh sách chương trình đào tạo"}
@@ -275,13 +275,10 @@ function Curriculum() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[200px] px-4 py-2">
-                  Mã chương trình đào tạo
-                </th>
-                <th className=" min-w-[200px] px-4 py-2">
+                <th className=" min-w-[250px] px-4 py-2">
                   Tên chương trình đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
+                <th className=" min-w-[180px] px-4 py-2">Trạng thái đào tạo</th>
                 <th className=" min-w-[350px] px-4 py-2">
                   Tên chuyên ngành đào tạo
                 </th>
@@ -297,17 +294,20 @@ function Curriculum() {
                   className="flex max-h-[38px]  items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(degreebook.CURRICULUM_ID)}
                 >
-                  <td className="min-w-[200px] px-4 py-2">
-                    {degreebook.CURRICULUM_ID}
-                  </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="min-w-[250px] px-4 py-2">
                     {degreebook.CURRICULUM_NAME}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="min-w-[180px] px-4 py-2">
                     {degreebook.CURRICULUM_STATUS_NAME ? "Đang" : "Chưa"}
                   </td>
                   <td className="min-w-[350px] px-4 py-2">
-                    {degreebook.ACADEMIC_PROGRAM_ID}
+                    {academicProgram?.length > 0 &&
+                      academicProgram.map(
+                        (item) =>
+                          item.ACADEMIC_PROGRAM_ID ==
+                            degreebook.ACADEMIC_PROGRAM_ID &&
+                          item.ACADEMIC_PROGRAM_NAME,
+                      )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {degreebook.DESCRIPTION}
@@ -351,7 +351,7 @@ function Curriculum() {
       <div className="fixed bottom-2 w-full">
         <div className="flex justify-center">
           <FooterPage
-            count={+`${parseInt(panigationData.count / 94)}`}
+            count={panigationData.page}
             handlePageChange={handlePageChange}
           />
         </div>
@@ -359,7 +359,7 @@ function Curriculum() {
 
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -373,20 +373,12 @@ function Curriculum() {
             <div className="border-y-[1px] border-border-body-form py-[20px]">
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
-                  text={"Mã chương trình đào tạo:"}
-                  setValue={setPayload}
-                  keyObject={"CURRICULUM_ID"}
-                  setInvalidFields={setInvalidFields}
-                  invalidFields={invalidFields}
-                  w333
-                />
-                <InputForm2
                   text={"Tên chương trình đào tạo:"}
                   setValue={setPayload}
                   keyObject={"CURRICULUM_NAME"}
                   setInvalidFields={setInvalidFields}
                   invalidFields={invalidFields}
-                  w333
+                  w22
                 />
                 <SelectForm
                   text={"Trạng thái đào tạo:"}
@@ -394,7 +386,7 @@ function Curriculum() {
                   keyObject={"CURRICULUM_STATUS_NAME"}
                   setInvalidFields={setInvalidFields}
                   invalidFields={invalidFields}
-                  w333
+                  w22
                   dataNoAPI={statuses}
                 />
               </div>
@@ -442,7 +434,7 @@ function Curriculum() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[410px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[410px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -462,32 +454,12 @@ function Curriculum() {
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
-                          Mã chương trình đào tạo:
-                        </label>
-                        <input
-                          defaultValue={
-                            objectPayload[student.CURRICULUM_ID].CURRICULUM_ID
-                          }
-                          type="text"
-                          id="CURRICULUM_ID"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          onChange={(e) =>
-                            handledOnchangeEdit(
-                              e,
-                              student.CURRICULUM_ID,
-                              "CURRICULUM_ID",
-                            )
-                          }
-                        />
-                      </div>{" "}
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
                           Tên chương trình đào tạo:
                         </label>
                         <input
                           type="text"
                           id="CURRICULUM_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           defaultValue={
                             objectPayload[student.CURRICULUM_ID].CURRICULUM_NAME
                           }
@@ -512,7 +484,7 @@ function Curriculum() {
                           }
                           type="text"
                           id="CURRICULUM_STATUS_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,

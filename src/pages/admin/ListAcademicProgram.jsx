@@ -19,6 +19,10 @@ import Swal from "sweetalert2";
 
 const { BsThreeDotsVertical, FaTimes } = icon;
 import "react-toastify/dist/ReactToastify.css";
+const statuses = [
+  { id: 0, value: true, status: "Kỹ sư" },
+  { id: 1, value: false, status: "Cử nhân" },
+];
 
 function ListAcademicProgram() {
   const dispatch = useDispatch();
@@ -36,6 +40,7 @@ function ListAcademicProgram() {
       try {
         const response = await axiosConfig.get(`/academicprogram?page=${page}`);
         setAcademicPrograms(response.data.results.data);
+        console.log("academicprograms", academicprograms);
         setPanigationData({
           count: response.data.count,
           page: response.data.total_pages,
@@ -56,7 +61,7 @@ function ListAcademicProgram() {
         const academiclevel = await Academicleveltype();
         const degree = await Degree();
         setAcademicleveltype(academiclevel.data);
-        setDegree(degree.data.results.data);
+        setDegree(degree.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -271,7 +276,7 @@ function ListAcademicProgram() {
     handleEditAction();
   };
   return (
-    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-secondary">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <ToastContainer />
       <HeaderAndInput
         lable={"Danh sách chuyên ngành đào tạo"}
@@ -291,7 +296,7 @@ function ListAcademicProgram() {
                 <th className=" min-w-[400px] px-4 py-2">
                   Tên chuyên ngành đào tạo
                 </th>
-                <th className=" min-w-[400px] px-4 py-2">Tên ngành tạo</th>
+                <th className=" min-w-[300px] px-4 py-2">Tên ngành tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo </th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Thời gian đào tạo</th>
@@ -314,8 +319,8 @@ function ListAcademicProgram() {
                   <td className="min-w-[400px] px-4 py-2">
                     {academicprogram.ACADEMIC_PROGRAM_NAME}
                   </td>
-                  <td className="min-w-[400px] px-4 py-2">
-                    {degree.length > 0 &&
+                  <td className="min-w-[300px] px-4 py-2">
+                    {degree?.length > 0 &&
                       degree.map(
                         (degree) =>
                           degree.DEGREE_ID === academicprogram.DEGREE_ID &&
@@ -323,13 +328,17 @@ function ListAcademicProgram() {
                       )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {academicprogram.ACADEMIC_LEVEL_TYPE_ID}
+                    {academicprogram.ACADEMIC_LEVEL_TYPE_ID == 1
+                      ? "Đại học"
+                      : "Cử nhân"}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {academicprogram.MODE_OF_STUDY}
+                    {academicprogram.MODE_OF_STUDY == 0
+                      ? "Chính quy"
+                      : "Cao đẳng"}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {academicprogram.DEGREE_DURATION}
+                    {`${academicprogram.DEGREE_DURATION} năm`}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.DESCRIPTION}
@@ -384,7 +393,7 @@ function ListAcademicProgram() {
 
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -405,68 +414,26 @@ function ListAcademicProgram() {
                   invalidFields={invalidFields}
                   w333
                 />
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Bậc đào tạo tạo
-                  </label>
-                  <select
-                    id="ACADEMIC_LEVEL_TYPE_ID"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    <option value={0}>Chính quy</option>
-                    <option value={1}>Cao đẳng</option>
-                  </select>
-                  {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "MODE_OF_STUDY",
-                    ) && (
-                      <small className="italic text-red-500">
-                        {
-                          invalidFields.find((i) => i.name === "MODE_OF_STUDY")
-                            ?.message
-                        }
-                      </small>
-                    )}
-                </div>{" "}
-                <div className="flex flex-col gap-[5px]">
-                  <label className="text-[16px] font-normal">
-                    Loại hình đào tạo
-                  </label>
-                  <select
-                    id="MODE_OF_STUDY"
-                    className="block h-[40px] w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    type="text"
-                    onChange={(e) =>
-                      setPayload((pre) => ({
-                        ...pre,
-                        [e.target.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option hidden></option>
-                    <option value={0}>Chính quy</option>
-                    <option value={1}>Cao đẳng</option>
-                  </select>
-                  {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "MODE_OF_STUDY",
-                    ) && (
-                      <small className="italic text-red-500">
-                        {
-                          invalidFields.find((i) => i.name === "MODE_OF_STUDY")
-                            ?.message
-                        }
-                      </small>
-                    )}
-                </div>{" "}
+                <SelectForm
+                  text={"Bậc đào tạo tạo:"}
+                  setValue={setPayload}
+                  keyObject={"ACADEMIC_LEVEL_TYPE_ID"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                  dataAPI={academicleveltype}
+                  dataValue={"ACADEMIC_LEVEL_TYPE_ID"}
+                  dataName={"ACADEMIC_LEVEL_TYPE_NAME"}
+                />
+                <SelectForm
+                  text={"Loại hình đào tạo:"}
+                  setValue={setPayload}
+                  keyObject={"MODE_OF_STUDY"}
+                  setInvalidFields={setInvalidFields}
+                  invalidFields={invalidFields}
+                  w333
+                  dataNoAPI={statuses}
+                />
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
@@ -531,7 +498,7 @@ function ListAcademicProgram() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[20px] z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">

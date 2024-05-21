@@ -20,7 +20,7 @@ export const addStudent = async (student, dispatch) => {
     dispatch(addActionSuccess(res.data));
     console.log("add student 20 apiRequestAdd ", res.data.message);
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error);
     dispatch(addActionFailed(error.response.data));
   }
 };
