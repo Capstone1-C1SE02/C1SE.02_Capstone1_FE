@@ -421,7 +421,7 @@ function ListAcademicProgram() {
 
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -526,7 +526,7 @@ function ListAcademicProgram() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[25%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[20%]  z-20 m-auto h-[610px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">

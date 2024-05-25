@@ -44,7 +44,7 @@ function HeaderAndInput({
 
           <button
             onClick={buttonClick}
-            className="p-3 text-[14px] font-semibold"
+            className="p-3 text-[14px] font-semibold "
           >
             Tìm kiếm
           </button>
