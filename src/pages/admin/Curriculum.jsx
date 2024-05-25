@@ -110,7 +110,7 @@ function Curriculum() {
     let invalids = 0;
     let fields = Object.entries(payload);
     fields.forEach((item, index) => {
-      if (index !== 0 && item[1] === "") {
+      if (index !== 0 && item[0] !== "DESCRIPTION" && item[1] === "") {
         setInvalidFields((prev) => [
           ...prev,
           {

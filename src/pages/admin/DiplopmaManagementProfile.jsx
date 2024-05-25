@@ -202,7 +202,8 @@ function DiplopmaManagementProfile() {
     let invalids = 0;
     let fields = Object.entries(payload);
     fields.forEach((item, index) => {
-      if (item[1] === "") {
+      console.log("item", item[0] === "APPROVED");
+      if (item[1] === "" && item[0] != "APPROVED") {
         setInvalidFields((prev) => [
           ...prev,
           {

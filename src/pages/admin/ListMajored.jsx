@@ -121,7 +121,7 @@ function ListMajored() {
     let invalids = 0;
     let fields = Object.entries(payload);
     fields.forEach((item, index) => {
-      if (index !== 0 && item[1] === "") {
+      if (index !== 0 && item[0] !== "DESCRIPTION" && item[1] === "") {
         setInvalidFields((prev) => [
           ...prev,
           {
@@ -284,6 +284,7 @@ function ListMajored() {
         valueSearch={searchValue}
         setvalueSearch={setSearchValue}
         endSearch={handleEndSearch}
+        searchOrNot
       />
       <div className="h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">

@@ -32,7 +32,7 @@ function Nav({ onClick }) {
                 to={"/list-majored"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Quản lý Ngành Đào Tạo
+                Quản lý ngành đào Tạo
               </NavLink>
             </li>
             <li
@@ -43,7 +43,7 @@ function Nav({ onClick }) {
                 to={"/list-academic-program"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Quản lý chuyên ngành Đào tạo
+                Quản lý chuyên ngành đào tạo
               </NavLink>
             </li>
             <li
@@ -65,7 +65,7 @@ function Nav({ onClick }) {
                 to={"/list-year"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Năm Tuyển Sinh
+                Năm tuyển Sinh
               </NavLink>
             </li>
             <li
@@ -87,7 +87,7 @@ function Nav({ onClick }) {
                 to={"/list-student"}
                 className={" block w-full px-[20px] py-[5px]"}
               >
-                Quản lý Hồ sơ Sinh viên
+                Quản lý hồ sơ Sinh viên
               </NavLink>
             </li>
 

@@ -369,6 +369,7 @@ function ListStudent() {
         valueSearch={searchValue}
         setvalueSearch={setSearchValue}
         endSearch={handleEndSearch}
+        searchOrNot
       />
 
       <div className="h-[84%] rounded-xl bg-table-bg">
@@ -550,11 +551,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "MIDDLE_NAME",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "MIDDLE_NAME")
                             ?.message
                         }
                       </small>
@@ -575,11 +576,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "FIRST_NAME",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "FIRST_NAME")
                             ?.message
                         }
                       </small>
@@ -602,12 +603,13 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "STUDENT_ID_NUMBER",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
+                          invalidFields.find(
+                            (i) => i.name === "STUDENT_ID_NUMBER",
+                          )?.message
                         }
                       </small>
                     )}
@@ -627,11 +629,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "BIRTH_DATE",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "BIRTH_DATE")
                             ?.message
                         }
                       </small>
@@ -652,11 +654,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "BIRTH_PLACE",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "BIRTH_PLACE")
                             ?.message
                         }
                       </small>
@@ -682,12 +684,10 @@ function ListStudent() {
                     <option value={false}>Nữ</option>
                   </select>{" "}
                   {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
-                    ) && (
+                    invalidFields.some((item) => item.name === "GENDER") && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "GENDER")
                             ?.message
                         }
                       </small>
@@ -707,12 +707,10 @@ function ListStudent() {
                     }
                   />{" "}
                   {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
-                    ) && (
+                    invalidFields.some((item) => item.name === "NATION") && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "NATION")
                             ?.message
                         }
                       </small>
@@ -733,11 +731,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "NATIONALITY",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "NATIONALITY")
                             ?.message
                         }
                       </small>
@@ -760,12 +758,13 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "PEOPLE_ID_NUMBER",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
+                          invalidFields.find(
+                            (i) => i.name === "PEOPLE_ID_NUMBER",
+                          )?.message
                         }
                       </small>
                     )}
@@ -787,11 +786,11 @@ function ListStudent() {
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "PHONE_NUMBER",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
+                          invalidFields.find((i) => i.name === "PHONE_NUMBER")
                             ?.message
                         }
                       </small>
@@ -811,14 +810,9 @@ function ListStudent() {
                     }
                   />{" "}
                   {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
-                    ) && (
+                    invalidFields.some((item) => item.name === "EMAIL") && (
                       <small className="italic text-red-500">
-                        {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
-                        }
+                        {invalidFields.find((i) => i.name === "EMAIL")?.message}
                       </small>
                     )}
                 </div>{" "}
@@ -853,12 +847,13 @@ function ListStudent() {
                   </select>{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "LEARNING_STATUS_TYPE_ID",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
+                          invalidFields.find(
+                            (i) => i.name === "LEARNING_STATUS_TYPE_ID",
+                          )?.message
                         }
                       </small>
                     )}
@@ -891,12 +886,13 @@ function ListStudent() {
                   </select>{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
+                      (item) => item.name === "ACADEMIC_LEVEL_TYPE_ID",
                     ) && (
                       <small className="italic text-red-500">
                         {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
+                          invalidFields.find(
+                            (i) => i.name === "ACADEMIC_LEVEL_TYPE_ID",
+                          )?.message
                         }
                       </small>
                     )}
@@ -917,17 +913,6 @@ function ListStudent() {
                       }))
                     }
                   />{" "}
-                  {invalidFields.length > 0 &&
-                    invalidFields.some(
-                      (item) => item.name === "DEGREE_CODE",
-                    ) && (
-                      <small className="italic text-red-500">
-                        {
-                          invalidFields.find((i) => i.name === "DEGREE_CODE")
-                            ?.message
-                        }
-                      </small>
-                    )}
                 </div>{" "}
               </div>
             </div>
