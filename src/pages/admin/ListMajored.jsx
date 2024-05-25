@@ -292,12 +292,12 @@ function ListMajored() {
           >
             <thead className="relative flex w-full flex-col justify-between">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[300px] px-4 py-2">Mã ngành đào tạo</th>
-                <th className=" min-w-[300px] px-4 py-2">Tên ngành đào tạo</th>
-                <th className=" min-w-[300px] px-4 py-2">
+                <th className=" min-w-[200px] px-4 py-2">Mã ngành đào tạo</th>
+                <th className=" min-w-[400px] px-4 py-2">Tên ngành đào tạo</th>
+                <th className=" min-w-[400px] px-4 py-2">
                   Trạng thái ngành đào tạo
                 </th>
-                <th className=" min-w-[500px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
@@ -308,14 +308,14 @@ function ListMajored() {
                   className="flex h-[58px] items-center  justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(major.DEGREE_ID)}
                 >
-                  <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
-                  <td className="w-[300px] px-4 py-2">{major.DEGREE_NAME}</td>
-                  <td className="w-[300px] px-4 py-2">
+                  <td className="w-[200px] px-4 py-2">{major.DEGREE_CODE}</td>
+                  <td className="w-[400px] px-4 py-2">{major.DEGREE_NAME}</td>
+                  <td className="w-[400px] px-4 py-2">
                     {statuses?.map(
                       (item) => item.id == major.DEGREE_STATUS && item.status,
                     )}
                   </td>
-                  <td className="w-[500px] px-4 py-2">{major.DESCRIPTION}</td>
+                  <td className="w-[200px] px-4 py-2">{major.DESCRIPTION}</td>
                   <td
                     onClick={() => handleActionClick(major.DEGREE_ID)}
                     className={`w-[10px] ${
