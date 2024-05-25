@@ -3,6 +3,7 @@ import ErrorMessage from "@/components/user/Form/error-message";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { searchByPicture } from "@/api/user";
+import { cn } from "@/lib/utils";
 
 function Home() {
   const [chonAnh, setChonAnh] = useState("/images/noPicture.svg");
@@ -11,6 +12,8 @@ function Home() {
 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -29,10 +32,13 @@ function Home() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
+      setMessage("");
       if (chonAnh === "/images/noPicture.svg") {
         setMessage("Vui lòng chọn ảnh trước khi tra cứu");
+        setLoading(false);
         return;
       }
       const response = await searchByPicture({ image: file });
@@ -40,6 +46,7 @@ function Home() {
       navigate("/result", { state: { data: response.data.data } });
     } catch (error) {
       console.log("Home -> error", error);
+      setLoading(false);
       setMessage("Ảnh không hợp lệ. Vui lòng gửi lại ảnh!");
     }
   };
@@ -54,7 +61,12 @@ function Home() {
         className="flex flex-col items-end gap-[20px]"
         onSubmit={handleSubmit}
       >
-        <div className="flex w-full flex-col gap-2 md:flex-row md:items-center md:gap-8">
+        <div
+          className={cn(
+            "flex w-full flex-col gap-2 md:flex-row md:items-center md:gap-8",
+            { "cursor-none opacity-50": loading },
+          )}
+        >
           <label
             htmlFor="ChonAnh"
             className="font-[500] md:text-right lg:w-[150px] xl:w-[200px]"
@@ -81,6 +93,7 @@ function Home() {
           <Button
             className="ml-auto cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 text-[18px] hover:bg-primary-0.9"
             type="submit"
+            disabled={loading}
           >
             Tra cứu
           </Button>

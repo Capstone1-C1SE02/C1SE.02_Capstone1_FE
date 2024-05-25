@@ -1,6 +1,21 @@
-function FormField({ label, id, value, setValue, type = "text", image }) {
+import { cn } from "@/lib/utils";
+
+function FormField({
+  label,
+  id,
+  value,
+  setValue,
+  type = "text",
+  image,
+  disabled,
+}) {
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-7 xl:gap-8">
+    <div
+      className={cn(
+        "flex flex-col gap-2 md:flex-row md:items-center md:gap-7 xl:gap-8",
+        { "cursor-none opacity-50": disabled },
+      )}
+    >
       <label
         htmlFor={id}
         className="flex-shrink-0 font-[500] md:w-[150px] md:text-right lg:w-[200px]"

@@ -69,7 +69,7 @@ const Login = () => {
   };
 
   return isLoading ? (
-    <div className="bg-backLayout flex min-h-screen w-full items-center justify-center">
+    <div className="flex min-h-screen w-full items-center justify-center bg-backLayout">
       <HashLoader
         color={"#000"}
         loading={true}
@@ -79,14 +79,10 @@ const Login = () => {
       />
     </div>
   ) : (
-    <div className="bg-backLayout flex min-h-screen w-full flex-col items-center justify-center">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center bg-backLayout">
       <div className="h-[396px] w-[638px] rounded-lg bg-white px-8 py-6 shadow-md dark:bg-gray-900">
         <div className="relative flex h-[66px] w-[576px] items-center">
-          <img
-            className="m-auto block h-[50px] w-[170px] text-center"
-            src="https://reviewedu.net/wp-content/uploads/2021/09/dai-hoc-duy-tan.png"
-            alt="logo"
-          />
+          <img className="m-auto flex" src="/images/logo.svg" alt="logo" />
           <div className="absolute right-0 ">
             <Link className="block h-5 w-[40px] font-bold" to={"/"}>
               <LogIn />

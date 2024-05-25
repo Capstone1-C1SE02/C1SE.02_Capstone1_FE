@@ -8,10 +8,11 @@ import { searchByTextField, getCaptcha } from "@/api/user";
 
 function SearchByText() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const [soHieuVanBang, setSoHieuVanBang] = useState("471708");
-  const [soVaoSo, setSoVaoSo] = useState("KMQ61");
-  const [hoTen, setHoTen] = useState("Nguyễn Văn Quốc");
+  const [soHieuVanBang, setSoHieuVanBang] = useState("");
+  const [soVaoSo, setSoVaoSo] = useState("");
+  const [hoTen, setHoTen] = useState("");
   const [keyMaXacNhan, setKeyMaXacNhan] = useState("");
   const [maXacNhan, setMaXacNhan] = useState("");
   const [anhMaXacNhan, setAnhMaXacNhan] = useState("/images/captchaImage.png");
@@ -36,7 +37,9 @@ function SearchByText() {
 
   const handleSubmit = useCallback(
     async (e) => {
+      console.log("Clicked");
       e.preventDefault();
+      setLoading(true);
       try {
         setMessage("");
         if (
@@ -46,6 +49,7 @@ function SearchByText() {
           maXacNhan === ""
         ) {
           setMessage("Vui lòng nhập đầy đủ thông tin!");
+          setLoading(false);
           return;
         }
         const response = await searchByTextField({
@@ -69,10 +73,11 @@ function SearchByText() {
         }
       } catch (error) {
         console.log("SearchByText -> error", error);
-        setMessage(error.response.data.message);
+        setLoading(false);
+        setMessage(error?.response?.data?.message);
       }
     },
-    [soHieuVanBang, soVaoSo, hoTen, maXacNhan],
+    [soHieuVanBang, soVaoSo, hoTen, maXacNhan, loading],
   );
 
   return (
@@ -88,18 +93,21 @@ function SearchByText() {
           id="SoHieuVanBang"
           value={soHieuVanBang}
           setValue={setSoHieuVanBang}
+          disabled={loading}
         />
         <FormField
           label="Số vào sổ"
           id="SoVaoSo"
           value={soVaoSo}
           setValue={setSoVaoSo}
+          disabled={loading}
         />
         <FormField
           label="Họ và tên"
           id="HoTen"
           value={hoTen}
           setValue={setHoTen}
+          disabled={loading}
         />
         <FormField
           label="Mã xác nhận"
@@ -107,6 +115,7 @@ function SearchByText() {
           value={maXacNhan}
           setValue={setMaXacNhan}
           image={anhMaXacNhan}
+          disabled={loading}
         />
       </div>
       <div className="flex w-full items-center justify-between">
@@ -114,6 +123,7 @@ function SearchByText() {
         <Button
           className="ml-auto cursor-pointer bg-[--primaryBackgroundColor] px-10 py-2 text-[18px] hover:bg-primary-0.9"
           type="submit"
+          disabled={loading}
         >
           Tra cứu
         </Button>
