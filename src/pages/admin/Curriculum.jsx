@@ -27,8 +27,8 @@ function Curriculum() {
   const [page, setPage] = useState(1);
   const [academicProgram, setAcademicProgram] = useState();
   const statuses = [
-    { id: 0, value: true, status: "ĐÃ HOÀN THÀNH" },
-    { id: 1, value: false, status: "ĐANG" },
+    { id: 0, value: true, status: "Đang tiến hành" },
+    { id: 1, value: false, status: "Đã hoàn thành" },
   ];
   const [panigationData, setPanigationData] = useState({
     count: "",
@@ -282,7 +282,7 @@ function Curriculum() {
                 <th className=" min-w-[350px] px-4 py-2">
                   Tên chuyên ngành đào tạo
                 </th>
-                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[350px] px-4 py-2">Mô tả</th>
 
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
@@ -291,25 +291,29 @@ function Curriculum() {
               {degreebooks?.map((degreebook) => (
                 <tr
                   key={degreebook.CURRICULUM_ID}
-                  className="flex max-h-[38px]  items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex h-[58px] cursor-pointer  items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(degreebook.CURRICULUM_ID)}
                 >
                   <td className="min-w-[250px] px-4 py-2">
                     {degreebook.CURRICULUM_NAME}
                   </td>
                   <td className="min-w-[180px] px-4 py-2">
-                    {degreebook.CURRICULUM_STATUS_NAME ? "Đang" : "Chưa"}
+                    {statuses.map(
+                      (i) =>
+                        degreebook.CURRICULUM_STATUS_NAME == i.value &&
+                        i.status,
+                    )}
                   </td>
                   <td className="min-w-[350px] px-4 py-2">
                     {academicProgram?.length > 0 &&
-                      academicProgram.map(
+                      academicProgram?.map(
                         (item) =>
                           item.ACADEMIC_PROGRAM_ID ==
                             degreebook.ACADEMIC_PROGRAM_ID &&
                           item.ACADEMIC_PROGRAM_NAME,
                       )}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="w-[350px] max-w-[350px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-2">
                     {degreebook.DESCRIPTION}
                   </td>
 
@@ -476,7 +480,6 @@ function Curriculum() {
                         <label className="text-[16px] font-normal">
                           Trạng thái đào tạo
                         </label>
-
                         <select
                           defaultValue={
                             objectPayload[student.CURRICULUM_ID]
@@ -494,8 +497,11 @@ function Curriculum() {
                           }
                         >
                           <option hidden></option>
-                          <option value={true}>Đang</option>
-                          <option value={false}>Chưa</option>
+                          {statuses.map((i) => (
+                            <option key={i.id} value={i.value}>
+                              {i.status}
+                            </option>
+                          ))}
                         </select>
                       </div>{" "}
                     </div>

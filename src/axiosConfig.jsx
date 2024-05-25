@@ -65,8 +65,7 @@ instance.interceptors.response.use(
 
         localStorageDataRaw.refresh = newRefresh1;
         localStorageDataRaw.access = newAccess1;
-        console.log("localStorageData2", localStorageDataRaw.refresh);
-        console.log("localStorageData3", localStorageDataRaw);
+
         localStorage.setItem(
           "persist:auth",
           JSON.stringify(localStorageDataRaw),

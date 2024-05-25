@@ -321,7 +321,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
               {YBAPData?.map((YBAP) => (
                 <tr
                   key={YBAP.id}
-                  className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  className="relative flex h-[58px] cursor-pointer items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                   onClick={() => showViewEdit(YBAP.id)}
                 >
                   <td className="w-[300px] px-4 py-2">
@@ -487,7 +487,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
               </div>
             </div>
 
-            {YBAPData.map(
+            {YBAPData?.map(
               (academicprogram, index) =>
                 showActionMenu.studentId === academicprogram.id && (
                   <div

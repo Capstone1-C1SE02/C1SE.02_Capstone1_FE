@@ -8,6 +8,7 @@ import {
   FooterPage,
   InputForm2,
   SelectForm,
+  ImportFile,
 } from "@/components/admin";
 import {
   Student,
@@ -33,8 +34,8 @@ function DiplopmaManagementProfile() {
   const [students, setStudent] = useState();
   const [academicleveltype, setAcademicleveltype] = useState();
   const statuses = [
-    { id: 0, status: "ĐÃ HOÀN THÀNH" },
-    { id: 1, status: "ĐANG" },
+    { id: 0, value: true, status: "Đã khoá" },
+    { id: 1, value: false, status: "Chưa khoá" },
   ];
 
   console.log(statuses);
@@ -65,6 +66,46 @@ function DiplopmaManagementProfile() {
     }
     fetchDegreesData();
   }, [render, page]);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileSelect = (file) => {
+    setSelectedFile(file);
+  };
+  const handleImport = async () => {
+    try {
+      if (!selectedFile) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "File không tồn tại",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await axiosConfig.post("/upload-diploma", formData);
+      Swal.fire({
+        icon: "success",
+        title: "Import danh sách bằng cấp thành công",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setImportFile(false);
+      setRender(render + 1);
+    } catch (error) {
+      let errorMessage = Object.entries(error.response.data)[0][1];
+      for (let i = 0; i < errorMessage.length; i++) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorMessage[i].error,
+        });
+      }
+      error = "";
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -91,13 +132,12 @@ function DiplopmaManagementProfile() {
   const [addAction, showAddAction] = useState(false);
   const [editAction, showEditAction] = useState(false);
   const [deleteAction, showDeleteAction] = useState(false);
+  const [importFile, setImportFile] = useState(false);
+
   const [payload, setPayload] = useState();
 
   useEffect(() => {
     setPayload({
-      LAST_NAME: "",
-      FIRST_NAME: "",
-      MIDDLE_NAME: "",
       STUDENT_ID_NUMBER: "",
       GRADUATION_YEAR: "",
       MODE_OF_STUDY: "",
@@ -107,7 +147,7 @@ function DiplopmaManagementProfile() {
       CERTIFICATE_NUMBER: "",
       DATE_OF_DECISION_ANNOUNCEMENT: "",
       DATE_UPDATED: "",
-      APPORVEDY: "",
+      APPROVED: "",
       COMMENT: "",
       user: adminId,
     });
@@ -115,9 +155,6 @@ function DiplopmaManagementProfile() {
 
   const setPayloadAction = () => {
     setPayload({
-      LAST_NAME: "",
-      FIRST_NAME: "",
-      MIDDLE_NAME: "",
       STUDENT_ID_NUMBER: "",
       GRADUATION_YEAR: "",
       MODE_OF_STUDY: "",
@@ -127,7 +164,7 @@ function DiplopmaManagementProfile() {
       CERTIFICATE_NUMBER: "",
       DATE_OF_DECISION_ANNOUNCEMENT: "",
       DATE_UPDATED: "",
-      APPORVEDY: "",
+      APPROVED: "",
       COMMENT: "",
       user: adminId,
     });
@@ -139,9 +176,6 @@ function DiplopmaManagementProfile() {
     setObjectPayload(
       degreebooks.reduce((acc, diplopmaMP) => {
         acc[diplopmaMP.DIPLOMA_MANAGEMENT_PROFILE_ID] = {
-          LAST_NAME: diplopmaMP.LAST_NAME,
-          FIRST_NAME: diplopmaMP.FIRST_NAME,
-          MIDDLE_NAME: diplopmaMP.MIDDLE_NAME,
           STUDENT_ID_NUMBER: diplopmaMP.STUDENT_ID_NUMBER,
           GRADUATION_YEAR: diplopmaMP.GRADUATION_YEAR,
           MODE_OF_STUDY: diplopmaMP.MODE_OF_STUDY,
@@ -155,7 +189,7 @@ function DiplopmaManagementProfile() {
           DATE_OF_DECISION_ANNOUNCEMENT:
             diplopmaMP.DATE_OF_DECISION_ANNOUNCEMENT,
           DATE_UPDATED: diplopmaMP.DATE_UPDATED,
-          APPORVEDY: diplopmaMP.APPORVEDY,
+          APPROVED: diplopmaMP.APPROVED,
           COMMENT: diplopmaMP.COMMENT,
           user: adminId,
         };
@@ -225,10 +259,13 @@ function DiplopmaManagementProfile() {
   //add
   const handleAddANew = async () => {
     console.log("add payload", payload);
+    console.log("ok vali1");
+    console.log(invalidFields);
     const valid = validate(payload);
     if (valid > 0) {
       return;
     }
+    console.log("ok vali2");
     await addDiplopManamentProfile(payload, dispatch);
     setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
@@ -276,11 +313,15 @@ function DiplopmaManagementProfile() {
     showDeleteAction(!deleteAction);
     showEditAction(!editAction);
   };
+  const handleImportFile = () => {
+    setImportFile(!importFile);
+  };
 
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
     showDeleteAction(false);
+    setImportFile(false);
   };
 
   const handleActionClick = (studentId) => {
@@ -312,6 +353,7 @@ function DiplopmaManagementProfile() {
         lable={"Quản lý bằng cấp"}
         onClick={handleAddAction}
         placeholder="Nhập tên bằng cấp để tìm kiếm"
+        onClickImportFile={handleImportFile}
       />
       <div className=" relative h-[84%]  rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -322,7 +364,7 @@ function DiplopmaManagementProfile() {
               <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[200px] px-4 py-2">Tên </th>
                 <th className=" min-w-[200px] px-4 py-2">Mã sinh viên</th>
-                <th className=" min-w-[200px] px-4 py-2">
+                <th className=" min-w-[400px] px-4 py-2">
                   chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
@@ -341,7 +383,7 @@ function DiplopmaManagementProfile() {
               {degreebooks?.map((student, index) => (
                 <tr
                   key={index}
-                  className="block border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex h-[58px] cursor-pointer items-center border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() =>
                     showViewEdit(student.DIPLOMA_MANAGEMENT_PROFILE_ID)
                   }
@@ -356,8 +398,12 @@ function DiplopmaManagementProfile() {
                   <td className="min-w-[200px] px-4 py-2">
                     {student.STUDENT_ID_NUMBER}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
-                    {student.ACADEMIC_PROGRAM_ID}
+                  <td className="min-w-[400px] px-4 py-2">
+                    {academicProgram?.map(
+                      (i) =>
+                        student.ACADEMIC_PROGRAM_ID == i.ACADEMIC_PROGRAM_ID &&
+                        i.ACADEMIC_PROGRAM_NAME,
+                    )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {student.GRADUATION_YEAR}
@@ -382,9 +428,9 @@ function DiplopmaManagementProfile() {
                     {student.DATE_UPDATED}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {student.APPORVEDY === true
-                      ? "Được phê duyệt"
-                      : "Đang xử lý"}
+                    {statuses.map(
+                      (i) => i.value == student.APPROVED && i.status,
+                    )}
                   </td>
 
                   <td
@@ -437,7 +483,7 @@ function DiplopmaManagementProfile() {
 
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0  z-20 m-auto h-[800px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0  z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
@@ -453,45 +499,16 @@ function DiplopmaManagementProfile() {
                   keyObject={"STUDENT_ID_NUMBER"}
                   setInvalidFields={setInvalidFields}
                   invalidFields={invalidFields}
-                  w1
-                  btn
+                  w333
                   searchStudent={searchStudent}
                 />
-              </div>
-              <div className="flex h-[100px] gap-[30px]">
-                <InputForm2
-                  text={"Họ:"}
-                  setValue={setPayload}
-                  keyObject={"LAST_NAME"}
-                  setInvalidFields={setInvalidFields}
-                  invalidFields={invalidFields}
-                  w333
-                />
-                <InputForm2
-                  text={"Tên lót:"}
-                  setValue={setPayload}
-                  keyObject={"MIDDLE_NAME"}
-                  setInvalidFields={setInvalidFields}
-                  invalidFields={invalidFields}
-                  w333
-                />
-                <InputForm2
-                  text={"Tên:"}
-                  setValue={setPayload}
-                  keyObject={"FIRST_NAME"}
-                  setInvalidFields={setInvalidFields}
-                  invalidFields={invalidFields}
-                  w333
-                />
-              </div>
-              <div className="flex h-[100px] gap-[30px]">
                 <InputForm2
                   text={"Năm tốt nghiệp:"}
                   setValue={setPayload}
                   keyObject={"GRADUATION_YEAR"}
                   setInvalidFields={setInvalidFields}
                   invalidFields={invalidFields}
-                  w22
+                  w333
                 />
                 <SelectForm
                   text={"Loại đào tạo:"}
@@ -501,7 +518,7 @@ function DiplopmaManagementProfile() {
                   dataAPI={academicleveltype}
                   dataValue={"ACADEMIC_LEVEL_TYPE_ID"}
                   dataName={"ACADEMIC_LEVEL_TYPE_NAME"}
-                  w22
+                  w333
                   invalidFields={invalidFields}
                 />
               </div>
@@ -566,7 +583,7 @@ function DiplopmaManagementProfile() {
                 <SelectForm
                   text={"Trạng thái:"}
                   setValue={setPayload}
-                  keyObject={"APPORVEDY"}
+                  keyObject={"APPROVED"}
                   setInvalidFields={setInvalidFields}
                   w12
                   invalidFields={invalidFields}
@@ -605,7 +622,7 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 z-20 m-auto h-[710px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
@@ -622,67 +639,6 @@ function DiplopmaManagementProfile() {
                     key={item.DIPLOMA_MANAGEMENT_PROFILE_ID}
                     className="border-t-[1px] border-border-body-form py-[20px]"
                   >
-                    <div className="flex h-[100px] gap-[30px]">
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">Họ:</label>
-                        <input
-                          defaultValue={
-                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
-                              .LAST_NAME
-                          }
-                          type="text"
-                          id="LAST_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          onChange={(e) =>
-                            handledOnchangeEdit(
-                              e,
-                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
-                              "LAST_NAME",
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">
-                          Tên lót:
-                        </label>
-                        <input
-                          defaultValue={
-                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
-                              .MIDDLE_NAME
-                          }
-                          type="text"
-                          id="MIDDLE_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          onChange={(e) =>
-                            handledOnchangeEdit(
-                              e,
-                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
-                              "MIDDLE_NAME",
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="flex flex-col gap-[5px]">
-                        <label className="text-[16px] font-normal">Tên:</label>
-                        <input
-                          defaultValue={
-                            objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
-                              .FIRST_NAME
-                          }
-                          type="text"
-                          id="FIRST_NAME"
-                          className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                          onChange={(e) =>
-                            handledOnchangeEdit(
-                              e,
-                              item.DIPLOMA_MANAGEMENT_PROFILE_ID,
-                              "FIRST_NAME",
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
                     <div className="flex h-[100px] gap-[30px]">
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
@@ -893,22 +849,29 @@ function DiplopmaManagementProfile() {
                         <label className="text-[16px] font-normal">
                           Trạng thái:
                         </label>
-                        <input
+                        <select
                           defaultValue={
                             objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
-                              .APPORVEDY
+                              .APPROVED
                           }
                           type="text"
-                          id="APPORVEDY"
+                          id="APPROVED"
                           className="block w-[530px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
                               item.DIPLOMA_MANAGEMENT_PROFILE_ID,
-                              "APPORVEDY",
+                              "APPROVED",
                             )
                           }
-                        />
+                        >
+                          <option hidden></option>
+                          {statuses?.map((item) => (
+                            <option key={item.id} value={item.value}>
+                              {item.status}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                     <div className="flex h-[100px] gap-[30px]">
@@ -980,7 +943,15 @@ function DiplopmaManagementProfile() {
         />
       )}
 
-      {(addAction || editAction || deleteAction) && (
+      {importFile && (
+        <ImportFile
+          text={"Danh sách bằng cấp"}
+          handleImportAction={handleImportFile}
+          handleImport={handleImport}
+          onFileSelect={handleFileSelect}
+        />
+      )}
+      {(addAction || editAction || deleteAction || importFile) && (
         <div>
           <Label onClick={handleCloseAll} />
         </div>

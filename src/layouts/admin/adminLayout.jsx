@@ -25,7 +25,7 @@ function adminLayout({ children }) {
             <div>
               <Header onClickShowNav={handleOnClick} />
             </div>
-            <div className=" h-[92.5%] px-6 pb-2">{children}</div>
+            <div className=" h-[94.5%] px-6 pb-2">{children}</div>
           </div>
         </div>
       </div>

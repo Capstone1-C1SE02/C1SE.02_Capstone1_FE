@@ -221,7 +221,7 @@ const ListYear = () => {
   };
 
   return (
-    <div className="bg-backLayout relative mx-auto flex h-full w-full flex-col gap-[10px]">
+    <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <HeaderAndInput
         lable={"Năm học"}
         onClick={handleAddAction}
@@ -239,11 +239,11 @@ const ListYear = () => {
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className="flex w-full flex-col ">
+            <tbody className="flex w-full cursor-pointer flex-col ">
               {years?.map((year) => (
                 <tr
                   key={year.ACADEMIC_INTAKE_SESSION_ID}
-                  className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  className="relative flex h-[58px] items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                   onClick={() => showViewEdit(year.ACADEMIC_INTAKE_SESSION_ID)}
                 >
                   <td className="w-[400px] px-4 py-2">

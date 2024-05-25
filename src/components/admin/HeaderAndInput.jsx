@@ -31,12 +31,9 @@ function HeaderAndInput({
           )}
         </div>
         <div className="ml-4 flex items-center gap-2">
-          <button
-            onClick={buttonClick}
-            className="p-3 text-[14px] font-semibold"
-          >
-            Tìm kiếm
-          </button>
+          <div onClick={clearInput}>
+            <FaWindowClose size={24} onClick={endSearch} />
+          </div>
           <input
             type="text"
             className="border-black-300 h-[24px] w-[400px] border-2 p-3 text-[16px] font-light"
@@ -44,9 +41,13 @@ function HeaderAndInput({
             value={valueSearch}
             placeholder={placeholder}
           />
-          <div onClick={clearInput}>
-            <FaWindowClose size={24} onClick={endSearch} />
-          </div>
+
+          <button
+            onClick={buttonClick}
+            className="p-3 text-[14px] font-semibold"
+          >
+            Tìm kiếm
+          </button>
         </div>
       </div>
     </div>

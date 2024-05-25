@@ -20,11 +20,13 @@ import Swal from "sweetalert2";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import "react-toastify/dist/ReactToastify.css";
 const statuses = [
-  { id: 0, value: true, status: "Kỹ sư" },
-  { id: 1, value: false, status: "Cử nhân" },
+  { id: 0, status: "Chính quy" },
+  { id: 1, status: "Vừa học vừa làm" },
+  { id: 2, status: "Đào tạo từ xa" },
 ];
 
 function ListAcademicProgram() {
+  const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
   const [render, setRender] = useState(0);
   const [academicleveltype, setAcademicleveltype] = useState();
@@ -35,16 +37,25 @@ function ListAcademicProgram() {
     count: "",
     page: "",
   });
+  const [searchPayload, setsearchPayload] = useState(false);
   useEffect(() => {
     async function fetchaAademicPrograms() {
       try {
-        const response = await axiosConfig.get(`/academicprogram?page=${page}`);
-        setAcademicPrograms(response.data.results.data);
-        console.log("academicprograms", academicprograms);
-        setPanigationData({
-          count: response.data.count,
-          page: response.data.total_pages,
-        });
+        if (searchPayload == false) {
+          const response = await axiosConfig.get(
+            `/academicprogram?page=${page}`,
+          );
+          setAcademicPrograms(response.data.results.data);
+          setPanigationData({
+            count: response.data.count,
+            page: response.data.total_pages,
+          });
+        } else {
+          const response = await axiosConfig.post(
+            `/search/academicprogram?AcademicProgramName=${searchValue}`,
+          );
+          setAcademicPrograms([response.data.data]);
+        }
       } catch (error) {
         console.error(
           "Đã xảy ra lỗi khi lấy danh sách Mã chuyên ngành đào tạo:",
@@ -53,7 +64,7 @@ function ListAcademicProgram() {
       }
     }
     fetchaAademicPrograms();
-  }, [render, page]);
+  }, [render, page, searchPayload]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -275,6 +286,14 @@ function ListAcademicProgram() {
     setShowActionMenu({ studentId: id });
     handleEditAction();
   };
+  const handleSearch = async () => {
+    setsearchPayload(true);
+    setRender(render + 1);
+  };
+
+  const handleEndSearch = () => {
+    setsearchPayload(false);
+  };
   return (
     <div className="relative mx-auto flex h-full w-full flex-col gap-[10px] bg-backLayout">
       <ToastContainer />
@@ -282,6 +301,10 @@ function ListAcademicProgram() {
         lable={"Danh sách chuyên ngành đào tạo"}
         placeholder="Nhập tên chuyên ngành đào tạo để tìm kiếm"
         onClick={handleAddAction}
+        buttonClick={handleSearch}
+        valueSearch={searchValue}
+        setvalueSearch={setSearchValue}
+        endSearch={handleEndSearch}
       />
       <div className=" relative h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -300,15 +323,15 @@ function ListAcademicProgram() {
                 <th className=" min-w-[200px] px-4 py-2">Bậc đào tạo </th>
                 <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Thời gian đào tạo</th>
-                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[300px] px-4 py-2">Mô tả</th>
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className="flex w-full flex-col ">
+            <tbody className=" relative w-full">
               {academicprograms?.map((academicprogram) => (
                 <tr
                   key={academicprogram.ACADEMIC_PROGRAM_ID}
-                  className="flex max-h-[38px] items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex h-[58px] cursor-pointer items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() =>
                     showViewEdit(academicprogram.ACADEMIC_PROGRAM_ID)
                   }
@@ -321,26 +344,31 @@ function ListAcademicProgram() {
                   </td>
                   <td className="min-w-[300px] px-4 py-2">
                     {degree?.length > 0 &&
-                      degree.map(
+                      degree?.map(
                         (degree) =>
                           degree.DEGREE_ID === academicprogram.DEGREE_ID &&
                           degree.DEGREE_NAME,
                       )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {academicprogram.ACADEMIC_LEVEL_TYPE_ID == 1
-                      ? "Đại học"
-                      : "Cử nhân"}
+                    {academicleveltype?.map(
+                      (i) =>
+                        academicprogram.ACADEMIC_LEVEL_TYPE_ID ==
+                          i.ACADEMIC_LEVEL_TYPE_ID &&
+                        i.ACADEMIC_LEVEL_TYPE_NAME,
+                    )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {academicprogram.MODE_OF_STUDY == 0
                       ? "Chính quy"
-                      : "Cao đẳng"}
+                      : academicprogram.MODE_OF_STUDY == 1
+                        ? "Vừa học vừa làm"
+                        : "Đào tạo từ xa"}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {`${academicprogram.DEGREE_DURATION} năm`}
                   </td>
-                  <td className="min-w-[200px] px-4 py-2">
+                  <td className="min-w-[300px] px-4 py-2">
                     {academicprogram.DESCRIPTION}
                   </td>
                   <td
@@ -622,8 +650,11 @@ function ListAcademicProgram() {
                           }
                         >
                           <option hidden></option>
-                          <option value={0}>Chính quy</option>
-                          <option value={1}>Cao đẳng</option>
+                          {statuses?.map((i) => (
+                            <option key={i.id} value={i.id}>
+                              {i.status}
+                            </option>
+                          ))}
                         </select>
                         {invalidFields.length > 0 &&
                           invalidFields.some(
@@ -735,7 +766,7 @@ function ListAcademicProgram() {
                           }
                         >
                           <option hidden></option>
-                          {degree.map((item) => (
+                          {degree?.map((item) => (
                             <option
                               key={item.DEGREE_ID}
                               value={+item.DEGREE_ID}

@@ -1,10 +1,11 @@
-import icon from "@/ultils/icon";
-const { FaBars } = icon;
 import Button from "./Button";
 import { useState } from "react";
 import { logout } from "@/redux/apiRequests";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import icon from "@/ultils/icon";
+
+const { FaUserCircle, FaBars } = icon;
 
 function Header({ onClickShowNav, onClickLabel }) {
   const navigate = useNavigate();
@@ -21,16 +22,14 @@ function Header({ onClickShowNav, onClickLabel }) {
     console.log("logout");
   };
   return (
-    <div className="bg-backLayout flex h-[70px] w-full items-center justify-between px-6">
+    <div className="flex h-[70px] w-full items-center justify-between bg-backLayout px-6">
       <div className="text-iconHeader" onClick={onClickShowNav}>
         <FaBars onClick={onClickShowNav} />
       </div>
 
       <div className="relative">
-        <img
+        <FaUserCircle
           className="h-[30px] w-[30px] rounded-full"
-          src="https://th.bing.com/th/id/R.105feb1ff0869489e31624ff0fbd4e8c?rik=1MqbiSkQ4pBw8Q&pid=ImgRaw&r=0"
-          alt=""
           onClick={(e) => handleShowOption(e)}
         />
         {showOption && (

@@ -32,36 +32,74 @@ function ListStudent() {
     page: "",
   });
 
-  const searchValueSuccess = useSelector((state) => state.searchAction);
-  console.log("searchValueSuccess", searchValueSuccess);
   const [searchPayload, setsearchPayload] = useState(false);
-  const handleImport = async () => {};
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleFileSelect = (file) => {
+    setSelectedFile(file);
+  };
+
+  const handleImport = async () => {
+    try {
+      if (!selectedFile) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "File không tồn tại",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await axiosConfig.post("/upload-student", formData);
+      Swal.fire({
+        icon: "success",
+        title: "Import danh sách sinh viên thành công",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setImportFile(false);
+
+      console.log("Upload file successfully", response);
+    } catch (error) {
+      let errorMessage = Object.entries(error.response.data)[0][1];
+      for (let i = 0; i < errorMessage.length; i++) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorMessage[i].error,
+        });
+      }
+      error = "";
+    }
+  };
 
   useEffect(() => {
     async function fetchStudentsData() {
       try {
-        console.log("check", searchPayload);
         if (searchPayload == false) {
           const response = await axiosConfig.get(`/student?page=${page}`);
           setStudentsData(response.data.results.data);
+          console.log("response ád", response.data);
+          setPanigationData({
+            count: response.data.count,
+            page: response.data.total_pages,
+          });
         } else {
           const response = await axiosConfig.post(
             `/search/student?studentID=${searchValue}`,
           );
-          console.log("26211235134");
+
           setStudentsData([response.data.data]);
         }
-
-        setPanigationData({
-          count: response.data.count,
-          page: response.data.total_pages,
-        });
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
       }
     }
     fetchStudentsData();
   }, [render, page, searchPayload]);
+  console.log("response", panigationData.count, panigationData.page);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -276,6 +314,7 @@ function ListStudent() {
 
   //edit
   const handleSaveInformation = async (id) => {
+    console.log("objectPayload[id]", objectPayload[id]);
     const valid = validate(objectPayload[id]);
     console.log("valid edit--------", valid);
     if (valid > 0) {
@@ -283,7 +322,7 @@ function ListStudent() {
     }
     await editStudent(objectPayload[id], dispatch);
     await searchStudent(searchValue, dispatch);
-    setsearchPayload(true);
+
     setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
     setRender(render + 1);
@@ -294,7 +333,6 @@ function ListStudent() {
   const handleDelete = async () => {
     await deleleStudent(showActionMenu.studentId, dispatch);
     await searchStudent(searchValue, dispatch);
-    setsearchPayload(true);
     showDeleteAction(!deleteAction);
     setRender(render + 1);
     setShowAlert(true);
@@ -326,8 +364,8 @@ function ListStudent() {
         lable={"Danh sách sinh viên"}
         onClick={handleAddAction}
         onClickImportFile={handleImportFile}
-        buttonClick={handleSearch}
         placeholder="Nhập mã số sinh viên để tìm kiếm"
+        buttonClick={handleSearch}
         valueSearch={searchValue}
         setvalueSearch={setSearchValue}
         endSearch={handleEndSearch}
@@ -340,9 +378,9 @@ function ListStudent() {
           >
             <thead className=" relative w-full">
               <tr className="relavite block w-full text-left text-[12px] font-medium uppercase text-header-text">
+                <th className=" min-w-[200px] px-4 py-2">MSSV</th>
                 <th className=" min-w-[350px] px-4 py-2">Họ </th>
                 <th className=" min-w-[200px] px-4 py-2">Tên</th>
-                <th className=" min-w-[200px] px-4 py-2">MSSV</th>
                 <th className=" min-w-[200px] px-4 py-2">Giới tính</th>
                 <th className=" min-w-[200px] px-4 py-2">Ngày sinh</th>
                 <th className=" min-w-[500px] px-4 py-2">Nơi sinh</th>
@@ -362,18 +400,19 @@ function ListStudent() {
               {students?.map((student) => (
                 <tr
                   key={student.STUDENT_ID_NUMBER}
-                  className="flex max-h-[38px] items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex h-[58px] cursor-pointer items-center overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(student.STUDENT_ID_NUMBER)}
                 >
+                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
+                    {student.STUDENT_ID_NUMBER}
+                  </td>
                   <td className="w-[350px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.LAST_NAME + " " + student.MIDDLE_NAME}
                   </td>
                   <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.FIRST_NAME}
                   </td>
-                  <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
-                    {student.STUDENT_ID_NUMBER}
-                  </td>
+
                   <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
                     {student.GENDER ? "Nam" : "Nữ"}
                   </td>
@@ -400,10 +439,20 @@ function ListStudent() {
                     {student.COMMENTS}
                   </td>
                   <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
-                    {student.academicleveltype.ACADEMIC_LEVEL_TYPE_NAME}
+                    {learningStatusType?.map(
+                      (i) =>
+                        student.LEARNING_STATUS_TYPE_ID ==
+                          i.LEARNING_STATUS_TYPE_ID &&
+                        i.LEARNING_STATUS_TYPE_NAME,
+                    )}
                   </td>
                   <td className="w-[200px] overflow-hidden text-ellipsis px-4 py-2">
-                    {student.learningstatustype.LEARNING_STATUS_TYPE_NAME}
+                    {academicleveltype?.map(
+                      (i) =>
+                        student.ACADEMIC_LEVEL_TYPE_ID ==
+                          i.ACADEMIC_LEVEL_TYPE_ID &&
+                        i.ACADEMIC_LEVEL_TYPE_NAME,
+                    )}
                   </td>
                   <td
                     onClick={() => handleActionClick(student.STUDENT_ID_NUMBER)}
@@ -1186,16 +1235,16 @@ function ListStudent() {
                           <select
                             defaultValue={
                               objectPayload[student.STUDENT_ID_NUMBER]
-                                .ACADEMIC_LEVEL_TYPE_ID
+                                .LEARNING_STATUS_TYPE_ID
                             }
                             type="text"
-                            id="LEARNING_STATUS_TYPE_NAME"
+                            id="LEARNING_STATUS_TYPE_ID"
                             className="block w-[390px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                             onChange={(e) =>
                               handledOnchangeEdit(
                                 e,
                                 student.STUDENT_ID_NUMBER,
-                                "LEARNING_STATUS_TYPE_NAME",
+                                "LEARNING_STATUS_TYPE_ID",
                               )
                             }
                           >
@@ -1233,7 +1282,7 @@ function ListStudent() {
                           >
                             <option hidden></option>
                             {academicleveltype &&
-                              academicleveltype.map((item) => (
+                              academicleveltype?.map((item) => (
                                 <option
                                   value={item.ACADEMIC_LEVEL_TYPE_ID}
                                   key={item.ACADEMIC_LEVEL_TYPE_ID}
@@ -1312,9 +1361,10 @@ function ListStudent() {
 
       {importFile && (
         <ImportFile
-          text={"Năm tuyển sinh"}
+          text={"Danh sách sinh viên"}
           handleImportAction={handleImportFile}
           handleImport={handleImport}
+          onFileSelect={handleFileSelect}
         />
       )}
 

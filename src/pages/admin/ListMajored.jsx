@@ -24,6 +24,8 @@ const statuses = [
 ];
 function ListMajored() {
   const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState("");
+
   const [learningStatusType, setLearningStatusType] = useState();
   const [render, setRender] = useState(0);
   const [majors, setMajors] = useState([]);
@@ -32,23 +34,31 @@ function ListMajored() {
     count: "",
     page: "",
   });
+  const [searchPayload, setsearchPayload] = useState(false);
+
   useEffect(() => {
     async function fetchMajorsData() {
       try {
-        console.log("page tesst", page);
-        const response = await axiosConfig.get(`/degree?page=${page}`);
-        console.log("response", response);
-        setMajors(response.data.results.data);
-        setPanigationData({
-          count: response.data.count,
-          page: response.data.total_pages,
-        });
+        if (searchPayload == false) {
+          const response = await axiosConfig.get(`/degree?page=${page}`);
+          setMajors(response.data.results.data);
+          setPanigationData({
+            count: response.data.count,
+            page: response.data.total_pages,
+          });
+        } else {
+          const response = await axiosConfig.post(
+            `/search/degree?degreename=${searchValue}`,
+          );
+          console.log("response", response);
+          setMajors([response.data.data]);
+        }
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
       }
     }
     fetchMajorsData();
-  }, [render, page]);
+  }, [render, page, searchPayload]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,7 +87,7 @@ function ListMajored() {
     DEGREE_CODE: "",
     DEGREE_NAME: "",
     DEGREE_STATUS: "",
-    DESCRIPTON: "",
+    DESCRIPTION: "",
   });
 
   const setPayloadAction = () => {
@@ -86,7 +96,7 @@ function ListMajored() {
       DEGREE_CODE: "",
       DEGREE_NAME: "",
       DEGREE_STATUS: "",
-      DESCRIPTON: "",
+      DESCRIPTION: "",
     });
   };
 
@@ -99,7 +109,7 @@ function ListMajored() {
           DEGREE_CODE: degree.DEGREE_CODE,
           DEGREE_NAME: degree.DEGREE_NAME,
           DEGREE_STATUS: degree.DEGREE_STATUS,
-          DESCRIPTON: degree.DESCRIPTON,
+          DESCRIPTION: degree.DESCRIPTION,
         };
         return acc;
       }, {}),
@@ -186,6 +196,7 @@ function ListMajored() {
     if (valid > 0) {
       return;
     }
+    console.log("objectPayload", objectPayload[id]);
     await editMajor(objectPayload[id], dispatch);
     setCount((pre) => ({ ...pre, countEdit: pre.countEdit + 1 }));
     showEditAction(!editAction);
@@ -253,7 +264,14 @@ function ListMajored() {
     setShowActionMenu({ studentId: id });
     handleEditAction();
   };
+  const handleSearch = async () => {
+    setsearchPayload(true);
+    setRender(render + 1);
+  };
 
+  const handleEndSearch = () => {
+    setsearchPayload(false);
+  };
   const handleImport = async () => {};
 
   return (
@@ -261,8 +279,11 @@ function ListMajored() {
       <HeaderAndInput
         lable={"Danh sách ngành đào tạo"}
         onClick={handleAddAction}
-        onClickImportFile={handleImportFile}
         placeholder="Nhập tên ngành đào tạo để tìm kiếm"
+        buttonClick={handleSearch}
+        valueSearch={searchValue}
+        setvalueSearch={setSearchValue}
+        endSearch={handleEndSearch}
       />
       <div className="h-[84%] rounded-xl bg-table-bg">
         <div className="h-full p-[-60px]">
@@ -280,21 +301,21 @@ function ListMajored() {
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
             </thead>
-            <tbody className="relative flex w-full flex-col justify-between ">
+            <tbody className="relative flex w-full cursor-pointer flex-col justify-between ">
               {majors?.map((major) => (
                 <tr
                   key={major.DEGREE_ID}
-                  className="flex max-h-[38px] items-center  justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
+                  className="flex h-[58px] items-center  justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(major.DEGREE_ID)}
                 >
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_CODE}</td>
                   <td className="w-[300px] px-4 py-2">{major.DEGREE_NAME}</td>
                   <td className="w-[300px] px-4 py-2">
-                    {statuses.map(
+                    {statuses?.map(
                       (item) => item.id == major.DEGREE_STATUS && item.status,
                     )}
                   </td>
-                  <td className="w-[500px] px-4 py-2">{major.DESCRIPTON}</td>
+                  <td className="w-[500px] px-4 py-2">{major.DESCRIPTION}</td>
                   <td
                     onClick={() => handleActionClick(major.DEGREE_ID)}
                     className={`w-[10px] ${
@@ -381,7 +402,7 @@ function ListMajored() {
                   typeInput="tex"
                   text={"Mô tả:"}
                   setValue={setPayload}
-                  keyObject={"DESCRIPTON"}
+                  keyObject={"DESCRIPTION"}
                   setInvalidFields={setInvalidFields}
                   w1
                   invalidFields={invalidFields}
@@ -417,7 +438,7 @@ function ListMajored() {
               </div>
             </div>
 
-            {majors.map(
+            {majors?.map(
               (major, index) =>
                 showActionMenu.studentId === major.DEGREE_ID && (
                   <div
@@ -491,6 +512,7 @@ function ListMajored() {
                             </small>
                           )}
                       </div>
+
                       <div className="flex flex-col gap-[5px]">
                         <label className="text-[16px] font-normal">
                           Trạng thái ngành đào tạo:
@@ -513,11 +535,11 @@ function ListMajored() {
                         >
                           <option hidden></option>
                           {statuses?.map((item) => (
-                            <option key={item.id} value={item.id}>
+                            <option key={item.id} value={!item.value}>
                               {item.status}
                             </option>
                           ))}
-                        </select>{" "}
+                        </select>
                         {invalidFields.length > 0 &&
                           invalidFields.some(
                             (item) => item.name === "DEGREE_STATUS",
@@ -540,28 +562,28 @@ function ListMajored() {
                         </label>
                         <input
                           defaultValue={
-                            objectPayload[major.DEGREE_ID].DESCRIPTON
+                            objectPayload[major.DEGREE_ID].DESCRIPTION
                           }
                           type="text"
-                          id="DESCRIPTON"
+                          id="DESCRIPTION"
                           className="block w-[820px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
                           onChange={(e) =>
                             handledOnchangeEdit(
                               e,
                               major.DEGREE_ID,
-                              "DESCRIPTON",
+                              "DESCRIPTION",
                             )
                           }
                           onFocus={() => setInvalidFields("")}
                         />{" "}
                         {invalidFields.length > 0 &&
                           invalidFields.some(
-                            (item) => item.name === "DESCRIPTON",
+                            (item) => item.name === "DESCRIPTION",
                           ) && (
                             <small className="italic text-red-500">
                               {
                                 invalidFields.find(
-                                  (i) => i.name === "DESCRIPTON",
+                                  (i) => i.name === "DESCRIPTION",
                                 )?.message
                               }
                             </small>

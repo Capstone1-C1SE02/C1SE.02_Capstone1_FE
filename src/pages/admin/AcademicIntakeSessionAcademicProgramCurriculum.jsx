@@ -35,8 +35,8 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
   });
 
   const statuses = [
-    { id: 0, value: true, status: "ĐÃ HOÀN THÀNH" },
-    { id: 1, value: false, status: "ĐANG" },
+    { id: 0, value: true, status: "Đang tiến hành" },
+    { id: 1, value: false, status: "Đã hoàn thành" },
   ];
   const [YBAPData, setYBAPData] = useState([]);
   useEffect(() => {
@@ -293,10 +293,10 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
                 <th className=" min-w-[300px] px-4 py-2">Tên kỳ tuyển sinh</th>
-                <th className=" min-w-[300px] px-4 py-2">
+                <th className=" min-w-[320px] px-4 py-2">
                   Chương trình đào tạo
                 </th>
-                <th className=" min-w-[300px] px-4 py-2">
+                <th className=" min-w-[400px] px-4 py-2">
                   Tên chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[300px] px-4 py-2">Trạng thái</th>
@@ -307,7 +307,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
               {YBAPData?.map((YBAP) => (
                 <tr
                   key={YBAP.id}
-                  className="relative flex items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
+                  className="relative flex h-[58px] cursor-pointer items-center justify-between border-gray-300 text-[14px] font-semibold hover:bg-gray-200 "
                   onClick={() => showViewEdit(YBAP.id)}
                 >
                   <td className="min-w-[300px] px-4 py-2">
@@ -318,14 +318,14 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                         `${item.ACADEMIC_INTAKE_SESSION_NAME}`,
                     )}
                   </td>
-                  <td className="min-w-[300px] px-4 py-2">
+                  <td className="min-w-[320px] px-4 py-2">
                     {curiculum?.map(
                       (item) =>
                         item.CURRICULUM_ID === YBAP.CURRICULUM_ID &&
                         `${item.CURRICULUM_NAME}`,
                     )}
                   </td>
-                  <td className="min-w-[300px] px-4 py-2">
+                  <td className="min-w-[400px] px-4 py-2">
                     {" "}
                     {academicProgram?.map(
                       (item) =>
@@ -334,7 +334,9 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                     )}
                   </td>
                   <td className="min-w-[300px] px-4 py-2">
-                    {YBAP.STATUS_NAME == 1 ? "ĐANG MỞ" : "ĐÃ HOÀN THÀNH"}
+                    {statuses.map(
+                      (i) => YBAP.STATUS_NAME == i.value && i.status,
+                    )}
                   </td>
                   <td
                     onClick={() => handleActionClick(YBAP.id)}
@@ -466,7 +468,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
               </div>
             </div>
 
-            {YBAPData.map(
+            {YBAPData?.map(
               (academicprogram) =>
                 showActionMenu.studentId === academicprogram.id && (
                   <div
@@ -542,7 +544,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                         </label>
                         <select
                           defaultValue={
-                            objectPayload[academicprogram.id].STATUS_NAME
+                            objectPayload[academicprogram.id].STATUS_NAME + ""
                           }
                           type="text"
                           id="STATUS_NAME"
@@ -557,7 +559,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
                         >
                           <option hidden></option>
                           {statuses.map((item) => (
-                            <option key={item.id} value={item.id}>
+                            <option key={item.id} value={item.value}>
                               {item.status}
                             </option>
                           ))}
