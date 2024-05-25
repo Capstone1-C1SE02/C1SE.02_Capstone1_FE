@@ -501,7 +501,7 @@ function ListStudent() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[16%]  z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation absolute left-1/2 top-1/2 z-20 m-auto h-[810px] w-[870px] -translate-x-1/2 -translate-y-1/2 bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>

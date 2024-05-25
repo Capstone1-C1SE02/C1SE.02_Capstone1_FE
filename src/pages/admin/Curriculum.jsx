@@ -275,14 +275,14 @@ function Curriculum() {
           >
             <thead className="flex w-full flex-col ">
               <tr className=" flex w-full items-center justify-between text-left text-[12px] font-medium uppercase text-header-text">
-                <th className=" min-w-[250px] px-4 py-2">
+                <th className=" min-w-[400px] px-4 py-2">
                   Tên chương trình đào tạo
                 </th>
-                <th className=" min-w-[180px] px-4 py-2">Trạng thái đào tạo</th>
-                <th className=" min-w-[350px] px-4 py-2">
+                <th className=" min-w-[200px] px-4 py-2">Trạng thái đào tạo</th>
+                <th className=" min-w-[400px] px-4 py-2">
                   Tên chuyên ngành đào tạo
                 </th>
-                <th className=" min-w-[350px] px-4 py-2">Mô tả</th>
+                <th className=" min-w-[200px] px-4 py-2">Mô tả</th>
 
                 <th className=" min-w-[20px] px-4 py-2"></th>
               </tr>
@@ -294,17 +294,17 @@ function Curriculum() {
                   className="flex h-[58px] cursor-pointer  items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap border-gray-300 text-[14px] font-semibold hover:bg-gray-200"
                   onClick={() => showViewEdit(degreebook.CURRICULUM_ID)}
                 >
-                  <td className="min-w-[250px] px-4 py-2">
+                  <td className="min-w-[400px] px-4 py-2">
                     {degreebook.CURRICULUM_NAME}
                   </td>
-                  <td className="min-w-[180px] px-4 py-2">
+                  <td className="min-w-[200px] px-4 py-2">
                     {statuses.map(
                       (i) =>
                         degreebook.CURRICULUM_STATUS_NAME == i.value &&
                         i.status,
                     )}
                   </td>
-                  <td className="min-w-[350px] px-4 py-2">
+                  <td className="min-w-[400px] px-4 py-2">
                     {academicProgram?.length > 0 &&
                       academicProgram?.map(
                         (item) =>
@@ -313,7 +313,7 @@ function Curriculum() {
                           item.ACADEMIC_PROGRAM_NAME,
                       )}
                   </td>
-                  <td className="w-[350px] max-w-[350px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-2">
+                  <td className="w-[200px] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap px-4 py-2">
                     {degreebook.DESCRIPTION}
                   </td>
 

@@ -11,7 +11,7 @@ function Nav({ onClick }) {
   };
 
   return (
-    <div className=" w-[350px] p-[10px]">
+    <div className="w-[320px] p-[10px]">
       <img
         className="mx-auto my-[20px] h-[50px] w-[169.39px] "
         src={"/images/logo.svg"}

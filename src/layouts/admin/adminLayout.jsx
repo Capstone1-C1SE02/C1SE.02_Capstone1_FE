@@ -14,7 +14,7 @@ function adminLayout({ children }) {
     <div className="flex h-screen w-auto overflow-hidden">
       <div className="flex w-full">
         <div
-          className={`transition-all duration-300 ease-in-out ${showNav ? "w-[16.6667%]" : "w-0"} h-full border-r-[1px] bg-backLayout `}
+          className={`transition-all duration-300 ease-in-out ${showNav ? "w-[20%]" : "w-0"} h-full border-r-[1px] bg-backLayout `}
         >
           <Nav onClick={handleOnClick} />
         </div>
@@ -25,7 +25,7 @@ function adminLayout({ children }) {
             <div>
               <Header onClickShowNav={handleOnClick} />
             </div>
-            <div className=" h-[94.5%] px-6 pb-2">{children}</div>
+            <div className=" h-[92.5%] px-6 pb-2">{children}</div>
           </div>
         </div>
       </div>
