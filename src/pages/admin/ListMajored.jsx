@@ -19,8 +19,8 @@ import { LearningStatusType } from "@/components/dropList";
 import Swal from "sweetalert2";
 
 const statuses = [
-  { id: 0, value: true, status: "Đang tiến hành" },
-  { id: 1, value: false, status: "Đã huỷ" },
+  { id: 1, value: true, status: "Đang tiến hành" },
+  { id: 0, value: false, status: "Đã huỷ" },
 ];
 function ListMajored() {
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ function ListMajored() {
             `/search/degree?degreename=${searchValue}`,
           );
           console.log("response", response);
-          setMajors([response.data.data]);
+          setMajors(response.data.data);
         }
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);

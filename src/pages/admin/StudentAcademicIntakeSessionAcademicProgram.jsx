@@ -70,7 +70,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
         setLearningStatusType(learningStatus.data);
         setAcademicProgram(academicProgram.data.data);
         setStudent(student.data.data);
-        setAcademicintakesession(academicintakesession.data.results.data);
+        setAcademicintakesession(academicintakesession.data.data);
         setcuriculum(curiculum.data.results.data);
       } catch (error) {
         console.log(error);
@@ -398,7 +398,7 @@ function StudentAcademicIntakeSessionAcademicProgram() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 z-20 m-auto h-[880px] w-[1150px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[4%] z-20 m-auto h-[880px] w-[1150px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">

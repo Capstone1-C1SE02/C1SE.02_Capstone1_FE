@@ -5,7 +5,7 @@ import { Button } from "./index";
 
 const DeleteForm = ({ text, handleDeleteAction, handleDelete }) => {
   return (
-    <div className="animation fixed left-0 right-0 top-[25%] z-20 m-auto h-[298px] w-[870px] bg-[white]">
+    <div className="animation fixed left-0 right-0 top-[30%] z-20 m-auto h-[298px] w-[870px] bg-[white]">
       <div className="m-[30px]">
         <div className="m mb-[20px] flex justify-between">
           <h1 className="text-[30px] font-semibold">

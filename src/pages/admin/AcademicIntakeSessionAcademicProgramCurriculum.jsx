@@ -45,6 +45,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
         const response = await axiosConfig.get(
           `/academicintakesessionacademicprogramcurriculum?page=${page}`,
         );
+        console.log("response.data.results.data", response.data.results.data);
         setYBAPData(response.data.results.data);
         setPanigationData({
           count: response.data.count,
@@ -66,10 +67,9 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
         const academicProgram = await AcademicProgram();
         const curriculum = await Curiculum();
         const academicintakesession = await Academicintakesession();
-
-        setCuriculum(curriculum.data.results.data);
+        setCuriculum(curriculum.data.data);
         setAcademicProgram(academicProgram.data.data);
-        setAcademicintakesession(academicintakesession.data.results.data);
+        setAcademicintakesession(academicintakesession.data.data);
         console.log(academicintakesession);
       } catch (error) {
         console.log(error);
@@ -382,7 +382,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0 top-[18%] z-20 m-auto h-[780px] w-[1290px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[10%] z-20 m-auto h-[780px] w-[1290px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">
@@ -456,7 +456,7 @@ function AcademicIntakeSessionAcademicProgramCurriculum() {
       )}
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[18%] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[22%] z-20 m-auto h-[460px] w-[870px] rounded-[10px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">

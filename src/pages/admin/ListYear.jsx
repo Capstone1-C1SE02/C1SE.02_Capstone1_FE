@@ -192,6 +192,11 @@ const ListYear = () => {
     setImportFile(!importFile);
   };
 
+  const showDeleteEdit = () => {
+    showDeleteAction(!deleteAction);
+    showEditAction(!editAction);
+  };
+
   const handleCloseAll = () => {
     showAddAction(false);
     showEditAction(false);
@@ -461,7 +466,7 @@ const ListYear = () => {
                         // textColor={"text-[#16A34A] "}
                         justify
                         text16
-                        onClick={(e) => showDeleteAction(!deleteAction)}
+                        onClick={(e) => showDeleteEdit()}
                       />
                     </div>
                   </div>

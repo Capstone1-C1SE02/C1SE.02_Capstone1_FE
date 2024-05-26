@@ -4,6 +4,7 @@ import {
   HeaderAndInput,
   DeleteForm,
   FooterPage,
+  InputForm2,
   ImportFile,
 } from "@/components/admin";
 import React, { useEffect, useState } from "react";
@@ -81,7 +82,6 @@ function ListStudent() {
         if (searchPayload == false) {
           const response = await axiosConfig.get(`/student?page=${page}`);
           setStudentsData(response.data.results.data);
-          console.log("response ád", response.data);
           setPanigationData({
             count: response.data.count,
             page: response.data.total_pages,
@@ -90,8 +90,7 @@ function ListStudent() {
           const response = await axiosConfig.post(
             `/search/student?studentID=${searchValue}`,
           );
-
-          setStudentsData([response.data.data]);
+          setStudentsData(response.data.data);
         }
       } catch (error) {
         console.error("Đã xảy ra lỗi khi lấy danh sách sinh viên:", error);
@@ -99,7 +98,7 @@ function ListStudent() {
     }
     fetchStudentsData();
   }, [render, page, searchPayload]);
-  console.log("response", panigationData.count, panigationData.page);
+  console.log("setStudentsData", students);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -184,9 +183,9 @@ function ListStudent() {
             EMAIL: student.EMAIL,
             COMMENTS: student.COMMENTS,
             LEARNING_STATUS_TYPE_ID:
-              student.learningstatustype.LEARNING_STATUS_TYPE_ID,
+              student?.learningstatustype?.LEARNING_STATUS_TYPE_ID,
             ACADEMIC_LEVEL_TYPE_ID:
-              student.academicleveltype.ACADEMIC_LEVEL_TYPE_ID,
+              student?.academicleveltype?.ACADEMIC_LEVEL_TYPE_ID,
           };
           return acc;
         }, {}),
@@ -300,10 +299,13 @@ function ListStudent() {
 
   //add
   const handleAddANew = async () => {
+    console.log("ok");
     const valid = validate(payload);
+    console.log("invalidFields", invalidFields);
     if (valid > 0) {
       return;
     }
+    console.log("ok");
     await addStudent(payload, dispatch);
     setCount((pre) => ({ ...pre, countAdd: pre.countAdd + 1 }));
     showAddAction(!addAction);
@@ -502,7 +504,8 @@ function ListStudent() {
       </div>
       {/* add form */}
       {addAction && (
-        <div className="animation absolute left-1/2 top-1/2 z-20 m-auto h-[810px] w-[870px] -translate-x-1/2 -translate-y-1/2 bg-[white]">
+        // <div className="animation absolute left-1/2 top-1/2 z-20 m-auto h-[810px] w-[870px] -translate-x-1/2 -translate-y-1/2 bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[10%] z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>
@@ -525,6 +528,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />
                   {invalidFields.length > 0 &&
                     invalidFields.some((item) => item.name === "LAST_NAME") && (
@@ -548,6 +552,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -573,6 +578,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -600,6 +606,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -626,6 +633,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -651,6 +659,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -678,6 +687,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   >
                     <option hidden></option>
                     <option value={true}>Nam</option>
@@ -705,6 +715,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some((item) => item.name === "NATION") && (
@@ -728,6 +739,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -755,6 +767,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -783,6 +796,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some(
@@ -808,6 +822,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
                   {invalidFields.length > 0 &&
                     invalidFields.some((item) => item.name === "EMAIL") && (
@@ -833,6 +848,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   >
                     <option hidden></option>
                     {learningStatusType &&
@@ -872,6 +888,7 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   >
                     <option hidden></option>
                     {academicleveltype &&
@@ -912,7 +929,17 @@ function ListStudent() {
                         [e.target.id]: e.target.value,
                       }))
                     }
+                    onFocus={() => setInvalidFields("")}
                   />{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some((item) => item.name === "COMMENTS") && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "COMMENTS")
+                            ?.message
+                        }
+                      </small>
+                    )}
                 </div>{" "}
               </div>
             </div>
@@ -937,7 +964,7 @@ function ListStudent() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 top-[16%] z-20 m-auto h-[810px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[10%] z-20 m-auto h-[810px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Sinh viên</h1>

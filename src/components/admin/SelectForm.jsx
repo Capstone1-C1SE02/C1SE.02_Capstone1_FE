@@ -35,7 +35,7 @@ const SelectForm = ({
                 {item[dataName]}
               </option>
             ))
-          : dataNoAPI.map((item) => (
+          : dataNoAPI?.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.status}
               </option>

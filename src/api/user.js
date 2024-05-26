@@ -28,4 +28,10 @@ const searchByPicture = async ({ image }) => {
   }
 };
 
-export { getCaptcha, searchByTextField, searchByPicture };
+const getLevelType = async ({ id }) => {
+  const response = await axios.get("/api/academicleveltype");
+
+  console.log(response);
+};
+
+export { getCaptcha, getLevelType, searchByTextField, searchByPicture };

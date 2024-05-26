@@ -30,7 +30,7 @@ export default function TransferListForProYear({ onRightListChange }) {
   React.useEffect(() => {
     const fetchData = async () => {
       const curiculum = await Curiculum();
-      setLeft(curiculum.data.results.data);
+      setLeft(curiculum.data.data);
     };
     fetchData();
   }, []);

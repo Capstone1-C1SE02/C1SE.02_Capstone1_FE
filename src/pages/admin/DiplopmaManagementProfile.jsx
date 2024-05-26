@@ -369,7 +369,7 @@ function DiplopmaManagementProfile() {
                   chuyên ngành đào tạo
                 </th>
                 <th className=" min-w-[200px] px-4 py-2">Năm tốt nghiệp</th>
-                <th className=" min-w-[200px] px-4 py-2">Loại đào tạo</th>
+                <th className=" min-w-[200px] px-4 py-2">Loại hình đào tạo</th>
                 <th className=" min-w-[200px] px-4 py-2">Xếp loại</th>
                 <th className=" min-w-[200px] px-4 py-2">Số hiệu bằng</th>
                 <th className=" min-w-[200px] px-4 py-2">Số vào sổ</th>
@@ -484,7 +484,7 @@ function DiplopmaManagementProfile() {
 
       {/* add form */}
       {addAction && (
-        <div className="animation fixed left-0 right-0  z-20 m-auto h-[700px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[14%] z-20 m-auto h-[700px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
@@ -511,17 +511,39 @@ function DiplopmaManagementProfile() {
                   invalidFields={invalidFields}
                   w333
                 />
-                <SelectForm
-                  text={"Loại đào tạo:"}
-                  setValue={setPayload}
-                  keyObject={"MODE_OF_STUDY"}
-                  setInvalidFields={setInvalidFields}
-                  dataAPI={academicleveltype}
-                  dataValue={"ACADEMIC_LEVEL_TYPE_ID"}
-                  dataName={"ACADEMIC_LEVEL_TYPE_NAME"}
-                  w333
-                  invalidFields={invalidFields}
-                />
+                <div className="flex flex-col gap-[5px]">
+                  <label className="text-[16px] font-normal">
+                    Loại hình đào tạo:
+                  </label>
+                  <select
+                    type="checkbox"
+                    id="MODE_OF_STUDY"
+                    className="block w-[250px] rounded-[10px] border-[1px] border-border-input px-3 py-2 font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      setPayload((pre) => ({
+                        ...pre,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                    onFocus={() => setInvalidFields("")}
+                  >
+                    <option hidden></option>
+                    <option value={"Chính quy"}>Chính quy</option>
+                    <option value={"Đào tạo từ xa"}>Đào tạo từ xa</option>
+                    <option value={"Vừa học vừa làm"}>Vừa học vừa làm</option>
+                  </select>{" "}
+                  {invalidFields.length > 0 &&
+                    invalidFields.some(
+                      (item) => item.name === "MODE_OF_STUDY",
+                    ) && (
+                      <small className="italic text-red-500">
+                        {
+                          invalidFields.find((i) => i.name === "MODE_OF_STUDY")
+                            ?.message
+                        }
+                      </small>
+                    )}
+                </div>{" "}
               </div>
               <div className="flex h-[100px] gap-[30px]">
                 <SelectForm
@@ -623,7 +645,7 @@ function DiplopmaManagementProfile() {
 
       {/* edit form */}
       {editAction && (
-        <div className="animation fixed left-0 right-0 z-20 m-auto h-[710px] w-[870px] bg-[white]">
+        <div className="animation fixed left-0 right-0 top-[14%] z-20 m-auto h-[710px] w-[870px] bg-[white]">
           <div className="m-[30px]">
             <div className="m mb-[20px] flex justify-between">
               <h1 className="text-[30px] font-semibold">Quản lý bằng cấp</h1>
@@ -687,7 +709,7 @@ function DiplopmaManagementProfile() {
                         <label className="text-[16px] font-normal">
                           Loại đào tạo:
                         </label>
-                        <input
+                        <select
                           defaultValue={
                             objectPayload[item.DIPLOMA_MANAGEMENT_PROFILE_ID]
                               .MODE_OF_STUDY
@@ -702,7 +724,14 @@ function DiplopmaManagementProfile() {
                               "MODE_OF_STUDY",
                             )
                           }
-                        />
+                        >
+                          <option hidden></option>
+                          <option value={"Chính quy"}>Chính quy</option>
+                          <option value={"Đào tạo từ xa"}>Đào tạo từ xa</option>
+                          <option value={"Vừa học vừa làm"}>
+                            Vừa học vừa làm
+                          </option>
+                        </select>
                       </div>
                     </div>
                     <div className="flex h-[100px] gap-[30px]">

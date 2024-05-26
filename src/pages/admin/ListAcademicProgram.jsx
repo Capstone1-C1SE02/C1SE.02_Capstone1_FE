@@ -52,9 +52,9 @@ function ListAcademicProgram() {
           });
         } else {
           const response = await axiosConfig.post(
-            `/search/academicprogram?AcademicProgramName=${searchValue}`,
+            `/search/academicprogram?academicprogramname=${searchValue}`,
           );
-          setAcademicPrograms([response.data.data]);
+          setAcademicPrograms(response.data.data);
         }
       } catch (error) {
         console.error(

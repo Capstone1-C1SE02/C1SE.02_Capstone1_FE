@@ -1,5 +1,5 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Item from "@/components/user/Result/item";
@@ -8,6 +8,27 @@ import Row from "@/components/user/Result/row";
 function Result() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const levelTypes = [
+    {
+      ACADEMIC_LEVEL_TYPE_ID: 1,
+      ACADEMIC_LEVEL_TYPE_NAME: "Đại học",
+    },
+    {
+      ACADEMIC_LEVEL_TYPE_ID: 2,
+      ACADEMIC_LEVEL_TYPE_NAME: "Cao đẳng",
+    },
+    {
+      ACADEMIC_LEVEL_TYPE_ID: 3,
+      ACADEMIC_LEVEL_TYPE_NAME: "Thạc sĩ",
+    },
+    {
+      ACADEMIC_LEVEL_TYPE_ID: 4,
+      ACADEMIC_LEVEL_TYPE_NAME: "Tiến sĩ",
+    },
+  ];
+
+  const [levelType, setLevelType] = useState("");
 
   // Get data from the previous page
   const data = location.state?.data;
@@ -19,7 +40,16 @@ function Result() {
     if (!data) {
       navigate("/");
     }
+
+    getLevelType(data?.MODE_OF_STUDY);
   }, [data]);
+
+  const getLevelType = (id) => {
+    const levelType = levelTypes.find((levelType) => {
+      return levelType.ACADEMIC_LEVEL_TYPE_ID === id;
+    });
+    setLevelType(levelType?.ACADEMIC_LEVEL_TYPE_NAME);
+  };
 
   // Test UI
   // useEffect(() => {
@@ -78,7 +108,7 @@ function Result() {
             label="Ngành Đào tạo:"
             value={data?.ACADEMIC_PROGRAM?.DEGREE?.DEGREE_NAME}
           />
-          <Item label="Loại hình đào tạo:" value={data?.MODE_OF_STUDY} />
+          <Item label="Loại hình đào tạo:" value={levelType} />
         </Row>
         <Row>
           <Item
