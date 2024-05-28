@@ -20,9 +20,9 @@ import Swal from "sweetalert2";
 const { BsThreeDotsVertical, FaTimes } = icon;
 import "react-toastify/dist/ReactToastify.css";
 const statuses = [
-  { id: 0, status: "Chính quy" },
-  { id: 1, status: "Vừa học vừa làm" },
-  { id: 2, status: "Đào tạo từ xa" },
+  { status: "Chính quy" },
+  { status: "Vừa học vừa làm" },
+  { status: "Đào tạo từ xa" },
 ];
 
 function ListAcademicProgram() {
@@ -360,11 +360,7 @@ function ListAcademicProgram() {
                     )}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
-                    {academicprogram.MODE_OF_STUDY == 0
-                      ? "Chính quy"
-                      : academicprogram.MODE_OF_STUDY == 1
-                        ? "Vừa học vừa làm"
-                        : "Đào tạo từ xa"}
+                    {academicprogram.MODE_OF_STUDY}
                   </td>
                   <td className="min-w-[200px] px-4 py-2">
                     {`${academicprogram.DEGREE_DURATION} năm`}
@@ -652,7 +648,7 @@ function ListAcademicProgram() {
                         >
                           <option hidden></option>
                           {statuses?.map((i) => (
-                            <option key={i.id} value={i.id}>
+                            <option key={i.id} value={i.status + ""}>
                               {i.status}
                             </option>
                           ))}
